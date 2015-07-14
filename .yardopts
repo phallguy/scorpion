@@ -1,0 +1,7 @@
+--protected
+--no-private
+--no-cache
+--hide-void-return
+--output-dir /tmp/scorpion_docs
+--db /tmp/scorpion_yardoc
+--markup markdown
