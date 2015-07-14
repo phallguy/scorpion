@@ -10,7 +10,7 @@ Embrace convention over configuration while still benefitting from the
 dependency injection design principle.
 
 
-## Using Shog
+## Using Scorpion
 
 ...
 

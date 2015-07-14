@@ -13,5 +13,8 @@ gem 'fuubar'
 gem 'foreman'
 gem 'yard'
 gem 'simplecov', github: "colszowka/simplecov"
+gem 'ruby_gntp', '~> 0.3.4'
+gem 'awesome_print'
+
 
 gem "codeclimate-test-reporter", group: :test, require: nil

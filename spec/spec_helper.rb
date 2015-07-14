@@ -5,7 +5,7 @@ if ENV['COVERAGE']
 else
   SimpleCov.start
 end
-
+require 'pry'
 require 'scorpion'
 
 root_path = File.expand_path( "../..", __FILE__ )
