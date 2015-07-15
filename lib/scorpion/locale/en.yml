@@ -1,0 +1,5 @@
+en:
+  scorpion:
+    errors:
+      messages:
+        unsuccessful_hunt: "Couldn't find a %{contract} builder with traits '%{traits}'"

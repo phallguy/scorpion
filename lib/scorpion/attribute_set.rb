@@ -79,7 +79,7 @@ module Scorpion
       def define_attribute( name, contract, *traits )
         options = traits.pop if traits.last.is_a? Hash
         options ||= {}
-        attributes[name.to_sym] = Attribute.new name, contract, *traits, options
+        attributes[name.to_sym] = Attribute.new name, contract, traits, options
       end
 
       def method_missing( name, *args )

@@ -13,7 +13,6 @@ module Scorpion
     # @return [Scorpion] the scorpion used to hunt down prey.
       attr_reader :scorpion
 
-
     # @!attribute
     # @return [Scorpion::AttributeSet] the set of injected attributes and their
     #   settings.
@@ -24,53 +23,46 @@ module Scorpion
     #
     # @!endgroup Attributes
 
+    # Feeds one of the {#injected_attributes} to the object.
+    # @param [Scorpion::Attribute] attribute to be fed.
+    # @param [Object] food the value of the attribute
+    # @visibility private
+    #
+    # This method is used by the {#scorpion} to feed the king. Do not call it
+    # directly.
+    def feed( attribute, food )
+      send "#{ attribute.name }=", food
+    end
 
     def self.included( base )
       base.extend Scorpion::King::ClassMethods
-      Scorpion::King::ClassMethods.build_spawn( base ) if base.is_a? Class
+      Scorpion::King::ClassMethods.build_spawn_method( base ) if base.is_a? Class
+
+      super
     end
 
-    private
-      def feed( attribute, food )
-        send "#{ attribute.name }=", food
-      end
 
     module ClassMethods
 
-      # Tells a {Scorpion::Scorpion} what to inject into the class when it is constructed
-      # @param [Array<Symbol>] args named arguments that are require
+      # Tells a {Scorpion} what to inject into the class when it is constructed
       # @return [nil]
+      # @see AttributeSet#define
       def feed_on( &block )
-        puts "Inject #{ self }"
-
         injected_attributes.define &block
-        injected_attributes.each do |attr|
-          class_eval <<-RUBY, __FILE__, __LINE__ + 1
-            def #{ attr.name }
-              @#{ attr.name } ||= scorpion.hunt!( injected_attributes[ :#{ attr.name } ], self )
-            end
-
-            def #{ attr.name }=( value )
-              @#{ attr.name } = value
-            end
-            private :#{ attr.name }
-          RUBY
-        end
+        build_injected_attributes
       end
+      alias_method :inject, :feed_on
 
+      # @!attribute
       # @return [Scorpion::AttributeSet] the set of injected attriutes.
       def injected_attributes
         @injected_attributes ||= AttributeSet.new
       end
 
-      def inherited( base )
-        puts "Inherited #{base}"
-      end
-
       # @!method spawn( *args, &block )
       # Same as {#new} but handles injecting expected dependencies
       # @return [Object] the new object
-      def self.build_spawn( base )
+      def self.build_spawn_method( base )
         base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def self.spawn( scorpion, *args, &block )
             args, injected_args = extract_injections( args )
@@ -112,6 +104,24 @@ module Scorpion
           end
 
           [ args, injected ]
+        end
+
+        def build_injected_attributes
+          injected_attributes.each do |attr|
+            class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              def #{ attr.name }
+                @#{ attr.name } ||= begin
+                  attr = injected_attributes[ :#{ attr.name } ]
+                  scorpion.hunt!( attr.contract, attr.traits )
+                end
+              end
+
+              def #{ attr.name }=( value )
+                @#{ attr.name } = value
+              end
+              private :#{ attr.name }=
+            RUBY
+          end
         end
     end
   end

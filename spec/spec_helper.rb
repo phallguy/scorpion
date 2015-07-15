@@ -6,6 +6,12 @@ else
   SimpleCov.start
 end
 require 'pry'
+require 'bundler/setup'
+require 'combustion'
+
+Combustion.initialize! :all
+
+require 'rspec/rails'
 require 'scorpion'
 
 root_path = File.expand_path( "../..", __FILE__ )

@@ -29,11 +29,34 @@ module Scorpion
     # @!endgroup Attributes
 
 
-    def initialize( name, contract, *traits, options )
-      @name     = name.to_sym
-      @contract = contract
-      @traits   = traits.flatten
-      @lazy     = options.fetch( :lazy, false )
+    def initialize( name, contract, traits = nil, options = {} )
+      @name      = name.to_sym
+      @contract  = contract
+      @traits    = Array( traits ).flatten.freeze
+      @trait_set = Set.new( @traits.map{ |t| :"#{t}?" } )
+      @lazy      = options.fetch( :lazy, false )
+
     end
+
+    def respond_to?( name, include_all = false )
+      super || trait_set.include?( name )
+    end
+
+    private
+      # @return [Set] the set of traits associated with the attribute pre-processed
+      #   to include the trait names with a '?' suffix.
+        attr_reader :trait_set
+
+      def method_missing( name, *args )
+        if is_trait_method?( name )
+          trait_set.include? name
+        else
+          super
+        end
+      end
+
+      def is_trait_method?( name )
+        name[-1] == '?'
+      end
   end
 end

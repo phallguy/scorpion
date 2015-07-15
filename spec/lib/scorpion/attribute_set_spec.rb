@@ -41,6 +41,32 @@ describe Scorpion::AttributeSet do
 
       expect( set[:logger] ).to be_lazy
     end
+
+    it "parses traits" do
+      set.define do
+        with_traits nil, :color
+      end
+
+      expect( set[:with_traits].traits ).to eq [:color]
+    end
+
+    it "parses traits and options" do
+      set.define do
+        both nil, :formatted, lazy: true
+      end
+
+      expect( set[:both] ).to be_formatted
+      expect( set[:both] ).to be_lazy
+    end
+
+
+    it "parses options" do
+      set.define do
+        options nil, lazy: true
+      end
+
+      expect( set[:options] ).to be_lazy
+    end
   end
 
   describe "#merge" do
