@@ -6,7 +6,7 @@ module Test
     class Logger; end
 
     class Mamal
-      include Scorpion::King
+      prepend Scorpion::King
 
       def initialize( family, parent = nil, options={}, &block )
         @family    = family
@@ -62,6 +62,11 @@ describe Scorpion::King do
         Test::King::Mouse.spawn scorpion, name: 'name', &b
       end.to yield_control
     end
+
+    it "invokes on_fed" do
+      expect_any_instance_of( Test::King::Mouse ).to receive( :on_fed )
+      Test::King::Mouse.spawn scorpion
+    end
   end
 
   describe "accessors" do
@@ -76,41 +81,6 @@ describe Scorpion::King do
       expect( prey ).not_to respond_to :user_service=
     end
 
-    it "strips injected attributes" do
-      expect( prey.options ).not_to have_key :manager
-    end
-
-  end
-
-  describe "#extract_injections" do
-    class KingInjections
-      include Scorpion::King
-    end
-
-    let( :args ) { ['name', :apples, a: 'a', in: 'jected'] }
-
-    before( :each ) do
-      allow( KingInjections ).to receive( :injected_attributes ).and_return [Scorpion::Attribute.new( :in, nil )]
-    end
-
-    it "removes injected" do
-      real, _ = KingInjections.send :extract_injections, args
-
-      expect( real ).to eq( [ 'name', :apples, { a: 'a' } ] )
-    end
-
-    it "extract injected" do
-      _, injections = KingInjections.send :extract_injections, args
-
-      expect( injections ).to eq( { in: 'jected' } )
-    end
-
-    it "doesn't dup if no changes needed" do
-      ops     = { a: 'a' }
-      args, _ = KingInjections.send :extract_injections, [ 'name', ops ]
-
-      expect( args.last ).to be ops
-    end
   end
 
 end

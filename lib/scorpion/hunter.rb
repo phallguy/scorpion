@@ -36,6 +36,8 @@ module Scorpion
     def hunt_by_traits!( contract, traits = nil, *args, &block  )
       unless prey = hunting_map.find( contract, traits )
         return parent.hunt_by_traits! contract, traits if parent
+
+        prey = Scorpion::Prey::ClassPrey.new( contract, nil ) if contract.is_a?( Class ) && traits.nil?
         unsuccessful_hunt!( contract, traits ) unless prey
       end
       prey.fetch self, *args, &block

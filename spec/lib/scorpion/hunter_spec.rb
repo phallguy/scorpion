@@ -12,6 +12,7 @@ module Test
       end
       attr_reader :arg
     end
+    class Implicit; end
 
     class Zoo
       include Scorpion::King
@@ -59,6 +60,10 @@ describe Scorpion::Hunter do
   it "accepts arguments that are passed to constructor" do
     obj = hunter.hunt! Test::Hunter::Argumented, :awesome
     expect( obj.arg ).to eq :awesome
+  end
+
+  it "implicitly spawns Class contracts" do
+    expect( hunter.hunt! Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
   end
 
 end

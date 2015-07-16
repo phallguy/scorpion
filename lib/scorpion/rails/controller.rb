@@ -30,12 +30,16 @@ module Scorpion
       def self.included( base )
         # Setup dependency injection
         base.send :include, Scorpion::King
-        base.around_action :prepare_the_hunt
+        base.around_action :with_scorpion
 
         # @!attribute [rw]
         # @return [Scorpion::Nest] the singleton nest used by controllers.
         base.class_attribute :nest_instance
         base.class_exec do
+
+          # @!attribute
+          # @return [Scorpion::Nest] the nest used to conceive scorpions to
+          #   hunt for objects on each request.
           def self.nest
             nest_instance
           end
@@ -44,7 +48,9 @@ module Scorpion
             self.nest_instance = value
           end
 
-          def self.prepare_nest( &block )
+          # Prepare the nest for conceiving scorpions.
+          # @see HuntingMap#chart
+          def self.scorpion_nest( &block )
             nest.prepare &block
           end
         end
@@ -56,7 +62,7 @@ module Scorpion
       private
 
         # Fetch a scorpion and feed the controller it's dependencies
-        def prepare_the_hunt( &block )
+        def with_scorpion( &block )
           @scorpion = nest.conceive
 
           @scorpion.prepare do |hunter|

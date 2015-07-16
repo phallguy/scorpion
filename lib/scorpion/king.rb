@@ -34,6 +34,12 @@ module Scorpion
       send "#{ attribute.name }=", food
     end
 
+    def initialize( *args, &block )
+      binding.pry
+      super
+    end
+
+
     def self.included( base )
       base.extend Scorpion::King::ClassMethods
       Scorpion::King::ClassMethods.build_spawn_method( base ) if base.is_a? Class
@@ -41,6 +47,20 @@ module Scorpion
       super
     end
 
+    def self.prepended( base )
+      base.extend Scorpion::King::ClassMethods
+      Scorpion::King::ClassMethods.build_spawn_method( base ) if base.is_a? Class
+
+      super
+    end
+
+    private
+
+      # Called after the king has been initialized and feed all its required
+      # dependencies. It should be used in place of #initialize when the
+      # constructor needs access to injected attributes.
+      def on_fed
+      end
 
     module ClassMethods
 
@@ -65,46 +85,19 @@ module Scorpion
       def self.build_spawn_method( base )
         base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def self.spawn( scorpion, *args, &block )
-            args, injected_args = extract_injections( args )
 
             new( *args, &block ).tap do |king|
               king.instance_variable_set :@scorpion, scorpion
+              # Go hunt for dependencies that are not lazy and initialize the
+              # references.
               scorpion.feed! king
+              king.send :on_fed
             end
           end
         RUBY
       end
 
       private
-
-        # Extracts any manually specified injections from the last arg if it is a
-        # hash.
-        def extract_injections( args )
-          hash = args.last
-          if hash.is_a? Hash
-            split_injected_args args
-          else
-            [ args, nil ]
-          end
-        end
-
-        def split_injected_args( args )
-          hash     = args.last
-          options  = nil
-          injected = {}
-
-          injected_attributes.each do |attr|
-            next unless  hash.key? attr.name
-
-            unless options
-              options = hash.dup
-              args = args[0...-1] + [options]
-            end
-            injected[attr.name] = options.delete attr.name
-          end
-
-          [ args, injected ]
-        end
 
         def build_injected_attributes
           injected_attributes.each do |attr|

@@ -54,7 +54,7 @@ module Scorpion
   # Creates a new {Scorpion} copying the current configuration any any currently
   # captured prey.
   # @return [Scorpion] the replicated scorpion.
-  def replicate
+  def replicate( &block )
     fail "Not implemented"
   end
 

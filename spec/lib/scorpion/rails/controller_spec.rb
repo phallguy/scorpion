@@ -26,7 +26,7 @@ describe Scorpion::Rails::Controller, type: :controller do
 
   context "basics" do
     before( :each ) do
-      controller.class.prepare_nest do
+      controller.class.scorpion_nest do
         hunt_for  Test::Nest::Guard   # New each spawn
         capture   Test::Nest::Service # Once per request
 
