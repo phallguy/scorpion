@@ -2,6 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/scorpion-ioc.svg)](http://badge.fury.io/rb/scorpion-ioc)
 [![Code Climate](https://codeclimate.com/github/phallguy/scorpion.png)](https://codeclimate.com/github/phallguy/scorpion)
+[![Test Coverage](https://codeclimate.com/github/phallguy/scorpion/badges/coverage.svg)](https://codeclimate.com/github/phallguy/scorpion/coverage)
 [![Circle CI](https://circleci.com/gh/phallguy/scorpion.svg?style=svg)](https://circleci.com/gh/phallguy/scorpion)
 
 Add IoC to rails with minimal fuss and ceremony.
