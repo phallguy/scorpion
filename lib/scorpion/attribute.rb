@@ -8,22 +8,30 @@ module Scorpion
 
     # @!attribute
     # @return [Symbol] the name of the attribute.
-      attr_accessor :name
+      attr_reader :name
 
     # @!attribute
     # @return [Class,Module,Symbol] contract that describes the desired behavior
     #   of the injected object.
-      attr_accessor :contract
+      attr_reader :contract
 
     # @!attribute
     # @return [Array<Symbol>] traits that must match on instances of the {#contract}
-      attr_accessor :traits
+      attr_reader :traits
 
     # @!attribute
     # @return [Boolean] true if the attribute is not immediately required and
     #   will be hunted down on first use.
-      attr_accessor :lazy
-      alias_method :lazy?, :lazy
+      def lazy?; @lazy end
+
+    # @!attribute
+    # @return [Boolean] true if the attribute should have a public writer.
+      def public?; @public end
+
+    # @!attribute
+    # @return [Boolean] true if the attribute should have a public writer.
+      def private?; @private end
+
 
     #
     # @!endgroup Attributes
@@ -35,7 +43,8 @@ module Scorpion
       @traits    = Array( traits ).flatten.freeze
       @trait_set = Set.new( @traits.map{ |t| :"#{t}?" } )
       @lazy      = options.fetch( :lazy, false )
-
+      @public    = options.fetch( :public, false )
+      @private   = options.fetch( :private, false )
     end
 
     def respond_to?( name, include_all = false )

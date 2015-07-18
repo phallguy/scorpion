@@ -4,6 +4,8 @@ module Test
   module King
     class UserService; end
     class Logger; end
+    class BackLogger; end
+    class ColorLogger; end
 
     class Mamal
       include Scorpion::King
@@ -19,7 +21,8 @@ module Test
       feed_on do
         user_service Test::King::UserService
         logger       Test::King::Logger
-        manager      Test::King::Logger
+        manager      Test::King::Logger, public: true
+        executive_manager Test::King::Logger, private: true
       end
 
       attr_accessor :family
@@ -28,8 +31,19 @@ module Test
     end
 
     class Mouse < Mamal
+
+      feed_on do
+        cheese  Test::King::Logger
+        logger  Test::King::BackLogger
+      end
       def initialize( options = {} )
         super 'mouse', nil, options
+      end
+    end
+
+    class Bear < Mamal
+      feed_on do
+        logger Test::King::ColorLogger
       end
     end
 
@@ -70,24 +84,46 @@ describe Scorpion::King do
   end
 
   describe "accessors" do
-    let( :prey ) do
+    let( :king ) do
       Test::King::Mamal.spawn scorpion, 'harry', 'jim', name: 'name', manager: double
     end
 
-    subject{ prey }
+    subject{ king }
 
     it "defines accessors" do
-      expect( prey ).to     respond_to :user_service
-      expect( prey ).not_to respond_to :user_service=
+      expect( king ).to     respond_to :user_service
+      expect( king ).not_to respond_to :user_service=
     end
 
-    xit "supports private reader"
-    xit "supports public writer"
+    it "supports private reader" do
+      expect( king.respond_to? :executive_manager, false ).to be_falsy
+      expect( king.respond_to? :executive_manager, true ).to be_truthy
+    end
+
+    it "supports public writer" do
+      expect( king.respond_to? :manager=, false ).to be_truthy
+    end
+
+    describe  "inheritance" do
+      let( :king ) do
+        Test::King::Mouse.spawn scorpion
+      end
+
+      it "inherits attributes" do
+        expect( king.injected_attributes[:user_service].contract ).to be Test::King::UserService
+      end
+
+      it "overrides attributes" do
+        expect( king.injected_attributes[:logger].contract ).to be Test::King::BackLogger
+      end
+
+      it "doesn't effect other classes" do
+        expect( Test::King::Bear.spawn( scorpion, 'Yogi' ).injected_attributes[:logger].contract ).to be Test::King::ColorLogger
+      end
+
+    end
 
   end
 
-  describe  "inheritance" do
-    xit "can override feed_on"
-  end
 
 end

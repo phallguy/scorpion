@@ -27,7 +27,7 @@ module Scorpion
     # Inherit attribute definitions from another set.
     def inherit!( other )
       other.each do |attr|
-        attributes[attr.key] ||= attr
+        attributes[attr.name] ||= attr
       end
     end
 

@@ -102,7 +102,11 @@ module Scorpion
       # @!attribute
       # @return [Scorpion::AttributeSet] the set of injected attriutes.
       def injected_attributes
-        @injected_attributes ||= AttributeSet.new
+        @injected_attributes ||= begin
+          attr = AttributeSet.new
+          attr.inherit! superclass.injected_attributes if superclass.respond_to? :injected_attributes
+          attr
+        end
       end
 
       private
@@ -120,14 +124,25 @@ module Scorpion
               def #{ attr.name }=( value )
                 @#{ attr.name } = value
               end
-              private :#{ attr.name }=
 
               def #{ attr.name }?
                 !!@#{ attr.name }
               end
-              private :#{ attr.name }?
-
             RUBY
+
+            unless attr.public?
+              class_eval <<-RUBY, __FILE__, __LINE__ + 1
+                private :#{ attr.name }=
+                private :#{ attr.name }?
+              RUBY
+            end
+
+            if attr.private?
+              class_eval <<-RUBY, __FILE__, __LINE__ + 1
+                private :#{ attr.name }
+              RUBY
+            end
+
           end
         end
     end

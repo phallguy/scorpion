@@ -10,7 +10,6 @@ module Scorpion
   require 'scorpion/hunter'
   require 'scorpion/hunting_map'
   require 'scorpion/prey'
-  require 'scorpion/stinger'
   require 'scorpion/nest'
   require 'scorpion/rails'
 
