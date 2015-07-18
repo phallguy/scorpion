@@ -54,7 +54,7 @@ module Scorpion
             nest.prepare &block
           end
         end
-        base.nest ||= Scorpion::Nest.new
+        base.nest ||= Scorpion.instance.build_nest
 
         super
       end

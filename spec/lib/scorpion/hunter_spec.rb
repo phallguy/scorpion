@@ -66,4 +66,6 @@ describe Scorpion::Hunter do
     expect( hunter.hunt! Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
   end
 
+  it "feeds the same food to all immediate dependencies"
+
 end

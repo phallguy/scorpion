@@ -6,7 +6,7 @@ module Test
     class Logger; end
 
     class Mamal
-      prepend Scorpion::King
+      include Scorpion::King
 
       def initialize( family, parent = nil, options={}, &block )
         @family    = family
@@ -81,6 +81,13 @@ describe Scorpion::King do
       expect( prey ).not_to respond_to :user_service=
     end
 
+    xit "supports private reader"
+    xit "supports public writer"
+
+  end
+
+  describe  "inheritance" do
+    xit "can override feed_on"
   end
 
 end

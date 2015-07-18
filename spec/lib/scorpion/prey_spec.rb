@@ -32,6 +32,29 @@ describe Scorpion::Prey do
 
   end
 
+  describe "traits" do
+
+    context "symbolic" do
+      let( :prey ){ Scorpion::Prey.new Test::Prey::Base, :apples }
+      it "satisfies matched traits" do
+        expect( prey.satisfies? Test::Prey::Base, :apples ).to be_truthy
+      end
+
+      it "doesn't satisfy mis-matched traits" do
+        expect( prey.satisfies? Test::Prey::Base, :oranges ).to be_falsy
+      end
+    end
+
+    context "module" do
+      let( :prey ){ Scorpion::Prey.new Test::Prey::Derived }
+
+      it "satisfies module traits" do
+        expect( prey.satisfies? Test::Prey::Base, Test::Prey::Derived ).to be_truthy
+      end
+    end
+
+  end
+
   it "can satisfy symbol contracts" do
     expect( Scorpion::Prey.new( :symbol ).satisfies? :symbol ).to be_truthy
   end

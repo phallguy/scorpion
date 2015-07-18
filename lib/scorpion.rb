@@ -10,8 +10,20 @@ module Scorpion
   require 'scorpion/hunter'
   require 'scorpion/hunting_map'
   require 'scorpion/prey'
+  require 'scorpion/stinger'
   require 'scorpion/nest'
   require 'scorpion/rails'
+
+  # @return [Scorpion] main scorpion for the app.
+  def self.instance
+    @instance
+  end
+  @instance = Scorpion::Hunter.new
+
+  # Prepare the {#instance} for hunting.
+  def self.prepare( &block )
+    instance.prepare &block
+  end
 
   # Hunts for an object that satisfies the requested `contract` and `traits`.
   # @param [Class,Module,Symbol] contract describing the desired behavior of the prey.
@@ -21,6 +33,7 @@ module Scorpion
   def hunt_by_traits!( contract, traits, *args, &block )
     fail "Not implemented"
   end
+  alias_method :fetch_by_traits!, :hunt_by_traits!
 
   # Hunts for an object that satisfies the requested `contract` regardless of
   # traits.
@@ -28,6 +41,7 @@ module Scorpion
   def hunt!( contract, *args, &block )
     hunt_by_traits!( contract, nil, *args, &block )
   end
+  alias_method :fetch!, :hunt!
 
   # Populate given `king` with its expected attributes.
   # @param [Scorpion::King] king to be fed.
@@ -62,10 +76,15 @@ module Scorpion
   def destroy
   end
 
+  # @return [Scorpion::Nest] a nest that uses this scorpion as the mother.
+  def build_nest
+    Scorpion::Nest.new( self )
+  end
+
   private
 
     # Used by concrete scorpions to notify the caller that the hunt was
-    # unssuccessful.
+    # unsuccessful.
     def unsuccessful_hunt!( contract, traits )
       fail UnsuccessfulHunt.new contract, traits
     end

@@ -81,7 +81,13 @@ module Scorpion
       def satisfies_traits?( traits )
         return true if traits.blank?
 
-        Set.new( Array( traits ) ).subset? self.traits
+        Array( traits ).all? do |trait|
+          case trait
+          when Symbol then self.traits.include? trait
+          when Module then self.contract <= trait
+          else fail ArgumentError, "Unsupported trait"
+          end
+        end
       end
 
   end

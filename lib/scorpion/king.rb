@@ -34,25 +34,38 @@ module Scorpion
       send "#{ attribute.name }=", food
     end
 
-    def initialize( *args, &block )
-      binding.pry
-      super
-    end
-
-
-    def self.included( base )
+    # Crown the object as a king and prepare it to be fed.
+    def self.crown( base )
       base.extend Scorpion::King::ClassMethods
-      Scorpion::King::ClassMethods.build_spawn_method( base ) if base.is_a? Class
+      if base.is_a? Class
+        base.class_exec do
 
-      super
+          # Span a new instance of this class with all non-lazy dependencies
+          # satisfied.
+          # @param [Scorpion] scorpion that will hunt for dependencies.
+          def self.spawn( scorpion, *args, &block )
+            new( *args, &block ).tap do |king|
+              king.instance_variable_set :@scorpion, scorpion
+              # Go hunt for dependencies that are not lazy and initialize the
+              # references.
+              scorpion.feed! king
+              king.send :on_fed
+            end
+          end
+        end
+      end
     end
 
-    def self.prepended( base )
-      base.extend Scorpion::King::ClassMethods
-      Scorpion::King::ClassMethods.build_spawn_method( base ) if base.is_a? Class
+      def self.included( base )
+        crown( base )
+        super
+      end
 
-      super
-    end
+      def self.prepended( base )
+        crown( base )
+        super
+      end
+
 
     private
 
@@ -60,6 +73,18 @@ module Scorpion
       # dependencies. It should be used in place of #initialize when the
       # constructor needs access to injected attributes.
       def on_fed
+      end
+
+      # Convenience method to ask the {#scorpion} to hunt for an object.
+      # @see Scorpion#hunt!
+      def hunt!( contract, *args, &block )
+        scorpion.hunt! contract, *args, &block
+      end
+
+      # Convenience method to ask the {#scorpion} to hunt for an object.
+      # @see Scorpion#hunt_by_traits!
+      def hunt_by_traits!( contract, traits, *args, &block )
+        scorpion.hunt_by_traits! contract, *args, &block
       end
 
     module ClassMethods
@@ -72,29 +97,12 @@ module Scorpion
         build_injected_attributes
       end
       alias_method :inject, :feed_on
+      alias_method :depend_on, :feed_on
 
       # @!attribute
       # @return [Scorpion::AttributeSet] the set of injected attriutes.
       def injected_attributes
         @injected_attributes ||= AttributeSet.new
-      end
-
-      # @!method spawn( *args, &block )
-      # Same as {#new} but handles injecting expected dependencies
-      # @return [Object] the new object
-      def self.build_spawn_method( base )
-        base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-          def self.spawn( scorpion, *args, &block )
-
-            new( *args, &block ).tap do |king|
-              king.instance_variable_set :@scorpion, scorpion
-              # Go hunt for dependencies that are not lazy and initialize the
-              # references.
-              scorpion.feed! king
-              king.send :on_fed
-            end
-          end
-        RUBY
       end
 
       private
@@ -113,6 +121,12 @@ module Scorpion
                 @#{ attr.name } = value
               end
               private :#{ attr.name }=
+
+              def #{ attr.name }?
+                !!@#{ attr.name }
+              end
+              private :#{ attr.name }?
+
             RUBY
           end
         end
