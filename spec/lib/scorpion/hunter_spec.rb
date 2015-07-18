@@ -39,31 +39,35 @@ describe Scorpion::Hunter do
   end
 
   it "spawns prey" do
-    expect( hunter.hunt! Test::Hunter::Beast ).to be_a Test::Hunter::Bear
+    expect( hunter.hunt Test::Hunter::Beast ).to be_a Test::Hunter::Bear
   end
 
   it "spawns a new instance for multiple requests" do
-    first = hunter.hunt! Test::Hunter::Beast
-    expect( hunter.hunt! Test::Hunter::Beast ).not_to eq first
+    first = hunter.hunt Test::Hunter::Beast
+    expect( hunter.hunt Test::Hunter::Beast ).not_to eq first
   end
 
   it "spawns the same instance for captured prey" do
-    first = hunter.hunt_by_traits! Test::Hunter::Beast, :tame
-    expect( hunter.hunt_by_traits! Test::Hunter::Beast, :tame ).to be first
+    first = hunter.hunt_by_traits Test::Hunter::Beast, :tame
+    expect( hunter.hunt_by_traits Test::Hunter::Beast, :tame ).to be first
   end
 
   it "injects nested kings" do
-    zoo = hunter.hunt! Test::Hunter::Zoo
+    zoo = hunter.hunt Test::Hunter::Zoo
     expect( zoo.bear ).to be_a Test::Hunter::Bear
   end
 
   it "accepts arguments that are passed to constructor" do
-    obj = hunter.hunt! Test::Hunter::Argumented, :awesome
+    obj = hunter.hunt Test::Hunter::Argumented, :awesome
     expect( obj.arg ).to eq :awesome
   end
 
   it "implicitly spawns Class contracts" do
-    expect( hunter.hunt! Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
+    expect( hunter.hunt Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
+  end
+
+  it "implicitly spawns Class contracts with empty traits" do
+    expect( hunter.hunt_by_traits Test::Hunter::Implicit, [] ).to be_a Test::Hunter::Implicit
   end
 
 end

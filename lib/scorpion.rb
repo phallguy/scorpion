@@ -29,25 +29,27 @@ module Scorpion
   # @param [Array<Symbol>] traits required of the prey
   # @return [Object] an object that matches the requirements defined in `attribute`.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def hunt_by_traits!( contract, traits, *args, &block )
+  def hunt_by_traits( contract, traits, *args, &block )
     fail "Not implemented"
   end
-  alias_method :fetch_by_traits!, :hunt_by_traits!
+  alias_method :fetch_by_traits, :hunt_by_traits
 
   # Hunts for an object that satisfies the requested `contract` regardless of
   # traits.
-  # @see #hunt_by_traits!
-  def hunt!( contract, *args, &block )
-    hunt_by_traits!( contract, nil, *args, &block )
+  # @see #hunt_by_traits
+  def hunt( contract, *args, &block )
+    hunt_by_traits( contract, nil, *args, &block )
   end
-  alias_method :fetch!, :hunt!
+  alias_method :fetch, :hunt
 
   # Populate given `king` with its expected attributes.
   # @param [Scorpion::King] king to be fed.
   # @return [Scorpion::King] the populated king.
-  def feed!( king )
+  def feed( king )
     king.injected_attributes.each do |attr|
-      king.send :feed, attr, hunt_by_traits!( attr.contract, attr.traits )
+      next if king.send "#{ attr.name }?"
+
+      king.send :feed, attr, hunt_by_traits( attr.contract, attr.traits )
     end
   end
 
@@ -84,7 +86,7 @@ module Scorpion
 
     # Used by concrete scorpions to notify the caller that the hunt was
     # unsuccessful.
-    def unsuccessful_hunt!( contract, traits )
+    def unsuccessful_hunt( contract, traits )
       fail UnsuccessfulHunt.new contract, traits
     end
 

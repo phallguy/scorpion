@@ -2,7 +2,7 @@ require 'scorpion/attribute_set'
 
 module Scorpion
   # Identifies objects that are served by {Scorpion scorpions} that feed on
-  # {Scorpion#hunt! hunted} prey.
+  # {Scorpion#hunt hunted} prey.
   module King
 
     # ============================================================================
@@ -48,7 +48,7 @@ module Scorpion
               king.instance_variable_set :@scorpion, scorpion
               # Go hunt for dependencies that are not lazy and initialize the
               # references.
-              scorpion.feed! king
+              scorpion.feed king
               king.send :on_fed
             end
           end
@@ -76,16 +76,48 @@ module Scorpion
       end
 
       # Convenience method to ask the {#scorpion} to hunt for an object.
-      # @see Scorpion#hunt!
-      def hunt!( contract, *args, &block )
-        scorpion.hunt! contract, *args, &block
+      # @see Scorpion#hunt
+      def hunt( contract, *args, &block )
+        scorpion.hunt contract, *args, &block
       end
 
       # Convenience method to ask the {#scorpion} to hunt for an object.
-      # @see Scorpion#hunt_by_traits!
-      def hunt_by_traits!( contract, traits, *args, &block )
-        scorpion.hunt_by_traits! contract, *args, &block
+      # @see Scorpion#hunt_by_traits
+      def hunt_by_traits( contract, traits, *args, &block )
+        scorpion.hunt_by_traits contract, *args, &block
       end
+
+      # Feed dependencies from a hash into their associated attributes.
+      # @param [Hash] dependencies hash describing attributes to inject.
+      # @param [Boolean] overwrite existing attributes with values in in the hash.
+      def feast_on( dependencies, overwrite = false )
+        injected_attributes.each do |attr|
+          next unless dependencies.key? attr.name
+
+          if overwrite || !self.send( "#{ attr.name }?" )
+            self.send( "#{ attr.name }=", dependencies[ attr.name ] )
+          end
+        end
+
+        dependencies
+      end
+      alias_method :inject_from, :feast_on
+
+      # Injects dependenices from the hash and removes them from the hash.
+      # @see #feast_on
+      def feast_on!( dependencies, overwrite = false )
+        injected_attributes.each do |attr|
+          next unless dependencies.key? attr.name
+          val = dependencies.delete( attr.name )
+
+          if overwrite || !self.send( "#{ attr.name }?" )
+            self.send( "#{ attr.name }=", val )
+          end
+        end
+
+        dependencies
+      end
+      alias_method :inject_from!, :feast_on!
 
     module ClassMethods
 
@@ -113,36 +145,42 @@ module Scorpion
 
         def build_injected_attributes
           injected_attributes.each do |attr|
+            build_injected_attribute attr
+            set_injected_attribute_visibility attr
+          end
+        end
+
+        def build_injected_attribute( attr )
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def #{ attr.name }
+              @#{ attr.name } ||= begin
+                attr = injected_attributes[ :#{ attr.name } ]
+                scorpion.hunt( attr.contract, attr.traits )
+              end
+            end
+
+            def #{ attr.name }=( value )
+              @#{ attr.name } = value
+            end
+
+            def #{ attr.name }?
+              !!@#{ attr.name }
+            end
+          RUBY
+        end
+
+        def set_injected_attribute_visibility( attr )
+          unless attr.public?
             class_eval <<-RUBY, __FILE__, __LINE__ + 1
-              def #{ attr.name }
-                @#{ attr.name } ||= begin
-                  attr = injected_attributes[ :#{ attr.name } ]
-                  scorpion.hunt!( attr.contract, attr.traits )
-                end
-              end
-
-              def #{ attr.name }=( value )
-                @#{ attr.name } = value
-              end
-
-              def #{ attr.name }?
-                !!@#{ attr.name }
-              end
+              private :#{ attr.name }=
+              private :#{ attr.name }?
             RUBY
+          end
 
-            unless attr.public?
-              class_eval <<-RUBY, __FILE__, __LINE__ + 1
-                private :#{ attr.name }=
-                private :#{ attr.name }?
-              RUBY
-            end
-
-            if attr.private?
-              class_eval <<-RUBY, __FILE__, __LINE__ + 1
-                private :#{ attr.name }
-              RUBY
-            end
-
+          if attr.private?
+            class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              private :#{ attr.name }
+            RUBY
           end
         end
     end

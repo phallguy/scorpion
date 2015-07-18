@@ -13,7 +13,8 @@ module Test
       def initialize( family, parent = nil, options={}, &block )
         @family    = family
         @parent    = parent
-        @options   = options
+        @options   = feast_on! options
+
 
         yield if block_given?
       end
@@ -55,7 +56,7 @@ describe Scorpion::King do
   let( :scorpion ){ double Scorpion }
 
   before( :each ) do
-    allow( scorpion ).to receive( :feed! )
+    allow( scorpion ).to receive( :feed )
   end
 
   describe ".spawn" do
@@ -63,6 +64,11 @@ describe Scorpion::King do
     it "can spawn" do
       mamal = Test::King::Mamal.spawn scorpion, 'mouse', 'rodent', name: 'name'
       expect( mamal ).to be_a Test::King::Mamal
+    end
+
+    it "calls feed" do
+      expect( scorpion ).to receive( :feed )
+      Test::King::Mouse.spawn scorpion
     end
 
     it "can inherit" do
@@ -125,5 +131,68 @@ describe Scorpion::King do
 
   end
 
+  describe "feasting" do
+    let( :logger )  { Test::King::Logger.new }
+    let( :options ) { { manager: logger, color: :red } }
+    let( :king )    { Test::King::Mouse.new name: 'mighty' }
+
+
+    describe "#feast_on" do
+      it "assigns attributes" do
+        king.send :feast_on, options
+        expect( king.manager ).to be logger
+      end
+
+      it "doesn't overwrite" do
+        king.manager = Test::King::Logger.new
+        king.send :feast_on, options
+        expect( king.manager ).not_to be logger
+      end
+
+      it "overwrites when asked" do
+        king.manager = Test::King::Logger.new
+        king.send :feast_on, options, true
+        expect( king.manager ).to be logger
+      end
+    end
+
+    describe "feast_on!" do
+      it "assigns attributes" do
+        king.send :feast_on!, options
+        expect( king.manager ).to be logger
+      end
+
+      it "doesn't overwrite" do
+        king.manager = Test::King::Logger.new
+        king.send :feast_on!, options
+        expect( king.manager ).not_to be logger
+      end
+
+      it "overwrites when asked" do
+        king.manager = Test::King::Logger.new
+        king.send :feast_on!, options, true
+        expect( king.manager ).to be logger
+      end
+
+      it "removes injected attributes" do
+        expect( options ).to have_key :manager
+        king.send :feast_on!, options
+        expect( options ).not_to have_key :manager
+      end
+
+      it "removes injected attribute even if already set" do
+        expect( options ).to have_key :manager
+        king.manager = Test::King::Logger.new
+        king.send :feast_on!, options
+        expect( options ).not_to have_key :manager
+      end
+
+      it "doesn't remove other options" do
+        king.send :feast_on!, options
+        expect( options ).to have_key :color
+      end
+
+    end
+  end
 
 end

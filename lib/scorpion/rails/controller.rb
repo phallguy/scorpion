@@ -71,14 +71,14 @@ module Scorpion
             end
             # Allow dependencies to access the current request/response
             hunter.hunt_for ActionDispatch::Request do |hunter|
-              hunter.hunt!( AbstractController::Base ).request
+              hunter.hunt( AbstractController::Base ).request
             end
             hunter.hunt_for ActionDispatch::Response do |hunter|
-              hunter.hunt!( AbstractController::Base ).response
+              hunter.hunt( AbstractController::Base ).response
             end
           end
 
-          @scorpion.feed! self
+          @scorpion.feed self
 
           yield
         ensure
