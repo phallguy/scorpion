@@ -28,23 +28,24 @@ describe Scorpion::Hunter do
 
   let( :hunter ) do
     Scorpion::Hunter.new do
+      capture Test::Hunter::Lion, :tame
+
       hunt_for Test::Hunter::Bear
       hunt_for Test::Hunter::Lion, :male
       hunt_for Test::Hunter::Grizly, :female
       hunt_for Test::Hunter::Argumented
 
-      capture Test::Hunter::Lion, :tame
       hunt_for Test::Hunter::Zoo
     end
   end
 
   it "spawns prey" do
-    expect( hunter.hunt Test::Hunter::Beast ).to be_a Test::Hunter::Bear
+    expect( hunter.hunt Test::Hunter::Beast ).to be_a Test::Hunter::Beast
   end
 
   it "spawns a new instance for multiple requests" do
     first = hunter.hunt Test::Hunter::Beast
-    expect( hunter.hunt Test::Hunter::Beast ).not_to eq first
+    expect( hunter.hunt Test::Hunter::Beast ).not_to be first
   end
 
   it "spawns the same instance for captured prey" do
