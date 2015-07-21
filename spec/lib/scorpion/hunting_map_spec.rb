@@ -96,8 +96,6 @@ describe Scorpion::HuntingMap do
 
       expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
     end
-<<<<<<< Updated upstream
-=======
 
     it "adds a BuilderPrey when hunted class implements #hunt" do
       map.chart do
@@ -107,7 +105,6 @@ describe Scorpion::HuntingMap do
       expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
       expect( map.find( Test::HuntingMap::Footwear ).fetch( scorpion ) {"Nike"} ).to eq "Nike"
     end
->>>>>>> Stashed changes
   end
 
   describe "#replicate_from" do
