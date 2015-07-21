@@ -31,8 +31,8 @@ module Scorpion
 
     def initialize( scorpion )
       @scorpion = scorpion
-      @prey_set = @active_prey_set = Set.new
-      @shared_prey_set = Set.new
+      @prey_set = @active_prey_set = []
+      @shared_prey_set = []
     end
 
     # Find {Prey} that matches the requested `contract` and `traits`.
@@ -66,7 +66,7 @@ module Scorpion
     # @param [Array<Symbol>] traits found on the {Prey}.
     # @return [Scorpion::Prey] the prey to be hunted for.
     def hunt_for( contract, traits = nil, &builder )
-      active_prey_set << prey_class( contract, &builder ).new( contract, traits, &builder )
+      active_prey_set.unshift prey_class( contract, &builder ).new( contract, traits, &builder )
     end
     alias_method :offer, :hunt_for
 
@@ -74,7 +74,7 @@ module Scorpion
     # for the resource.
     # @see #hunt_for
     def capture( contract, traits = nil, &builder )
-      active_prey_set << Scorpion::Prey::CapturedPrey.new( prey_class( contract, &builder ).new( contract, traits, &builder ) )
+      active_prey_set.unshift Scorpion::Prey::CapturedPrey.new( prey_class( contract, &builder ).new( contract, traits, &builder ) )
     end
     alias_method :singleton, :capture
 

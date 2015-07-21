@@ -54,15 +54,15 @@ describe Scorpion::HuntingMap do
         end
       end
 
-      it "returns the first prey that matches one trait" do
-        expect( map.find( Test::HuntingMap::Weapon, :one_handed ).traits ).to include :sharp
+      it "returns the last prey that matches one trait" do
+        expect( map.find( Test::HuntingMap::Weapon, :one_handed ).traits ).to include :blunt
       end
 
-      it "returns the first prey that matches all of the traits" do
+      it "returns the last prey that matches all of the traits" do
         expect( map.find( Test::HuntingMap::Weapon, [ :one_handed, :blunt ] ).traits ).to include :blunt
       end
 
-      it "returns the first prey that matches a unique trait" do
+      it "returns the last prey that matches a unique trait" do
         expect( map.find( Test::HuntingMap::Weapon, :blunt ).traits ).to include :blunt
       end
     end
