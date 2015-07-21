@@ -88,6 +88,14 @@ describe Scorpion::HuntingMap do
 
       expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
     end
+
+    it "adds a BuilderPrey for with: option" do
+      map.chart do
+        hunt_for String, with: ->(scorpion,*args,&block){ "YASSS" }
+      end
+
+      expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
+    end
   end
 
   describe "#replicate_from" do
