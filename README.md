@@ -14,9 +14,16 @@ Add IoC to rails with minimal fuss and ceremony.
 
 - [Dependency Injection](#dependency-injection)
   - [Why might you _Want_ a DI FRamework?](#why-might-you-_want_-a-di-framework)
+    - [Using a Framework...like Scorpion](#using-a-frameworklike-scorpion)
 - [Using Scorpion](#using-scorpion)
   - [Kings](#kings)
   - [Configuration](#configuration)
+    - [Classes](#classes)
+    - [Modules](#modules)
+    - [Traits](#traits)
+    - [Builders](#builders)
+    - [Hunting Delegates](#hunting-delegates)
+    - [Singletons](#singletons)
   - [Nests](#nests)
   - [Rails](#rails)
 - [Contributing](#contributing)
@@ -138,7 +145,7 @@ and setting the weapon. When a Hunter is created it's dependencies are also
 created - and any of their dependencies and so on. Usage is equally simple
 
 ```ruby
-hunter = scorpion.hunt! Hunter
+hunter = scorpion.hunt Hunter
 hunter.weapon   # => a Weapon
 ```
 
@@ -151,7 +158,7 @@ scorpion.prepare do
   hunt_for Axe
 end
 
-hunter = scorpion.hunt! Hunter
+hunter = scorpion.hunt Hunter
 hunter.weapon # => an Axe
 ```
 
@@ -166,7 +173,7 @@ Overriding hunters!
     hunt_for Axe
   end
 
-  hunter = scorpion.hunt! Hunter
+  hunter = scorpion.hunt Hunter
   hunter        # => Predator
   hunter.weapon # => an Axe
 ```
@@ -178,7 +185,7 @@ Out of the box Scorpion does not need any configuration and will work
 immediately. You can hunt for any Class even if it hasn't been configured.
 
 ```ruby
-  hash = Scorpion.instance.hunt! Hash
+  hash = Scorpion.instance.hunt Hash
   hash # => {}
 ```
 
@@ -206,7 +213,7 @@ class Zoo
   end
 end
 
-zoo = scorpion.hunt! Zoo
+zoo = scorpion.hunt Zoo
 zoo.keeper       # => an instance of a Zoo::Keeper
 zoo.vet?         # => false it hasn't been hunted down yet
 zoo.vet          # => an instnace of a Zoo::Vet
@@ -235,13 +242,13 @@ derived class). In the absence of any configuration, Scorpion will simply create
 an instance of the specific class requested.
 
 ```ruby
-scorpion.hunt! Hash   # => Hash.new
+scorpion.hunt Hash   # => Hash.new
 
 scorpion.prepare do
   hunt_for Object::HashWithIndifferentAccess
 end
 
-scorpion.hunt! Hash   # => Object::HashWithIndifferentAccess.new
+scorpion.hunt Hash   # => Object::HashWithIndifferentAccess.new
 ```
 
 #### Modules
@@ -262,14 +269,14 @@ class Sword
   include Sharp
 end
 
-poker = scorpion.hunt! Sharp
+poker = scorpion.hunt Sharp
 poker.poke     # => "Module"
 
 scorpion.prepare do
   hunt_for Sword
 end
 
-poker = scorpion.hunt! Sharp
+poker = scorpion.hunt Sharp
 poker.poke     # => "Sword"
 ```
 
@@ -291,9 +298,9 @@ scorpion.prepare do
   hunt_for Mace, :blunt, :sharp
 end
 
-scorpion.hunt! Weapon, :blunt # => Hammer.new
-scorpion.hunt! Weapon, :sharp # => Sword.new
-scorpion.hunt! Weapon, :sharp, :blunt # => Mace.new
+scorpion.hunt Weapon, :blunt # => Hammer.new
+scorpion.hunt Weapon, :sharp # => Sword.new
+scorpion.hunt Weapon, :sharp, :blunt # => Mace.new
 ```
 
 Modules can also be used to identify specific traits desired from the hunted
@@ -315,8 +322,8 @@ scorpion.prepare do
   hunt_for SysLog
 end
 
-scorpion.hunt! Logger, Color      # => Console.new
-scorpion.hunt! Logger, Streaming  # => SysLog.new
+scorpion.hunt Logger, Color      # => Console.new
+scorpion.hunt Logger, Streaming  # => SysLog.new
 ```
 
 #### Builders
@@ -334,6 +341,35 @@ scorpion.prepare do
   end
 end
 ```
+
+#### Hunting Delegates
+
+For really complex dependencies you may want to delegate the effort to retrieve
+the dependencies to another type - a factory module for example. Scorpion
+allows you to delegate hunting prey using the `:with` option.
+
+```ruby
+module ChocolateFactory
+    module_function
+
+    def call( scorpion, *args, &block )
+      case args.first
+      when Nuget        then scorpion.spawn Snickers, *args, &block
+      when Butterscotch then scorpion.spawn Butterfinger, *args, &block
+      when Coconut      then scorpion.spawn Garbage, *args, &block
+      end
+    end
+end
+
+scorpion.prepare do
+  hunt_for Candy, with: ChocolateFactory
+end
+
+scorpion.hunt Candy, Nuget.new  #=> Snickers.new Nugget.new
+```
+
+Any object that responds to `#call( scorpion, *args, &block )` can be used as
+a hunting delegate.
 
 #### Singletons
 
@@ -353,8 +389,8 @@ scorpion.prepare do
   capture Logger
 end
 
-scorpion.hunt! Logger  # => Logger.new
-scorpion.hunt! Logger  # => Previously captured logger
+scorpion.hunt Logger  # => Logger.new
+scorpion.hunt Logger  # => Previously captured logger
 ```
 
 Captured dependencies are not shared with child scorpions (for example when
@@ -376,7 +412,7 @@ nest.prepare do
 end
 
 scorpion = nest.conceive
-scorpion.hunt! Logger  # => Logger.new
+scorpion.hunt Logger  # => Logger.new
 ```
 
 ### Rails

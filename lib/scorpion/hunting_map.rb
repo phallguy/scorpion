@@ -66,7 +66,7 @@ module Scorpion
     # @param [Array<Symbol>] traits found on the {Prey}.
     # @return [Scorpion::Prey] the prey to be hunted for.
     def hunt_for( contract, traits = nil, &builder )
-      active_prey_set.unshift prey_class( contract, &builder ).new( contract, traits, &builder )
+      active_prey_set.unshift define_prey( contract, traits, &builder )
     end
     alias_method :offer, :hunt_for
 
@@ -74,7 +74,7 @@ module Scorpion
     # for the resource.
     # @see #hunt_for
     def capture( contract, traits = nil, &builder )
-      active_prey_set.unshift Scorpion::Prey::CapturedPrey.new( prey_class( contract, &builder ).new( contract, traits, &builder ) )
+      active_prey_set.unshift Scorpion::Prey::CapturedPrey.new( define_prey( contract, traits, &builder ) )
     end
     alias_method :singleton, :capture
 
@@ -103,8 +103,32 @@ module Scorpion
     end
 
     private
+
+      def define_prey( contract, traits, &builder )
+        options, traits = extract_options!( traits )
+
+        if with = options[:with]
+          Scorpion::Prey::BuilderPrey.new( contract, traits, with )
+        elsif block_given?
+          Scorpion::Prey::BuilderPrey.new( contract, traits, builder)
+        else
+          prey_class( contract ).new( contract, traits, &builder )
+        end
+      end
+
+      def extract_options!( traits )
+        case traits
+        when Hash then return [ traits, nil ]
+        when Array then
+          if traits.last.is_a? Hash
+            return [ traits.pop, traits ]
+          end
+        end
+
+        [ {}, traits]
+      end
+
       def prey_class( contract, &builder )
-        return Scorpion::Prey::BuilderPrey if block_given?
         return Scorpion::Prey::HuntedPrey  if contract.respond_to? :hunt
         return Scorpion::Prey::ClassPrey   if contract.is_a? Class
         return Scorpion::Prey::ClassPrey   if contract.is_a? Module
