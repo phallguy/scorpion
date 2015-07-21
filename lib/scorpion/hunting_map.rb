@@ -110,7 +110,11 @@ module Scorpion
         if with = options[:with]
           Scorpion::Prey::BuilderPrey.new( contract, traits, with )
         elsif block_given?
-          Scorpion::Prey::BuilderPrey.new( contract, traits, builder)
+          Scorpion::Prey::BuilderPrey.new( contract, traits, builder )
+        elsif contract.respond_to?( :hunt )
+          Scorpion::Prey::BuilderPrey.new( contract, traits ) do |scorpion,*args,&block|
+            contract.hunt scorpion, *args, &block
+          end
         else
           prey_class( contract ).new( contract, traits, &builder )
         end
