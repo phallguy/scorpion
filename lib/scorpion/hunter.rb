@@ -34,13 +34,20 @@ module Scorpion
 
     # @see Scorpion#hunt
     def hunt_by_traits( contract, traits = nil, *args, &block  )
-      unless prey = hunting_map.find( contract, traits )
-        return parent.hunt_by_traits contract, traits if parent
+      prey   = hunting_map.find( contract, traits )
+      prey ||= parent.hunting_map.find( contract, traits ) if parent
+      prey ||= Scorpion::Prey::ClassPrey.new( contract, nil ) if contract.is_a?( Class ) && traits.blank?
 
-        prey = Scorpion::Prey::ClassPrey.new( contract, nil ) if contract.is_a?( Class ) && traits.blank?
-        unsuccessful_hunt( contract, traits ) unless prey
+      unsuccessful_hunt( contract, traits ) unless prey
+
+      hunter = replicate
+      hunter.prepare do
+        args.each do |arg|
+          argument arg
+        end
       end
-      prey.fetch self, *args, &block
+
+      prey.fetch hunter, *args, &block
     end
 
     # @see Scorpion#replicate

@@ -78,6 +78,12 @@ module Scorpion
     end
     alias_method :singleton, :capture
 
+    # Captures a specific instance of an argument so that it can be propagated
+    # to all child dependencies.
+    def argument( argument )
+      active_prey_set.unshift Scorpion::Prey::ArgumentPrey.new( argument )
+    end
+
     # Share captured prey defined within the block with all child scorpions.
     def share( &block )
       old_set = active_prey_set

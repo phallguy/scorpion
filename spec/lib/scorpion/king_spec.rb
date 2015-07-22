@@ -110,6 +110,18 @@ describe Scorpion::King do
       expect( king.respond_to? :manager=, false ).to be_truthy
     end
 
+    describe "#attr_dependency" do
+      it "defines attributes" do
+        klass = Class.new do
+          include Scorpion::King
+
+          attr_dependency :logger, Test::King::Logger
+        end
+
+        expect( klass.new ).to respond_to :logger
+      end
+    end
+
     describe  "inheritance" do
       let( :king ) do
         Test::King::Mouse.spawn scorpion

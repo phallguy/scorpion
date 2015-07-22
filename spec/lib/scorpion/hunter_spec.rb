@@ -21,6 +21,32 @@ module Test
         bear Bear
       end
     end
+
+    class Park
+      include Scorpion::King
+
+      feed_on do
+        zoo Zoo
+      end
+
+      def initialize( zoo = nil )
+        @zoo = zoo
+      end
+    end
+
+    class City
+      include Scorpion::King
+
+      feed_on do
+        zoo Zoo
+        park Park
+      end
+
+      def initialize( zoo )
+        @zoo = zoo
+      end
+    end
+
   end
 end
 
@@ -69,6 +95,15 @@ describe Scorpion::Hunter do
 
   it "implicitly spawns Class contracts with empty traits" do
     expect( hunter.hunt_by_traits Test::Hunter::Implicit, [] ).to be_a Test::Hunter::Implicit
+  end
+
+  context "child depdencies" do
+    it "captures arguments and feeds them to dependencies" do
+      zoo  = hunter.hunt Test::Hunter::Zoo
+      city = hunter.hunt Test::Hunter::City, zoo
+
+      expect( city.park.zoo ).to be zoo
+    end
   end
 
 end

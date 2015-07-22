@@ -124,12 +124,22 @@ module Scorpion
       # Tells a {Scorpion} what to inject into the class when it is constructed
       # @return [nil]
       # @see AttributeSet#define
-      def feed_on( &block )
+      def feed_on(  &block )
         injected_attributes.define &block
         build_injected_attributes
       end
       alias_method :inject, :feed_on
       alias_method :depend_on, :feed_on
+
+      # Define a single dependency and accessor.
+      # @param [Symbol] name of the dependency.
+      # @param [Class,Module,Symbol] contract describing the desired behavior of the prey.
+      # @param [Array<Symbol>] traits found on the {Prey}.
+      def attr_dependency( name, contract, traits = nil )
+        attr = injected_attributes.define_attribute name, contract, traits
+        build_injected_attribute attr
+        set_injected_attribute_visibility attr
+      end
 
       # @!attribute
       # @return [Scorpion::AttributeSet] the set of injected attriutes.

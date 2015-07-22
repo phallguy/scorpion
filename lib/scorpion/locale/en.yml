@@ -3,3 +3,4 @@ en:
     errors:
       messages:
         unsuccessful_hunt: "Couldn't find a %{contract} builder with traits '%{traits}'"
+        builder_required: A custom builder must be provided to resolve this prey

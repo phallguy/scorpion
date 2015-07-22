@@ -7,6 +7,7 @@ module Scorpion
     require 'scorpion/prey/module_prey'
     require 'scorpion/prey/builder_prey'
     require 'scorpion/prey/hunted_prey'
+    require 'scorpion/prey/argument_prey'
 
     # ============================================================================
     # @!group Attributes

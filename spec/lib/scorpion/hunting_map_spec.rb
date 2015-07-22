@@ -4,6 +4,12 @@ module Test
   module HuntingMap
     class Weapon; end
     class Armor; end
+
+    class Footwear
+      def self.hunt( scorpion, *args, &block )
+        yield
+      end
+    end
   end
 end
 
