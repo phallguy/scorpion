@@ -3,6 +3,7 @@ require 'i18n'
 I18n.load_path += Dir[ File.expand_path( '../scorpion/locale/*.yml', __FILE__ ) ]
 
 module Scorpion
+
   require 'scorpion/version'
   require 'scorpion/error'
   require 'scorpion/king'
@@ -12,23 +13,6 @@ module Scorpion
   require 'scorpion/prey'
   require 'scorpion/nest'
   require 'scorpion/rails'
-
-  # @return [Scorpion] main scorpion for the app.
-  def self.instance
-    @instance
-  end
-  @instance = Scorpion::Hunter.new
-
-  # Prepare the {#instance} for hunting.
-  # @param [Boolean] reset true to free all existing resource and initialize a
-  #   new scorpion.
-  def self.prepare( reset = false, &block )
-    if reset
-      @instance.destroy
-      @instance = Scorpion::Hunter.new
-    end
-    instance.prepare &block
-  end
 
   # Hunts for an object that satisfies the requested `contract` and `traits`.
   # @param [Class,Module,Symbol] contract describing the desired behavior of the prey.
@@ -88,6 +72,50 @@ module Scorpion
   def build_nest
     Scorpion::Nest.new( self )
   end
+
+  # ============================================================================
+  # @!group Convenience Methods
+  #
+  # Module methods to make it easier to work with scorpion configurations. These
+  # _should not_ be used by library level classes. Instead only application
+  # level code (controllers, scripts, etc.) should explicitly access these
+  # methods.
+
+  # @return [Scorpion] main scorpion for the app.
+  def self.instance
+    @instance
+  end
+  @instance = Scorpion::Hunter.new
+
+  # Prepare the {#instance} for hunting.
+  # @param [Boolean] reset true to free all existing resource and initialize a
+  #   new scorpion.
+  def self.prepare( reset = false, &block )
+    if reset
+      @instance.destroy
+      @instance = Scorpion::Hunter.new
+    end
+    instance.prepare &block
+  end
+
+  # Hunt for prey from the primary Scorpion {#instance}.
+  # @see #hunt
+  def self.hunt( *args, &block )
+    instance.hunt *args, &block
+  end
+  singleton_class.send :alias_method, :fetch, :hunt
+
+  # Hunt for prey from the primary Scorpion {#instance}.
+  # @see #hunt_by_traits
+  def self.hunt_by_traits( *args, &block )
+    instance.hunt_by_traits *args, &block
+  end
+  singleton_class.send :alias_method, :fetch_by_traits, :hunt_by_traits
+
+
+  #
+  # @!endgroup Convenience Methods
+
 
   private
 
