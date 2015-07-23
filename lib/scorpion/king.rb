@@ -145,9 +145,9 @@ module Scorpion
       # @return [Scorpion::AttributeSet] the set of injected attriutes.
       def injected_attributes
         @injected_attributes ||= begin
-          attr = AttributeSet.new
-          attr.inherit! superclass.injected_attributes if superclass.respond_to? :injected_attributes
-          attr
+          attrs = AttributeSet.new
+          attrs.inherit! superclass.injected_attributes if superclass.respond_to? :injected_attributes
+          attrs
         end
       end
 

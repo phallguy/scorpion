@@ -9,6 +9,7 @@ module Test
 
       feed_on do
         logger Logger, public: true
+        sailor Logger, public: true, lazy: true
       end
     end
   end
@@ -26,7 +27,8 @@ describe Scorpion do
     it "injects attributes" do
       scorpion.feed target
 
-      expect( target.logger ).to be_a Test::Scorpion::Logger
+      expect( target.logger? ).to be_truthy
+      expect( target.logger  ).to be_a Test::Scorpion::Logger
     end
 
     it "does not overwrite existing attributes" do
@@ -35,6 +37,11 @@ describe Scorpion do
       scorpion.feed target
 
       expect( target.logger ).to be logger
+    end
+
+    it "does not fetch lazy attributes" do
+      scorpion.feed target
+      expect( target.sailor? ).to be_falsy
     end
   end
 end

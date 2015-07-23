@@ -54,6 +54,7 @@ module Scorpion
   def feed( king )
     king.injected_attributes.each do |attr|
       next if king.send "#{ attr.name }?"
+      next if attr.lazy?
 
       king.send :feed, attr, hunt_by_traits( attr.contract, attr.traits )
     end
