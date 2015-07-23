@@ -22,11 +22,14 @@ module Test
       end
     end
 
+    class City; end
+
     class Park
       include Scorpion::King
 
       feed_on do
         zoo Zoo
+        city City
       end
 
       def initialize( zoo = nil )
@@ -103,6 +106,13 @@ describe Scorpion::Hunter do
       city = hunter.hunt Test::Hunter::City, zoo
 
       expect( city.park.zoo ).to be zoo
+    end
+
+    it "captures itself" do
+      zoo  = hunter.hunt Test::Hunter::Zoo
+      city = hunter.hunt Test::Hunter::City, zoo
+
+      expect( city.park.city ).to be city
     end
   end
 

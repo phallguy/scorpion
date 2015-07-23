@@ -57,6 +57,7 @@ describe Scorpion::King do
 
   before( :each ) do
     allow( scorpion ).to receive( :feed )
+    allow( scorpion ).to receive( :prepare )
   end
 
   describe ".spawn" do

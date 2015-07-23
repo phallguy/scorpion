@@ -46,6 +46,7 @@ module Scorpion
           def self.spawn( scorpion, *args, &block )
             new( *args, &block ).tap do |king|
               king.instance_variable_set :@scorpion, scorpion
+              scorpion.prepare { argument king }
               # Go hunt for dependencies that are not lazy and initialize the
               # references.
               scorpion.feed king
