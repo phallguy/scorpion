@@ -91,5 +91,51 @@ module Scorpion
         end
       end
 
+    class << self
+
+      # Define prey based on the desired contract and traits.
+      # @return [Prey] the defined prey.
+      def define( contract, traits = nil , &builder )
+        options, traits = extract_options!( traits )
+
+        if with = options[:with]
+          Scorpion::Prey::BuilderPrey.new( contract, traits, with )
+        elsif block_given?
+          Scorpion::Prey::BuilderPrey.new( contract, traits, builder )
+        elsif contract.respond_to?( :hunt )
+          Scorpion::Prey::BuilderPrey.new( contract, traits ) do |scorpion,*args,&block|
+            contract.hunt scorpion, *args, &block
+          end
+        elsif contract.respond_to?( :fetch )
+          Scorpion::Prey::BuilderPrey.new( contract, traits ) do |scorpion,*args,&block|
+            contract.fetch scorpion, *args, &block
+          end
+        else
+          prey_class( contract ).new( contract, traits, &builder )
+        end
+      end
+
+      private
+        def extract_options!( traits )
+          case traits
+          when Hash then return [ traits, nil ]
+          when Array then
+            if traits.last.is_a? Hash
+              return [ traits.pop, traits ]
+            end
+          end
+
+          [ {}, traits]
+        end
+
+        def prey_class( contract, &builder )
+          return Scorpion::Prey::HuntedPrey  if contract.respond_to? :hunt
+          return Scorpion::Prey::ClassPrey   if contract.is_a? Class
+          return Scorpion::Prey::ClassPrey   if contract.is_a? Module
+
+          raise Scorpion::BuilderRequiredError
+        end
+    end
+
   end
 end
