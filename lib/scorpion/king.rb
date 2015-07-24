@@ -136,8 +136,8 @@ module Scorpion
       # @param [Symbol] name of the dependency.
       # @param [Class,Module,Symbol] contract describing the desired behavior of the prey.
       # @param [Array<Symbol>] traits found on the {Prey}.
-      def attr_dependency( name, contract, traits = nil, &block )
-        attr = injected_attributes.define_attribute name, contract, traits, &block
+      def attr_dependency( name, contract, *traits, &block )
+        attr = injected_attributes.define_attribute name, contract, *traits, &block
         build_injected_attribute attr
         set_injected_attribute_visibility attr
       end

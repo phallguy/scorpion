@@ -6,7 +6,6 @@ module Scorpion
     require 'scorpion/prey/class_prey'
     require 'scorpion/prey/module_prey'
     require 'scorpion/prey/builder_prey'
-    require 'scorpion/prey/hunted_prey'
     require 'scorpion/prey/argument_prey'
 
     # ============================================================================
@@ -98,7 +97,11 @@ module Scorpion
       def define( contract, traits = nil , &builder )
         options, traits = extract_options!( traits )
 
-        if with = options[:with]
+        if options.key?( :capture )
+          Scorpion::Prey::BuilderPrey.new( contract, traits ) do
+            options[:capture]
+          end
+        elsif with = options[:with]
           Scorpion::Prey::BuilderPrey.new( contract, traits, with )
         elsif block_given?
           Scorpion::Prey::BuilderPrey.new( contract, traits, builder )
@@ -129,9 +132,8 @@ module Scorpion
         end
 
         def prey_class( contract, &builder )
-          return Scorpion::Prey::HuntedPrey  if contract.respond_to? :hunt
           return Scorpion::Prey::ClassPrey   if contract.is_a? Class
-          return Scorpion::Prey::ClassPrey   if contract.is_a? Module
+          return Scorpion::Prey::ModulePrey  if contract.is_a? Module
 
           raise Scorpion::BuilderRequiredError
         end

@@ -4,12 +4,6 @@ module Test
   module HuntingMap
     class Weapon; end
     class Armor; end
-
-    class Footwear
-      def self.hunt( scorpion, *args, &block )
-        yield
-      end
-    end
   end
 end
 
@@ -83,33 +77,6 @@ describe Scorpion::HuntingMap do
       end
 
       expect( map.first ).to be_a Scorpion::Prey
-    end
-
-    it "adds a BuilderPrey for block hunts" do
-      map.chart do
-        hunt_for String do
-          "YASS"
-        end
-      end
-
-      expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
-    end
-
-    it "adds a BuilderPrey for with: option" do
-      map.chart do
-        hunt_for String, with: ->(scorpion,*args,&block){ "YASSS" }
-      end
-
-      expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
-    end
-
-    it "adds a BuilderPrey when hunted class implements #hunt" do
-      map.chart do
-        hunt_for Test::HuntingMap::Footwear
-      end
-
-      expect( map.first ).to be_a Scorpion::Prey::BuilderPrey
-      expect( map.find( Test::HuntingMap::Footwear ).fetch( scorpion ) {"Nike"} ).to eq "Nike"
     end
   end
 

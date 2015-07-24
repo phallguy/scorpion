@@ -7,6 +7,13 @@ module Test
     class Derived < Base
       include Mod
     end
+
+    class Footwear
+      def self.hunt( scorpion, *args, &block )
+        yield
+      end
+    end
+
   end
 end
 
@@ -71,6 +78,50 @@ describe Scorpion::Prey do
     specify{ expect( prey ).to eq same }
     specify{ expect( prey ).not_to eq different }
     specify{ expect( prey.hash ).to eq same.hash }
+  end
+
+  describe ".define" do
+    let( :scorpion ){ double Scorpion }
+
+    it "is a ClassPrey for class hunts" do
+      prey = Scorpion::Prey.define String
+      expect( prey ).to be_a Scorpion::Prey::ClassPrey
+    end
+
+    it "is a ModulePrey for module hunts" do
+      prey = Scorpion::Prey.define Test::Prey::Mod
+      expect( prey ).to be_a Scorpion::Prey::ModulePrey
+    end
+
+    it "is a BuilderPrey for capture instances" do
+      prey = Scorpion::Prey.define String, capture: "AWESEOME"
+
+      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
+      expect( prey.fetch scorpion ).to eq "AWESEOME"
+    end
+
+    it "is a BuilderPrey for block hunts" do
+      prey =  Scorpion::Prey.define String do
+                "YASS"
+              end
+
+      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
+    end
+
+    it "is a BuilderPrey for with: option" do
+      prey = Scorpion::Prey.define String, with: ->(scorpion,*args,&block){ "YASSS" }
+
+      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
+      expect( prey.fetch scorpion ).to eq "YASSS"
+    end
+
+    it "is a BuilderPrey when hunted class implements #hunt" do
+      prey = Scorpion::Prey.define Test::Prey::Footwear
+
+      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
+      expect( prey.fetch( scorpion ) {"Nike"} ).to eq "Nike"
+    end
+
   end
 
 end
