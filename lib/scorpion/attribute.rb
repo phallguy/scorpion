@@ -32,7 +32,6 @@ module Scorpion
     # @return [Boolean] true if the attribute should have a public writer.
       def private?; @private end
 
-
     #
     # @!endgroup Attributes
 

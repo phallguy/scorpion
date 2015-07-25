@@ -16,7 +16,7 @@ Add IoC to rails with minimal fuss and ceremony.
   - [Why might you _Want_ a DI FRamework?](#why-might-you-_want_-a-di-framework)
     - [Using a Framework...like Scorpion](#using-a-frameworklike-scorpion)
 - [Using Scorpion](#using-scorpion)
-  - [Kings](#kings)
+  - [Objects](#objects)
   - [Configuration](#configuration)
     - [Classes](#classes)
     - [Modules](#modules)
@@ -145,7 +145,7 @@ and setting the weapon. When a Hunter is created it's dependencies are also
 created - and any of their dependencies and so on. Usage is equally simple
 
 ```ruby
-hunter = scorpion.hunt Hunter
+hunter = scorpion.fetch Hunter
 hunter.weapon   # => a Weapon
 ```
 
@@ -158,7 +158,7 @@ scorpion.prepare do
   hunt_for Axe
 end
 
-hunter = scorpion.hunt Hunter
+hunter = scorpion.fetch Hunter
 hunter.weapon # => an Axe
 ```
 
@@ -173,7 +173,7 @@ Overriding hunters!
     hunt_for Axe
   end
 
-  hunter = scorpion.hunt Hunter
+  hunter = scorpion.fetch Hunter
   hunter        # => Predator
   hunter.weapon # => an Axe
 ```
@@ -185,49 +185,49 @@ Out of the box Scorpion does not need any configuration and will work
 immediately. You can hunt for any Class even if it hasn't been configured.
 
 ```ruby
-  hash = Scorpion.instance.hunt Hash
+  hash = Scorpion.instance.fetch Hash
   hash # => {}
 ```
 
-### Kings
+### Objects
 
-Scorpions feed their [Scorpion Kings](lib/scorpion/king.rb) - any object that
+Scorpions feed their [Scorpion Objects](lib/scorpion/object.rb) - any object that
 should be fed its dependencies when it is created. Simply include the
-Scorpion::King module into your class to benefit from Scorpion injections.
+Scorpion::Object module into your class to benefit from Scorpion injections.
 
 ```ruby
 class Keeper
-  include Scorpion::King
+  include Scorpion::Object
 
-  feed_on do
+  depend_on do
     lunch FastFood
   end
 end
 
 class Zoo
-  include Scorpion::King
+  include Scorpion::Object
 
-  feed_on do # or #depend_on if you like
+  depend_on do # or #depend_on if you like
     keeper Zoo::Keeper
     vet Zoo::Vet, lazy: true
   end
 end
 
-zoo = scorpion.hunt Zoo
+zoo = scorpion.fetch Zoo
 zoo.keeper       # => an instance of a Zoo::Keeper
 zoo.vet?         # => false it hasn't been hunted down yet
 zoo.vet          # => an instnace of a Zoo::Vet
 zoo.keeper.lunch # => an instance of FastFood
 ```
 
-All of your classes should be kings! And any dependency that is also a King will
+All of your classes should be objects! And any dependency that is also a Object will
 be fed.
 
 ### Configuration
 
 A good scorpion should be prepared to hunt. An effort that describes what the
 scorpion hunts for and how it should be found. Scorpion uses Classes and Modules
-as the primary means of identifying prey in favor of opaque labels or strings.
+as the primary means of identifying dependency in favor of opaque labels or strings.
 This serves two benefits:
 
 1. The type of object expected by the dependency is clearly identified making it
@@ -242,13 +242,13 @@ derived class). In the absence of any configuration, Scorpion will simply create
 an instance of the specific class requested.
 
 ```ruby
-scorpion.hunt Hash   # => Hash.new
+scorpion.fetch Hash   # => Hash.new
 
 scorpion.prepare do
   hunt_for Object::HashWithIndifferentAccess
 end
 
-scorpion.hunt Hash   # => Object::HashWithIndifferentAccess.new
+scorpion.fetch Hash   # => Object::HashWithIndifferentAccess.new
 ```
 
 #### Modules
@@ -269,21 +269,21 @@ class Sword
   include Sharp
 end
 
-poker = scorpion.hunt Sharp
+poker = scorpion.fetch Sharp
 poker.poke     # => "Module"
 
 scorpion.prepare do
   hunt_for Sword
 end
 
-poker = scorpion.hunt Sharp
+poker = scorpion.fetch Sharp
 poker.poke     # => "Sword"
 ```
 
 #### Traits
 
-Traits can be used to distinguish between prey of the same type. For example
-a scorpion may be prepare to hunt for several weapons and the king needs a
+Traits can be used to distinguish between dependency of the same type. For example
+a scorpion may be prepare to hunt for several weapons and the object needs a
 blunt weapon.
 
 ```ruby
@@ -298,13 +298,13 @@ scorpion.prepare do
   hunt_for Mace, :blunt, :sharp
 end
 
-scorpion.hunt Weapon, :blunt # => Hammer.new
-scorpion.hunt Weapon, :sharp # => Sword.new
-scorpion.hunt Weapon, :sharp, :blunt # => Mace.new
+scorpion.fetch Weapon, :blunt # => Hammer.new
+scorpion.fetch Weapon, :sharp # => Sword.new
+scorpion.fetch Weapon, :sharp, :blunt # => Mace.new
 ```
 
 Modules can also be used to identify specific traits desired from the hunted
-prey.
+dependency.
 
 ```ruby
 module Color; end
@@ -322,14 +322,14 @@ scorpion.prepare do
   hunt_for SysLog
 end
 
-scorpion.hunt Logger, Color      # => Console.new
-scorpion.hunt Logger, Streaming  # => SysLog.new
+scorpion.fetch Logger, Color      # => Console.new
+scorpion.fetch Logger, Streaming  # => SysLog.new
 ```
 
 #### Builders
 
 Sometimes resolving the correct dependencies is a bit more dynamic. In those
-cases you can use a builder block to hunt for prey.
+cases you can use a builder block to hunt for dependency.
 
 ```ruby
 class Samurai < Sword; end
@@ -342,11 +342,36 @@ scorpion.prepare do
 end
 ```
 
+Objects may also define their own .create methods that receive a scorpion and
+arguments.
+
+```ruby
+class City
+  def self.create( scorpion, name )
+    klass = if name == "New York"
+      BigCity
+    else
+      SmallCity
+    end
+
+    klass.new name
+  end
+
+  def initialize( name )
+    @name = name
+  end
+end
+
+class BigCity < City; end
+class SmallCity < City; end
+
+```
+
 #### Hunting Delegates
 
 For really complex dependencies you may want to delegate the effort to retrieve
 the dependencies to another type - a factory module for example. Scorpion
-allows you to delegate hunting prey using the `:with` option.
+allows you to delegate hunting dependency using the `:with` option.
 
 ```ruby
 module ChocolateFactory
@@ -365,7 +390,7 @@ scorpion.prepare do
   hunt_for Candy, with: ChocolateFactory
 end
 
-scorpion.hunt Candy, Nuget.new  #=> Snickers.new Nugget.new
+scorpion.fetch Candy, Nuget.new  #=> Snickers.new Nugget.new
 ```
 
 Any object that responds to `#call( scorpion, *args, &block )` can be used as
@@ -373,11 +398,11 @@ a hunting delegate.
 
 #### Singletons
 
-Scorpion allows you to capture prey and feed the same instance to everyone that
+Scorpion allows you to capture dependency and feed the same instance to everyone that
 asks for a matching dependency.
 
 DI singletons are different then global singletons in that each scorpion can
-have a unique instance of the class that it shares with all of it's kings. This
+have a unique instance of the class that it shares with all of it's objects. This
 allows, for example, global variable like support per-request without polluting
 the global namespace or dealing with thread concurrency issues.
 
@@ -389,12 +414,12 @@ scorpion.prepare do
   capture Logger
 end
 
-scorpion.hunt Logger  # => Logger.new
-scorpion.hunt Logger  # => Previously captured logger
+scorpion.fetch Logger  # => Logger.new
+scorpion.fetch Logger  # => Previously captured logger
 ```
 
 Captured dependencies are not shared with child scorpions (for example when
-conceiving scorpions from a [Nest](Nests)). To share captured prey with children
+conceiving scorpions from a [Nest](Nests)). To share captured dependency with children
 use `share`.
 
 ### Nests
@@ -412,7 +437,7 @@ nest.prepare do
 end
 
 scorpion = nest.conceive
-scorpion.hunt Logger  # => Logger.new
+scorpion.fetch Logger  # => Logger.new
 ```
 
 ### Rails
@@ -443,7 +468,7 @@ require 'scorpion'
 class ApplicationController < ActionController::Base
   include Scorpion::Rails::Controller
 
-  feed_on do
+  depend_on do
     users UserService, lazy: true
   end
 

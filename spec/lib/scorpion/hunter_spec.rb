@@ -15,9 +15,9 @@ module Test
     class Implicit; end
 
     class Zoo
-      include Scorpion::King
+      include Scorpion::Object
 
-      feed_on do
+      depend_on do
         bear Bear
       end
     end
@@ -25,29 +25,23 @@ module Test
     class City; end
 
     class Park
-      include Scorpion::King
+      include Scorpion::Object
 
-      feed_on do
-        zoo Zoo
+      depend_on do
         city City
       end
 
-      def initialize( zoo = nil )
-        @zoo = zoo
-      end
+      initialize( zoo: Test::Hunter::Zoo )
     end
 
     class City
-      include Scorpion::King
+      include Scorpion::Object
 
-      feed_on do
-        zoo Zoo
+      depend_on do
         park Park
       end
 
-      def initialize( zoo )
-        @zoo = zoo
-      end
+      initialize( zoo: Test::Hunter::Zoo )
     end
 
   end
@@ -68,49 +62,49 @@ describe Scorpion::Hunter do
     end
   end
 
-  it "spawns prey" do
-    expect( hunter.hunt Test::Hunter::Beast ).to be_a Test::Hunter::Beast
+  it "spawns dependency" do
+    expect( hunter.fetch Test::Hunter::Beast ).to be_a Test::Hunter::Beast
   end
 
   it "spawns a new instance for multiple requests" do
-    first = hunter.hunt Test::Hunter::Beast
-    expect( hunter.hunt Test::Hunter::Beast ).not_to be first
+    first = hunter.fetch Test::Hunter::Beast
+    expect( hunter.fetch Test::Hunter::Beast ).not_to be first
   end
 
-  it "spawns the same instance for captured prey" do
-    first = hunter.hunt_by_traits Test::Hunter::Beast, :tame
-    expect( hunter.hunt_by_traits Test::Hunter::Beast, :tame ).to be first
+  it "spawns the same instance for captured dependency" do
+    first = hunter.fetch_by_traits Test::Hunter::Beast, :tame
+    expect( hunter.fetch_by_traits Test::Hunter::Beast, :tame ).to be first
   end
 
-  it "injects nested kings" do
-    zoo = hunter.hunt Test::Hunter::Zoo
+  it "injects nested objects" do
+    zoo = hunter.fetch Test::Hunter::Zoo
     expect( zoo.bear ).to be_a Test::Hunter::Bear
   end
 
   it "accepts arguments that are passed to constructor" do
-    obj = hunter.hunt Test::Hunter::Argumented, :awesome
+    obj = hunter.fetch Test::Hunter::Argumented, :awesome
     expect( obj.arg ).to eq :awesome
   end
 
   it "implicitly spawns Class contracts" do
-    expect( hunter.hunt Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
+    expect( hunter.fetch Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
   end
 
   it "implicitly spawns Class contracts with empty traits" do
-    expect( hunter.hunt_by_traits Test::Hunter::Implicit, [] ).to be_a Test::Hunter::Implicit
+    expect( hunter.fetch_by_traits Test::Hunter::Implicit, [] ).to be_a Test::Hunter::Implicit
   end
 
-  context "child depdencies" do
-    it "captures arguments and feeds them to dependencies" do
-      zoo  = hunter.hunt Test::Hunter::Zoo
-      city = hunter.hunt Test::Hunter::City, zoo
+  context "child dependencies" do
+    it "passes initializer args to child dependencies" do
+      zoo  = Test::Hunter::Zoo.new
+      city = hunter.fetch Test::Hunter::City, zoo
 
       expect( city.park.zoo ).to be zoo
     end
 
-    it "captures itself" do
-      zoo  = hunter.hunt Test::Hunter::Zoo
-      city = hunter.hunt Test::Hunter::City, zoo
+    it "passes self to child dependencies" do
+      zoo  = Test::Hunter::Zoo.new
+      city = hunter.fetch Test::Hunter::City, zoo
 
       expect( city.park.city ).to be city
     end

@@ -9,7 +9,7 @@ module Test
     class Journey < ActiveJob::Base
       include Scorpion::Rails::Job
 
-      feed_on do
+      depend_on do
         compass Test::Job::Compass
       end
 

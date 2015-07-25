@@ -1,10 +1,10 @@
-require 'scorpion/prey'
+require 'scorpion/dependency'
 
 module Scorpion
-  class Prey
-    # {Prey} for an captured argument.
+  class Dependency
+    # {Dependency} for an captured argument.
     # @see {Scorpion#argument}.
-    class ArgumentPrey < Scorpion::Prey
+    class ArgumentDependency < Scorpion::Dependency
 
       attr_reader :argument
 
@@ -12,7 +12,7 @@ module Scorpion
         @argument = argument
       end
 
-      def fetch( scorpion, *args, &block )
+      def fetch( *args )
         argument
       end
 

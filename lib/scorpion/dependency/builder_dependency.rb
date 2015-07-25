@@ -1,17 +1,17 @@
-require 'scorpion/prey'
+require 'scorpion/dependency'
 
 module Scorpion
-  class Prey
-    # {Prey} that delegates to another object that implements
+  class Dependency
+    # {Dependency} that delegates to another object that implements
     # #call( scorpion, *args, &block ).
-    class BuilderPrey < Scorpion::Prey
+    class BuilderDependency < Scorpion::Dependency
 
       # ============================================================================
       # @!group Attributes
       #
 
       # @!attribute
-      # @return [#call(scorpion,*args,&block)] the builder to use to fetch instances of the prey.
+      # @return [#call(scorpion,*args,&block)] the builder to use to fetch instances of the dependency.
         attr_reader :builder
 
       #
@@ -22,9 +22,9 @@ module Scorpion
         super contract, traits
       end
 
-      # @see Scorpion::Prey#fetch
-      def fetch( scorpion, *args, &block )
-        builder.call( scorpion, *args, &block )
+      # @see Scorpion::Dependency#fetch
+      def fetch( hunt )
+        builder.call( hunt, *hunt.arguments, &hunt.block )
       end
 
     end
