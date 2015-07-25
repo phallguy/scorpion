@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Test
-  module Prey
+  module Dependency
     module Mod; end
     class Base; end
     class Derived < Base
@@ -9,7 +9,7 @@ module Test
     end
 
     class Footwear
-      def self.hunt( scorpion, *args, &block )
+      def self.create( scorpion, *args, &block )
         yield
       end
     end
@@ -17,24 +17,24 @@ module Test
   end
 end
 
-describe Scorpion::Prey do
+describe Scorpion::Dependency do
   context "inheritance" do
-    let( :prey ){ Scorpion::Prey.new( Test::Prey::Derived ) }
+    let( :dependency ){ Scorpion::Dependency.new( Test::Dependency::Derived ) }
 
     it "matches more derived class when looking for base class" do
-      expect( prey.satisfies? Test::Prey::Base ).to be_truthy
+      expect( dependency.satisfies? Test::Dependency::Base ).to be_truthy
     end
 
     it "matches same class when looking for base class" do
-      expect( prey.satisfies? Test::Prey::Derived ).to be_truthy
+      expect( dependency.satisfies? Test::Dependency::Derived ).to be_truthy
     end
 
     it "does not inherit symbols" do
-      expect( Scorpion::Prey.new( :a ).satisfies? :b ).to be_falsy
+      expect( Scorpion::Dependency.new( :a ).satisfies? :b ).to be_falsy
     end
 
     it "can satisfy a module with a class" do
-      expect( prey.satisfies? Test::Prey::Mod ).to be_truthy
+      expect( dependency.satisfies? Test::Dependency::Mod ).to be_truthy
     end
 
   end
@@ -42,84 +42,88 @@ describe Scorpion::Prey do
   describe "traits" do
 
     context "symbolic" do
-      let( :prey ){ Scorpion::Prey.new Test::Prey::Base, :apples }
+      let( :dependency ){ Scorpion::Dependency.new Test::Dependency::Base, :apples }
       it "satisfies matched traits" do
-        expect( prey.satisfies? Test::Prey::Base, :apples ).to be_truthy
+        expect( dependency.satisfies? Test::Dependency::Base, :apples ).to be_truthy
       end
 
       it "doesn't satisfy mis-matched traits" do
-        expect( prey.satisfies? Test::Prey::Base, :oranges ).to be_falsy
+        expect( dependency.satisfies? Test::Dependency::Base, :oranges ).to be_falsy
       end
     end
 
     context "module" do
-      let( :prey ){ Scorpion::Prey.new Test::Prey::Derived }
+      let( :dependency ){ Scorpion::Dependency.new Test::Dependency::Derived }
 
       it "satisfies module traits" do
-        expect( prey.satisfies? Test::Prey::Base, Test::Prey::Derived ).to be_truthy
+        expect( dependency.satisfies? Test::Dependency::Base, Test::Dependency::Derived ).to be_truthy
       end
     end
 
   end
 
   it "can satisfy symbol contracts" do
-    expect( Scorpion::Prey.new( :symbol ).satisfies? :symbol ).to be_truthy
+    expect( Scorpion::Dependency.new( :symbol ).satisfies? :symbol ).to be_truthy
   end
 
   it "satisfies ignores tail hash traits" do
-    expect( Scorpion::Prey.new( Test::Prey::Base ).satisfies?( Test::Prey::Base, ) )
+    expect( Scorpion::Dependency.new( Test::Dependency::Base ).satisfies?( Test::Dependency::Base, ) )
   end
 
   describe "equality" do
-    let( :prey )      { Scorpion::Prey.new( Test::Prey::Derived ) }
-    let( :same )      { Scorpion::Prey.new( Test::Prey::Derived ) }
-    let( :different ) { Scorpion::Prey.new( Test::Prey::Base ) }
+    let( :dependency )      { Scorpion::Dependency.new( Test::Dependency::Derived ) }
+    let( :same )      { Scorpion::Dependency.new( Test::Dependency::Derived ) }
+    let( :different ) { Scorpion::Dependency.new( Test::Dependency::Base ) }
 
-    specify{ expect( prey ).to eq same }
-    specify{ expect( prey ).not_to eq different }
-    specify{ expect( prey.hash ).to eq same.hash }
+    specify{ expect( dependency ).to eq same }
+    specify{ expect( dependency ).not_to eq different }
+    specify{ expect( dependency.hash ).to eq same.hash }
   end
 
   describe ".define" do
     let( :scorpion ){ double Scorpion }
+    let( :hunt )    { Scorpion::Hunt.new scorpion, String, nil }
 
-    it "is a ClassPrey for class hunts" do
-      prey = Scorpion::Prey.define String
-      expect( prey ).to be_a Scorpion::Prey::ClassPrey
+    it "is a ClassDependency for class hunts" do
+      dependency = Scorpion::Dependency.define String
+      expect( dependency ).to be_a Scorpion::Dependency::ClassDependency
     end
 
-    it "is a ModulePrey for module hunts" do
-      prey = Scorpion::Prey.define Test::Prey::Mod
-      expect( prey ).to be_a Scorpion::Prey::ModulePrey
+    it "is a ModuleDependency for module hunts" do
+      dependency = Scorpion::Dependency.define Test::Dependency::Mod
+      expect( dependency ).to be_a Scorpion::Dependency::ModuleDependency
     end
 
-    it "is a BuilderPrey for capture instances" do
-      prey = Scorpion::Prey.define String, capture: "AWESEOME"
+    it "is a BuilderDependency for capture instances" do
+      dependency = Scorpion::Dependency.define String, capture: "AWESEOME"
 
-      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
-      expect( prey.fetch scorpion ).to eq "AWESEOME"
+      expect( dependency ).to be_a Scorpion::Dependency::BuilderDependency
+      expect( dependency.fetch hunt ).to eq "AWESEOME"
     end
 
-    it "is a BuilderPrey for block hunts" do
-      prey =  Scorpion::Prey.define String do
+    it "is a BuilderDependency for block hunts" do
+      dependency =  Scorpion::Dependency.define String do
                 "YASS"
               end
 
-      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
+      expect( dependency ).to be_a Scorpion::Dependency::BuilderDependency
     end
 
-    it "is a BuilderPrey for with: option" do
-      prey = Scorpion::Prey.define String, with: ->(scorpion,*args,&block){ "YASSS" }
+    it "is a BuilderDependency for with: option" do
+      dependency = Scorpion::Dependency.define String, with: ->(scorpion,*args,&block){ "YASSS" }
 
-      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
-      expect( prey.fetch scorpion ).to eq "YASSS"
+      expect( dependency ).to be_a Scorpion::Dependency::BuilderDependency
+      expect( dependency.fetch hunt ).to eq "YASSS"
     end
 
-    it "is a BuilderPrey when hunted class implements #hunt" do
-      prey = Scorpion::Prey.define Test::Prey::Footwear
+    it "is a BuilderDependency when hunted class implements #create" do
+      dependency = Scorpion::Dependency.define Test::Dependency::Footwear
+      hunt = Scorpion::Hunt.new scorpion, String, nil do
+        "Nike"
+      end
 
-      expect( prey ).to be_a Scorpion::Prey::BuilderPrey
-      expect( prey.fetch( scorpion ) {"Nike"} ).to eq "Nike"
+      expect( dependency ).to be_a Scorpion::Dependency::BuilderDependency
+      expect( dependency.fetch( hunt ) ).to eq "Nike"
     end
 
   end

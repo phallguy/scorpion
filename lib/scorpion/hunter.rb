@@ -1,5 +1,5 @@
 module Scorpion
-  # A concrete implementation of a Scorpion used to hunt down food for a {Scorpion::King}.
+  # A concrete implementation of a Scorpion used to hunt down food for a {Scorpion::Object}.
   # @see Scorpion
   class Hunter
     include Scorpion
@@ -8,11 +8,11 @@ module Scorpion
     # @!group Attributes
     #
 
-    # @return [Scorpion::HuntingMap] map of {Prey} and how to create instances.
-      attr_reader :hunting_map
-      protected :hunting_map
+    # @return [Scorpion::DependencyMap] map of {Dependency} and how to create instances.
+      attr_reader :dependency_map
+      protected :dependency_map
 
-    # @return [Scorpion] parent scorpion to deferr hunting to on missing prey.
+    # @return [Scorpion] parent scorpion to deferr hunting to on missing dependency.
       attr_reader :parent
       private :parent
 
@@ -21,41 +21,35 @@ module Scorpion
 
     def initialize( parent = nil, &block )
       @parent      = parent
-      @hunting_map = Scorpion::HuntingMap.new( self )
+      @dependency_map = Scorpion::DependencyMap.new( self )
 
       prepare &block if block_given?
     end
 
     # Prepare the scorpion for hunting.
-    # @see HuntingMap#chart
+    # @see DependencyMap#chart
     def prepare( &block )
-      hunting_map.chart &block
-    end
-
-    # @see Scorpion#hunt
-    def hunt_by_traits( contract, traits = nil, *args, &block  )
-      prey   = hunting_map.find( contract, traits )
-      prey ||= parent.hunting_map.find( contract, traits ) if parent
-      prey ||= Prey.define( contract ) if traits.blank?
-
-      unsuccessful_hunt( contract, traits ) unless prey
-
-      hunter = replicate
-      hunter.prepare do
-        args.each do |arg|
-          argument arg
-        end
-      end
-
-      prey.fetch hunter, *args, &block
+      dependency_map.chart &block
     end
 
     # @see Scorpion#replicate
     def replicate
       replica = self.class.new self
-      replica.hunting_map.replicate_from( hunting_map )
+      replica.dependency_map.replicate_from( dependency_map )
       replica
     end
+
+    # @see Scorpion#hunt
+    def execute( hunt )
+      dependency   = dependency_map.find( hunt.contract, hunt.traits )
+      dependency ||= parent.dependency_map.find( hunt.contract, hunt.traits ) if parent
+      dependency ||= Dependency.define( hunt.contract ) if hunt.traits.blank?
+
+      unsuccessful_hunt( hunt.contract, hunt.traits ) unless dependency
+
+      dependency.fetch hunt
+    end
+
 
   end
 end

@@ -1,23 +1,23 @@
 module Scorpion
-  # Prey that can be fed to a {Scorpion::King} by a {Scorpion}.
-  class Prey
+  # Dependency that can be injected into a {Scorpion::Object} by a {Scorpion}.
+  class Dependency
 
-    require 'scorpion/prey/captured_prey'
-    require 'scorpion/prey/class_prey'
-    require 'scorpion/prey/module_prey'
-    require 'scorpion/prey/builder_prey'
-    require 'scorpion/prey/argument_prey'
+    require 'scorpion/dependency/captured_dependency'
+    require 'scorpion/dependency/class_dependency'
+    require 'scorpion/dependency/module_dependency'
+    require 'scorpion/dependency/builder_dependency'
+    require 'scorpion/dependency/argument_dependency'
 
     # ============================================================================
     # @!group Attributes
     #
 
     # @!attribute
-    # @return [Class,Module,Symbol] contract describing the desired behavior of the prey.
+    # @return [Class,Module,Symbol] contract describing the desired behavior of the dependency.
       attr_reader :contract
 
     # @!attribute
-    # @return [Array<Symbol>] the traits available on the prey.
+    # @return [Array<Symbol>] the traits available on the dependency.
       attr_reader :traits
 
     #
@@ -28,26 +28,24 @@ module Scorpion
       @traits   = Set.new( Array( traits ) )
     end
 
-    # @return [Boolean] if the prey satisfies the required contract and traits.
+    # @return [Boolean] if the dependency satisfies the required contract and traits.
     def satisfies?( contract, traits = nil )
       satisfies_contract?( contract ) && satisfies_traits?( traits )
     end
 
-    # Fetch an instance of the prey.
-    # @param [Scorpion] scorpion hunting for the prey.
-    # @param [Array<Object>] arguments to the consructor of the prey.
-    # @param [#call] block to pass to constructor.
-    # @return [Object] the hunted prey.
-    def fetch( scorpion, *args, &block )
+    # Fetch an instance of the dependency.
+    # @param [Hunt] the hunting context.
+    # @return [Object] the hunted dependency.
+    def fetch( hunt )
       fail "Not Implemented"
     end
 
-    # Release the prey, freeing up any long held resources.
+    # Release the dependency, freeing up any long held resources.
     def release
     end
 
-    # Replicate the Prey.
-    # @return [Prey] a replication of the prey.
+    # Replicate the Dependency.
+    # @return [Dependency] a replication of the dependency.
     def replicate
       dup
     end
@@ -92,29 +90,25 @@ module Scorpion
 
     class << self
 
-      # Define prey based on the desired contract and traits.
-      # @return [Prey] the defined prey.
+      # Define dependency based on the desired contract and traits.
+      # @return [Dependency] the defined dependency.
       def define( contract, traits = nil , &builder )
         options, traits = extract_options!( traits )
 
         if options.key?( :capture )
-          Scorpion::Prey::BuilderPrey.new( contract, traits ) do
+          Scorpion::Dependency::BuilderDependency.new( contract, traits ) do
             options[:capture]
           end
         elsif with = options[:with]
-          Scorpion::Prey::BuilderPrey.new( contract, traits, with )
+          Scorpion::Dependency::BuilderDependency.new( contract, traits, with )
         elsif block_given?
-          Scorpion::Prey::BuilderPrey.new( contract, traits, builder )
-        elsif contract.respond_to?( :hunt )
-          Scorpion::Prey::BuilderPrey.new( contract, traits ) do |scorpion,*args,&block|
-            contract.hunt scorpion, *args, &block
-          end
-        elsif contract.respond_to?( :fetch )
-          Scorpion::Prey::BuilderPrey.new( contract, traits ) do |scorpion,*args,&block|
-            contract.fetch scorpion, *args, &block
+          Scorpion::Dependency::BuilderDependency.new( contract, traits, builder )
+        elsif contract.respond_to?( :create )
+          Scorpion::Dependency::BuilderDependency.new( contract, traits ) do |scorpion,*args,&block|
+            contract.create scorpion, *args, &block
           end
         else
-          prey_class( contract ).new( contract, traits, &builder )
+          dependency_class( contract ).new( contract, traits, &builder )
         end
       end
 
@@ -131,9 +125,9 @@ module Scorpion
           [ {}, traits]
         end
 
-        def prey_class( contract, &builder )
-          return Scorpion::Prey::ClassPrey   if contract.is_a? Class
-          return Scorpion::Prey::ModulePrey  if contract.is_a? Module
+        def dependency_class( contract, &builder )
+          return Scorpion::Dependency::ClassDependency   if contract.is_a? Class
+          return Scorpion::Dependency::ModuleDependency  if contract.is_a? Module
 
           raise Scorpion::BuilderRequiredError
         end

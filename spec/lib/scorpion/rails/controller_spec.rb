@@ -12,14 +12,14 @@ describe Scorpion::Rails::Controller, type: :controller do
   controller ActionController::Base do
     include Scorpion::Rails::Controller
 
-    feed_on do
+    depend_on do
       service Test::Nest::Service
       cache   Test::Nest::Cache
     end
 
     def index
-      @guard1 = scorpion.hunt Test::Nest::Guard
-      @guard2 = scorpion.hunt Test::Nest::Guard
+      @guard1 = scorpion.fetch Test::Nest::Guard
+      @guard2 = scorpion.fetch Test::Nest::Guard
       render nothing: true
     end
   end
@@ -62,8 +62,8 @@ describe Scorpion::Rails::Controller, type: :controller do
 
     it "spawns the same service during the same request" do
       allow( subject ).to receive( :index ) do
-        service = subject.scorpion.hunt Test::Nest::Service
-        expect( subject.scorpion.hunt Test::Nest::Service ).to be service
+        service = subject.scorpion.fetch Test::Nest::Service
+        expect( subject.scorpion.fetch Test::Nest::Service ).to be service
         controller.render nothing: true
       end
 
@@ -74,7 +74,7 @@ describe Scorpion::Rails::Controller, type: :controller do
       service = subject.service
 
       allow( subject ).to receive( :index ) do
-        expect( subject.scorpion.hunt Test::Nest::Service ).not_to be service
+        expect( subject.scorpion.fetch Test::Nest::Service ).not_to be service
         controller.render nothing: true
       end
 
@@ -83,7 +83,7 @@ describe Scorpion::Rails::Controller, type: :controller do
 
     it "hunts for controller" do
       allow( subject ).to receive( :index ) do
-        expect( subject.scorpion.hunt( AbstractController::Base ) ).to be subject
+        expect( subject.scorpion.fetch( AbstractController::Base ) ).to be subject
         controller.render nothing: true
       end
 
@@ -92,7 +92,7 @@ describe Scorpion::Rails::Controller, type: :controller do
 
     it "hunts for response" do
       allow( subject ).to receive( :index ) do
-        expect( subject.scorpion.hunt( ActionDispatch::Response ) ).to be subject.response
+        expect( subject.scorpion.fetch( ActionDispatch::Response ) ).to be subject.response
         controller.render nothing: true
       end
 
@@ -101,7 +101,7 @@ describe Scorpion::Rails::Controller, type: :controller do
 
     it "hunts for request" do
       allow( subject ).to receive( :index ) do
-        expect( subject.scorpion.hunt( ActionDispatch::Request ).object_id ).to be subject.request.object_id
+        expect( subject.scorpion.fetch( ActionDispatch::Request ).object_id ).to be subject.request.object_id
         controller.render nothing: true
       end
 

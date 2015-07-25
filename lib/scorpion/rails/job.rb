@@ -1,11 +1,9 @@
 require 'scorpion/nest'
-require 'active_support/core_ext/class/attribute'
 
 module Scorpion
   module Rails
 
-    # Adds a scorpion nest to  to automatically support injection into rails
-    # background worker jobs.
+    # Adds a scorpion nest to support injection into rails background worker jobs.
     module Job
 
       def self.included( base )

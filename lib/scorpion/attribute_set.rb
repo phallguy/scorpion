@@ -35,7 +35,7 @@ module Scorpion
       attributes.key? name
     end
 
-    # Defines the food that {Scorpion::King} will feed on. A food is defined by
+    # Defines the food that {Scorpion::Object} will feed on. A food is defined by
     # invoking a method with the desired name passing the contract and traits
     # desired. AttributeSet uses method_missing to dynamically define
     # attributes.

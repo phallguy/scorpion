@@ -29,7 +29,7 @@ module Scorpion
 
       def self.included( base )
         # Setup dependency injection
-        base.send :include, Scorpion::King
+        base.send :include, Scorpion::Object
 
         # @!attribute [rw]
         # @return [Scorpion::Nest] the singleton nest used by controllers.
@@ -48,7 +48,7 @@ module Scorpion
           end
 
           # Prepare the nest for conceiving scorpions.
-          # @see HuntingMap#chart
+          # @see DependencyMap#chart
           def self.scorpion_nest( &block )
             nest.prepare &block
           end
@@ -67,7 +67,8 @@ module Scorpion
 
           prepare_scorpion( @scorpion ) if respond_to?( :prepare_scorpion, true )
 
-          @scorpion.feed self
+          hunt = Scorpion::Hunt.new @scorpion, nil, nil
+          hunt.inject self
 
           yield
         ensure

@@ -1,16 +1,16 @@
 require 'scorpion/attribute_set'
 
 module Scorpion
-  # Identifies objects that are served by {Scorpion scorpions} that feed on
-  # {Scorpion#hunt hunted} prey.
-  module King
+  # Identifies objects that are injected by {Scorpion scorpions} that inject
+  # {Scorpion#hunt hunted} dependencies.
+  module Object
 
     # ============================================================================
     # @!group Attributes
     #
 
     # @!attribute
-    # @return [Scorpion] the scorpion used to hunt down prey.
+    # @return [Scorpion] the scorpion used to hunt down dependencies.
       attr_reader :scorpion
 
     # @!attribute
@@ -23,75 +23,63 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    # Feeds one of the {#injected_attributes} to the object.
+    # Injects one of the {#injected_attributes} into the object.
     # @param [Scorpion::Attribute] attribute to be fed.
-    # @param [Object] food the value of the attribute
+    # @param [Object] dependency the value of the attribute
     # @visibility private
     #
-    # This method is used by the {#scorpion} to feed the king. Do not call it
+    # This method is used by the {#scorpion} to feed the object. Do not call it
     # directly.
-    def feed( attribute, food )
-      send "#{ attribute.name }=", food
+    def inject( attribute, dependency )
+      send "#{ attribute.name }=", dependency
     end
 
-    # Crown the object as a king and prepare it to be fed.
+    # Crown the object as a object and prepare it to be fed.
     def self.crown( base )
-      base.extend Scorpion::King::ClassMethods
+      base.extend Scorpion::Object::ClassMethods
       if base.is_a? Class
         base.class_exec do
 
-          # Span a new instance of this class with all non-lazy dependencies
+          # Create a new instance of this class with all non-lazy dependencies
           # satisfied.
-          # @param [Scorpion] scorpion that will hunt for dependencies.
-          def self.spawn( scorpion, *args, &block )
-            new( *args, &block ).tap do |king|
-              king.instance_variable_set :@scorpion, scorpion
-              scorpion.prepare { argument king }
+          # @param [Hunt] hunt that this instance will be used to satisfy.
+          def self.spawn( hunt, *args, &block )
+            new( *args, &block ).tap do |object|
+              object.instance_variable_set :@scorpion, hunt.scorpion
               # Go hunt for dependencies that are not lazy and initialize the
               # references.
-              scorpion.feed king
-              king.send :on_fed
+              hunt.inject object
+              object.send :on_injected
             end
           end
+
         end
       end
     end
 
-      def self.included( base )
-        crown( base )
-        super
-      end
+    def self.included( base )
+      crown( base )
+      super
+    end
 
-      def self.prepended( base )
-        crown( base )
-        super
-      end
+    def self.prepended( base )
+      crown( base )
+      super
+    end
 
 
     private
 
-      # Called after the king has been initialized and feed all its required
+      # Called after the object has been initialized and feed all its required
       # dependencies. It should be used in place of #initialize when the
       # constructor needs access to injected attributes.
-      def on_fed
-      end
-
-      # Convenience method to ask the {#scorpion} to hunt for an object.
-      # @see Scorpion#hunt
-      def hunt( contract, *args, &block )
-        scorpion.hunt contract, *args, &block
-      end
-
-      # Convenience method to ask the {#scorpion} to hunt for an object.
-      # @see Scorpion#hunt_by_traits
-      def hunt_by_traits( contract, traits, *args, &block )
-        scorpion.hunt_by_traits contract, *args, &block
+      def on_injected
       end
 
       # Feed dependencies from a hash into their associated attributes.
       # @param [Hash] dependencies hash describing attributes to inject.
       # @param [Boolean] overwrite existing attributes with values in in the hash.
-      def feast_on( dependencies, overwrite = false )
+      def inject_from( dependencies, overwrite = false )
         injected_attributes.each do |attr|
           next unless dependencies.key? attr.name
 
@@ -102,11 +90,10 @@ module Scorpion
 
         dependencies
       end
-      alias_method :inject_from, :feast_on
 
       # Injects dependenices from the hash and removes them from the hash.
-      # @see #feast_on
-      def feast_on!( dependencies, overwrite = false )
+      # @see #inject_from
+      def inject_from!( dependencies, overwrite = false )
         injected_attributes.each do |attr|
           next unless dependencies.key? attr.name
           val = dependencies.delete( attr.name )
@@ -118,24 +105,30 @@ module Scorpion
 
         dependencies
       end
-      alias_method :inject_from!, :feast_on!
 
     module ClassMethods
+
+      # Define an initializer that accepts injections.
+      # @param [Hash] arguments to accept in the initializer.
+      # @yield to initialize itself.
+      def initialize( arguments, &block )
+        Scorpion::ObjectConstructor.new( self, arguments, &block ).define
+      end
 
       # Tells a {Scorpion} what to inject into the class when it is constructed
       # @return [nil]
       # @see AttributeSet#define
-      def feed_on(  &block )
+      def depend_on( &block )
         injected_attributes.define &block
         build_injected_attributes
       end
-      alias_method :inject, :feed_on
-      alias_method :depend_on, :feed_on
+      alias_method :inject, :depend_on
+      alias_method :depend_on, :depend_on
 
       # Define a single dependency and accessor.
       # @param [Symbol] name of the dependency.
-      # @param [Class,Module,Symbol] contract describing the desired behavior of the prey.
-      # @param [Array<Symbol>] traits found on the {Prey}.
+      # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
+      # @param [Array<Symbol>] traits found on the {Dependency}.
       def attr_dependency( name, contract, *traits, &block )
         attr = injected_attributes.define_attribute name, contract, *traits, &block
         build_injected_attribute attr
@@ -148,6 +141,15 @@ module Scorpion
         @injected_attributes ||= begin
           attrs = AttributeSet.new
           attrs.inherit! superclass.injected_attributes if superclass.respond_to? :injected_attributes
+          attrs
+        end
+      end
+
+      # @!attribute
+      # @return [Scorpion::AttributeSet] the set of injected attriutes.
+      def initializer_injections
+        @initializer_injections ||= begin
+          attrs = AttributeSet.new
           attrs
         end
       end
@@ -166,7 +168,7 @@ module Scorpion
             def #{ attr.name }
               @#{ attr.name } ||= begin
                 attr = injected_attributes[ :#{ attr.name } ]
-                scorpion.hunt( attr.contract, attr.traits )
+                scorpion.fetch( attr.contract, attr.traits )
               end
             end
 

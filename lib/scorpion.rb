@@ -6,65 +6,61 @@ module Scorpion
 
   require 'scorpion/version'
   require 'scorpion/error'
-  require 'scorpion/king'
+  require 'scorpion/object'
+  require 'scorpion/object_constructor'
   require 'scorpion/attribute_set'
   require 'scorpion/hunter'
-  require 'scorpion/hunting_map'
-  require 'scorpion/prey'
+  require 'scorpion/dependency_map'
+  require 'scorpion/hunt'
+  require 'scorpion/dependency'
   require 'scorpion/nest'
   require 'scorpion/rails'
 
   # Hunts for an object that satisfies the requested `contract` and `traits`.
-  # @param [Class,Module,Symbol] contract describing the desired behavior of the prey.
-  # @param [Array<Symbol>] traits required of the prey
-  # @return [Object] an object that matches the requirements defined in `attribute`.
+  # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
+  # @param [Array<Symbol>] traits required of the dependency
+  # @return [Object] an object that satisfies the contract and traits.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def hunt_by_traits( contract, traits, *args, &block )
-    fail "Not implemented"
+  def fetch_by_traits( contract, traits, *args, &block )
+    hunt = Hunt.new( self, contract, traits, *args, &block )
+    execute hunt
   end
-  alias_method :fetch_by_traits, :hunt_by_traits
 
   # Hunts for an object that satisfies the requested `contract` regardless of
   # traits.
-  # @see #hunt_by_traits
-  def hunt( contract, *args, &block )
-    hunt_by_traits( contract, nil, *args, &block )
-  end
-  alias_method :fetch, :hunt
-
-  # Populate given `king` with its expected attributes.
-  # @param [Scorpion::King] king to be fed.
-  # @return [Scorpion::King] the populated king.
-  def feed( king )
-    king.injected_attributes.each do |attr|
-      next if king.send "#{ attr.name }?"
-      next if attr.lazy?
-
-      king.send :feed, attr, hunt_by_traits( attr.contract, attr.traits )
-    end
+  # @see #fetch_by_traits
+  def fetch( contract, *args, &block )
+    fetch_by_traits( contract, nil, *args, &block )
   end
 
-  # Creates a new king and feeds it it's dependencies.
-  # @param [Class] king_class a class that includes {Scorpion::King}.
+  # Creates a new object and feeds it it's dependencies.
+  # @param [Class] object_class a class that includes {Scorpion::Object}.
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
-  # @return [Scorpion::King] the spawned king.
-  def spawn( king_class, *args, &block )
-    if king_class < Scorpion::King
-      king_class.spawn self, *args, &block
+  # @return [Scorpion::Object] the spawned object.
+  def spawn( hunt, object_class, *args, &block )
+    if object_class < Scorpion::Object
+      object_class.spawn hunt, *args, &block
     else
-      king_class.new *args, &block
+      object_class.new *args, &block
     end
+  end
+
+  # Execute the `hunt` returning the desired dependency.
+  # @param [Hunt] hunt to execute.
+  # @return [Object] an object that satisfies the hunt contract and traits.
+  def execute( hunt )
+    fail "Not implemented"
   end
 
   # Creates a new {Scorpion} copying the current configuration any any currently
-  # captured prey.
+  # captured dependency.
   # @return [Scorpion] the replicated scorpion.
   def replicate( &block )
     fail "Not implemented"
   end
 
-  # Free up any captured prey and release any long-held resources.
+  # Free up any captured dependency and release any long-held resources.
   def destroy
   end
 
@@ -98,20 +94,17 @@ module Scorpion
     instance.prepare &block
   end
 
-  # Hunt for prey from the primary Scorpion {#instance}.
-  # @see #hunt
-  def self.hunt( *args, &block )
-    instance.hunt *args, &block
+  # Hunt for dependency from the primary Scorpion {#instance}.
+  # @see #fetch
+  def self.fetch( *args, &block )
+    instance.fetch *args, &block
   end
-  singleton_class.send :alias_method, :fetch, :hunt
 
-  # Hunt for prey from the primary Scorpion {#instance}.
-  # @see #hunt_by_traits
-  def self.hunt_by_traits( *args, &block )
-    instance.hunt_by_traits *args, &block
+  # Hunt for dependency from the primary Scorpion {#instance}.
+  # @see #fetch_by_traits
+  def self.fetch_by_traits( *args, &block )
+    instance.fetch_by_traits *args, &block
   end
-  singleton_class.send :alias_method, :fetch_by_traits, :hunt_by_traits
-
 
   #
   # @!endgroup Convenience Methods
