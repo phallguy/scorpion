@@ -9,7 +9,10 @@ module Scorpion
       def self.included( base )
         # Setup dependency injection
         base.send :include, Scorpion::Rails::Nest
-        base.send :around_perform, :with_scorpion
+        base.send :around_perform do |job, block|
+          job.with_scorpion &block
+        end
+
         super
       end
 

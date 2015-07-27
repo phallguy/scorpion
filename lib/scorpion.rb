@@ -14,6 +14,7 @@ module Scorpion
   require 'scorpion/hunt'
   require 'scorpion/dependency'
   require 'scorpion/nest'
+  require 'scorpion/stinger'
   require 'scorpion/rails'
 
   # Hunts for an object that satisfies the requested `contract` and `traits`.
@@ -69,6 +70,15 @@ module Scorpion
     Scorpion::Nest.new( self )
   end
 
+  # @!attribute
+  # @return [Logger] logger for the scorpion to use.
+  def logger
+    @logger || Scorpion.logger
+  end
+  def logger=( value )
+    @logger = value
+  end
+
   # ============================================================================
   # @!group Convenience Methods
   #
@@ -104,6 +114,15 @@ module Scorpion
   # @see #fetch_by_traits
   def self.fetch_by_traits( *args, &block )
     instance.fetch_by_traits *args, &block
+  end
+
+  # @!attribute logger
+  # @return [Logger] logger for the Scorpion framework to use.
+  def self.logger
+    @logger ||= defined?( ::Rails ) ? ::Rails.logger : Logger.new( STDOUT )
+  end
+  def self.logger=( value )
+    @logger = value
   end
 
   #

@@ -13,6 +13,7 @@ Combustion.initialize! :all
 
 require 'rspec/rails'
 require 'scorpion'
+require 'scorpion/rspec'
 
 root_path = File.expand_path( "../..", __FILE__ )
 

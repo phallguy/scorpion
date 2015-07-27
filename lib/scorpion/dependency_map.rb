@@ -55,12 +55,12 @@ module Scorpion
     #   chart do
     #     self #=> DependencyMap
     #     hunt_for Repository
-    #     capture  Cache, capture: cache # => NoMethodError
+    #     capture  Cache, return: cache # => NoMethodError
     #   end
     #
     #   chart do |map|
     #     map.hunt_for Repository
-    #     map.capture  Cache, capture: cache # => No problem
+    #     map.capture  Cache, return: cache # => No problem
     #   end
     #
     # @return [self]
