@@ -16,11 +16,6 @@ module Scorpion
       #
 
       # @!attribute
-      # @return [Scorpion] the scorpion used to fetch dependencies.
-        attr_reader :scorpion
-        private :scorpion
-
-      # @!attribute
       # @return [Scorpion::Nest] the nest used to conceive scorpions.
         def nest
           self.class.nest

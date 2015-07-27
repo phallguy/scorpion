@@ -27,7 +27,7 @@ module Scorpion
           # Defined here to override the #scorpion method provided by Scorpion::Object.
           def scorpion( scope = nil )
             if scope
-              scope.with_scorpion( scorpion )
+              super
             else
               env[ENV_KEY]
             end

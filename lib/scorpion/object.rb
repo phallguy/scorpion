@@ -9,10 +9,7 @@ module Scorpion
     # @!group Attributes
     #
 
-    # @!attribute
-    # @return [Scorpion] the scorpion used to hunt down dependencies.
-      attr_accessor :scorpion
-      private :scorpion=
+    include Scorpion::Method
 
     # @!attribute
     # @return [Scorpion::AttributeSet] the set of injected attributes and their

@@ -521,6 +521,7 @@ class SessionsController < ActionController::Base
 
   def create
     user = User.with_scorpion( scorpion ).find params[:id]
+    user = scorpion( User ).find params[:id]
     sign_in if user.check_password( params[:password] )
   end
 end

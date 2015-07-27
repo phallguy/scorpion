@@ -11,9 +11,7 @@ module Scorpion
         # @!group Attributes
         #
 
-        # @!attribute
-        # @return [Scorpion] the scorpion serving the relation.
-          attr_accessor :scorpion
+        include Scorpion::Method
 
         #
         # @!endgroup Attributes
@@ -27,7 +25,7 @@ module Scorpion
         #   User.with_scorpion( scorpion ).where( ... )
         def with_scorpion( scorpion )
           spawn.tap do |other|
-            other.scorpion = scorpion
+            other.send :scorpion=, scorpion
           end
         end
 

@@ -10,12 +10,11 @@ module Scorpion
         # @!group Attributes
         #
 
-        # @!attribute
-        # @return [Scorpion] the scorpion serving the association.
-          attr_accessor :scorpion
-          def scorpion
-            @scorpion || owner.scorpion
-          end
+        include Scorpion::Method
+
+        def scorpion( scope = nil )
+          super || owner.scorpion( scope )
+        end
 
         #
         # @!endgroup Attributes

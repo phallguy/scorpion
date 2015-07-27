@@ -9,12 +9,11 @@ module Scorpion
         def self.prepended( base )
           # Setup dependency injection
           base.send :include, Scorpion::Object
-          base.send :extend, ClassMethods
-          super
-        end
+          base.singleton_class.class_exec do
+            delegate :with_scorpion, to: :all
+          end
 
-        module ClassMethods
-          delegate :with_scorpion, to: :all
+          super
         end
 
         def association( *args, &block )

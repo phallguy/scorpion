@@ -23,7 +23,7 @@ Dir[ File.join( root_path, "spec/support/**/*.rb" ) ].each { |f| require f }
 
 RSpec.configure do |config|
 
-  config.order = "random"
+  config.order = "random:40203" # 40203
 
   config.filter_run focus: true
   config.filter_run_excluding :broken => true
@@ -32,4 +32,9 @@ RSpec.configure do |config|
   config.before(:each)  { GC.disable }
   config.after(:each)   { GC.enable }
 
+  config.before( :each, type: :model ) do
+    [ Todo, Author ].each do |model|
+      model.destroy_all
+    end
+  end
 end

@@ -6,6 +6,7 @@ module Scorpion
 
   require 'scorpion/version'
   require 'scorpion/error'
+  require 'scorpion/method'
   require 'scorpion/object'
   require 'scorpion/object_constructor'
   require 'scorpion/attribute_set'

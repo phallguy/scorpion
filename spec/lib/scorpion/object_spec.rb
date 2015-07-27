@@ -63,6 +63,14 @@ describe Scorpion::Object do
     allow( hunt ).to receive( :scorpion ).and_return scorpion
   end
 
+  it "stings scopes" do
+    scope = double
+
+    expect( scope ).to receive( :with_scorpion ).with( scorpion )
+
+    Test::Object::Mouse.spawn( hunt ).scorpion( scope )
+  end
+
   describe ".spawn" do
 
     it "can spawn" do
