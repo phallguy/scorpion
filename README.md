@@ -8,6 +8,8 @@
 
 Add IoC to rails with minimal fuss and ceremony.
 
+(Also check out [shog](http://github.com/phallguy/shog) for better rails logs)
+
 <!-- MarkdownTOC depth=4 -->
 
 - [Dependency Injection](#dependency-injection)
