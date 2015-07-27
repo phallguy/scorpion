@@ -26,7 +26,6 @@ module Scorpion
       #
       # @!endgroup Attributes
 
-
       def self.included( base )
         # Setup dependency injection
         base.send :include, Scorpion::Object
@@ -58,23 +57,30 @@ module Scorpion
         super
       end
 
+      # Fetch a scorpion and feed the controller it's dependencies, then yield
+      # to perform the action within the context of that scorpion.
+      def with_scorpion( &block )
+        assign_scorpion( nest.conceive )
+
+        prepare_scorpion( @scorpion ) if respond_to?( :prepare_scorpion, true )
+
+        hunt = Scorpion::Hunt.new @scorpion, nil, nil
+        hunt.inject self
+
+        yield
+      ensure
+        free_scorpion
+      end
+
       private
 
-        # @visibility public
-        # Fetch a scorpion and feed the controller it's dependencies
-        def with_scorpion( &block )
-          @scorpion = nest.conceive
-
-          prepare_scorpion( @scorpion ) if respond_to?( :prepare_scorpion, true )
-
-          hunt = Scorpion::Hunt.new @scorpion, nil, nil
-          hunt.inject self
-
-          yield
-        ensure
-          @scorpion = nil
+        def assign_scorpion( scorpion )
+          @scorpion = scorpion
         end
 
+        def free_scorpion
+          @scorpion = nil
+        end
     end
   end
 end

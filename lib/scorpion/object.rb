@@ -11,7 +11,8 @@ module Scorpion
 
     # @!attribute
     # @return [Scorpion] the scorpion used to hunt down dependencies.
-      attr_reader :scorpion
+      attr_accessor :scorpion
+      private :scorpion=
 
     # @!attribute
     # @return [Scorpion::AttributeSet] the set of injected attributes and their
@@ -45,7 +46,8 @@ module Scorpion
           # @param [Hunt] hunt that this instance will be used to satisfy.
           def self.spawn( hunt, *args, &block )
             new( *args, &block ).tap do |object|
-              object.instance_variable_set :@scorpion, hunt.scorpion
+              object.send :scorpion=, hunt.scorpion
+
               # Go hunt for dependencies that are not lazy and initialize the
               # references.
               hunt.inject object
@@ -53,6 +55,10 @@ module Scorpion
             end
           end
 
+        end
+
+        base.subclasses.each do |sub|
+          crown( sub ) unless sub < Scorpion::Object
         end
       end
     end

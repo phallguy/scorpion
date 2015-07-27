@@ -23,8 +23,9 @@ end
 describe Scorpion::Rails::Job do
   it "perform has been feed" do
     compass = Test::Job::Compass.new
+
     Test::Job::Journey.scorpion_nest do |hunter|
-      hunter.hunt_for Test::Job::Compass, capture: compass
+      hunter.hunt_for Test::Job::Compass, return: compass
     end
 
     expect( compass ).to receive( :directions )
