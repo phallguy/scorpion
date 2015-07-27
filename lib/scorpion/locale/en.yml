@@ -4,3 +4,6 @@ en:
       messages:
         unsuccessful_hunt: "Couldn't find a %{contract} builder with traits '%{traits}'"
         builder_required: A custom builder must be provided to resolve this dependency
+    warnings:
+      messages:
+        mixed_scorpions: A scorpion has already been assigned. Mixing scorpions can result in unexpected results.

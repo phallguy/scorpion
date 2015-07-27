@@ -94,8 +94,8 @@ describe Scorpion::Dependency do
       expect( dependency ).to be_a Scorpion::Dependency::ModuleDependency
     end
 
-    it "is a BuilderDependency for capture instances" do
-      dependency = Scorpion::Dependency.define String, capture: "AWESEOME"
+    it "is a BuilderDependency for return: instances" do
+      dependency = Scorpion::Dependency.define String, return: "AWESEOME"
 
       expect( dependency ).to be_a Scorpion::Dependency::BuilderDependency
       expect( dependency.fetch hunt ).to eq "AWESEOME"

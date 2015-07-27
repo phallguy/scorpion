@@ -95,9 +95,9 @@ module Scorpion
       def define( contract, traits = nil , &builder )
         options, traits = extract_options!( traits )
 
-        if options.key?( :capture )
+        if options.key?( :return )
           Scorpion::Dependency::BuilderDependency.new( contract, traits ) do
-            options[:capture]
+            options[:return]
           end
         elsif with = options[:with]
           Scorpion::Dependency::BuilderDependency.new( contract, traits, with )
