@@ -8,9 +8,7 @@
 
 Add IoC to rails with minimal fuss and ceremony.
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
+<!-- MarkdownTOC depth=4 -->
 
 - [Dependency Injection](#dependency-injection)
   - [Why might you _Want_ a DI FRamework?](#why-might-you-_want_-a-di-framework)
@@ -26,10 +24,13 @@ Add IoC to rails with minimal fuss and ceremony.
     - [Singletons](#singletons)
   - [Nests](#nests)
   - [Rails](#rails)
+    - [ActionController](#actioncontroller)
+    - [ActiveJob](#activejob)
+    - [ActiveRecord](#activerecord)
 - [Contributing](#contributing)
 - [License](#license)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- /MarkdownTOC -->
 
 ## Dependency Injection
 
@@ -442,6 +443,8 @@ scorpion.fetch Logger  # => Logger.new
 
 ### Rails
 
+#### ActionController
+
 Scorpion provides simple integration into for rails controllers to establish
 a scorpion for each request.
 
@@ -466,12 +469,9 @@ end
 require 'scorpion'
 
 class ApplicationController < ActionController::Base
-  include Scorpion::Rails::Controller
-
   depend_on do
     users UserService, lazy: true
   end
-
 end
 
 # users_controller.rb
@@ -482,6 +482,48 @@ class UsersController < ApplicationController
   end
 end
 ```
+
+#### ActiveJob
+
+Simliar to support for controllers, Scorpion provides support for dependency
+injection into ActiveJob objects.
+
+```ruby
+
+# avatar_job.rb
+class AvatarJob < ActiveJob::Base
+  def perform( id )
+    user = users.find( id )
+    logger.write "Found a user: #{ user }"
+  end
+end
+```
+
+#### ActiveRecord
+
+Scorpion enhances ActiveRecord models to support resolving dependencies from
+a scorpion and sharing that scorpion with all associations.
+
+```ruby
+class User < ActiveRecord::Base
+  depend_on do
+    credentials Service::Auth::Credentials
+  end
+
+  def check_password( password )
+    credentials.check encoded_password, password
+  end
+end
+
+class SessionsController < ActionController::Base
+
+  def create
+    user = User.with_scorpion( scorpion ).find params[:id]
+    sign_in if user.check_password( params[:password] )
+  end
+end
+```
+
 
 ## Contributing
 
