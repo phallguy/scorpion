@@ -5,7 +5,11 @@ module Scorpion
   module Rails
     # Handles building a scorpion to handle a single request and populating
     # all the dependencies automatically.
+    #
+    # The host class must respond to #scorpion, #assign_scorpion(scorpion) and
+    # #free_scorpion.
     module Nest
+      include Scorpion::Object
 
       # ============================================================================
       # @!group Attributes
@@ -27,8 +31,6 @@ module Scorpion
       # @!endgroup Attributes
 
       def self.included( base )
-        # Setup dependency injection
-        base.send :include, Scorpion::Object
 
         # @!attribute [rw]
         # @return [Scorpion::Nest] the singleton nest used by controllers.
@@ -62,9 +64,9 @@ module Scorpion
       def with_scorpion( &block )
         assign_scorpion( nest.conceive )
 
-        prepare_scorpion( @scorpion ) if respond_to?( :prepare_scorpion, true )
+        prepare_scorpion( scorpion ) if respond_to?( :prepare_scorpion, true )
 
-        hunt = Scorpion::Hunt.new @scorpion, nil, nil
+        hunt = Scorpion::Hunt.new scorpion, nil, nil
         hunt.inject self
 
         yield
@@ -72,15 +74,6 @@ module Scorpion
         free_scorpion
       end
 
-      private
-
-        def assign_scorpion( scorpion )
-          @scorpion = scorpion
-        end
-
-        def free_scorpion
-          @scorpion = nil
-        end
     end
   end
 end

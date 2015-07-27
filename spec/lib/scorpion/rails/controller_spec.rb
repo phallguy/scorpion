@@ -10,7 +10,6 @@ end
 
 describe Scorpion::Rails::Controller, type: :controller do
   controller ActionController::Base do
-    include Scorpion::Rails::Controller
 
     depend_on do
       service Test::Nest::Service
@@ -41,6 +40,25 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "has a scorpion" do
       expect( subject ).to respond_to :scorpion
     end
+
+    it "retrieves scorpion from `env`" do
+      expect( subject.env ).to receive( :[] )
+        .with( Scorpion::Rails::Controller::ENV_KEY )
+        .at_least( :once )
+        .and_call_original
+
+      get :index
+    end
+
+    it "stores the scorpion in `env`" do
+      expect( subject.env ).to receive( :[]= )
+        .with( Scorpion::Rails::Controller::ENV_KEY, kind_of( Scorpion ) )
+        .at_least( :once )
+        .and_call_original
+
+      get :index
+    end
+
 
     it "initializes non-lazy dependencies" do
       expect( subject.cache ).to be_present
@@ -102,6 +120,16 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "hunts for request" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion.fetch( ActionDispatch::Request ).object_id ).to be subject.request.object_id
+        controller.render nothing: true
+      end
+
+      get :index
+    end
+
+
+    it "scopes relations" do
+      allow( subject ).to receive( :index ) do
+        expect( subject.scorpion( Todo ).all.scorpion ).to be subject.scorpion
         controller.render nothing: true
       end
 

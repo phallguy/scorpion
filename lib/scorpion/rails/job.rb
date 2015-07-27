@@ -6,8 +6,10 @@ module Scorpion
     # Adds a scorpion nest to support injection into rails background worker jobs.
     module Job
 
+
       def self.included( base )
         # Setup dependency injection
+        base.send :include, Scorpion::Object
         base.send :include, Scorpion::Rails::Nest
         base.send :around_perform do |job, block|
           job.with_scorpion &block
@@ -24,6 +26,15 @@ module Scorpion
               self
             end
           end
+        end
+
+        attr_reader :scorpion
+        def assign_scorpion( scorpion )
+          @scorpion = scorpion
+        end
+
+        def free_scorpion
+          @scorpion.try( :destroy )
         end
     end
   end

@@ -8,14 +8,32 @@ module Scorpion
 
       ENV_KEY = 'scorpion.instance'.freeze
 
-      def scorpion
-        env[ENV_KEY]
-      end
+      # @overload scorpion
+      #   @return [Scorpion] the current scorpion
+      # @overload scorpion( scope )
+      #   Stings the given `scope` with the current scorpion.
+      #   @param [ActiveRecord::Relation,#with_scorpion] an ActiveRecord relation,
+      #     scope or model class.
+      #   @return [ActiveRecord::Relation] scorpion scoped relation.
 
       def self.included( base )
         # Setup dependency injection
+        base.send :include, Scorpion::Object
         base.send :include, Scorpion::Rails::Nest
+
         base.around_filter :with_scorpion
+
+        base.class_eval do
+          # Defined here to override the #scorpion method provided by Scorpion::Object.
+          def scorpion( scope = nil )
+            if scope
+              scope.with_scorpion( scorpion )
+            else
+              env[ENV_KEY]
+            end
+          end
+        end
+
         super
       end
 
@@ -42,6 +60,7 @@ module Scorpion
         end
 
         def free_scorpion
+          scorpion.try( :destroy )
         end
 
     end
