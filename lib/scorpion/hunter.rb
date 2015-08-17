@@ -50,6 +50,10 @@ module Scorpion
       dependency.fetch hunt
     end
 
+    # @see Scorpion#reset
+    def reset
+      dependency_map.reset
+    end
 
   end
 end

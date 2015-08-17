@@ -57,7 +57,7 @@ module Scorpion
       # Fetch a scorpion and feed the controller it's dependencies, then yield
       # to perform the action within the context of that scorpion.
       def with_scorpion( &block )
-        assign_scorpion( nest.conceive )
+        assign_scorpion( conceive_scorpion )
 
         prepare_scorpion( scorpion ) if respond_to?( :prepare_scorpion, true )
 
@@ -67,6 +67,10 @@ module Scorpion
         yield
       ensure
         free_scorpion
+      end
+
+      def conceive_scorpion
+        nest.conceive
       end
 
     end

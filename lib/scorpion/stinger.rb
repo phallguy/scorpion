@@ -19,7 +19,6 @@ module Scorpion
 
           private
             def method_missing( *args, &block )
-              binding.pry
               @__stinger__.sting! @__instance__.__send__( *args, &block )
             end
         end

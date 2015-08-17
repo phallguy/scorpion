@@ -7,6 +7,7 @@ module Scorpion
       initializer "scorpion.configure" do |app|
         ::ActionController::Base.send :include, Scorpion::Rails::Controller
         ::ActiveJob::Base.send :include, Scorpion::Rails::Job
+        ::ActionMailer::Base.send :include, Scorpion::Rails::Mailer
 
         ::Scorpion::Rails::ActiveRecord.install!
       end

@@ -30,8 +30,7 @@ module Scorpion
 
     def initialize( scorpion )
       @scorpion              = scorpion
-      @dependency_set        = @active_dependency_set = []
-      @shared_dependency_set = []
+      reset
     end
 
     # Find {Dependency} that matches the requested `contract` and `traits`.
@@ -124,6 +123,16 @@ module Scorpion
       end
 
       self
+    end
+
+    # Remove all dependency mappings.
+    def reset
+
+      @dependency_set.each &:release        if @dependency_set
+      @shared_dependency_set.each &:release if @shared_dependency_set
+
+      @dependency_set        = @active_dependency_set = []
+      @shared_dependency_set = []
     end
 
     private

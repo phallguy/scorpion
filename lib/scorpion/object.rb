@@ -121,7 +121,8 @@ module Scorpion
       # Tells a {Scorpion} what to inject into the class when it is constructed
       # @return [nil]
       # @see AttributeSet#define
-      def depend_on( &block )
+      def depend_on( arguments = nil, &block )
+        Scorpion::ObjectConstructor.new( self, arguments ).define if arguments.present?
         injected_attributes.define &block
         build_injected_attributes
       end
@@ -171,7 +172,7 @@ module Scorpion
             def #{ attr.name }
               @#{ attr.name } ||= begin
                 attr = injected_attributes[ :#{ attr.name } ]
-                scorpion.fetch( attr.contract, attr.traits )
+                scorpion.fetch_by_traits( attr.contract, attr.traits )
               end
             end
 

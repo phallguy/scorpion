@@ -150,6 +150,8 @@ module Scorpion
           @traits    = traits
           @arguments = arguments
           @block     = block
+
+          @caller = caller
         end
       end
 

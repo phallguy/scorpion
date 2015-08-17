@@ -25,6 +25,16 @@ describe Scorpion::Rspec::Helper do
     expect( scorpion.fetch Numeric ).to eq 42
   end
 
+  context "hunting" do
+    hunt( :number, Numeric, 5 )
+    hunt( :string, String ) { "hello" }
+    hunt( :double, Regexp )
+
+    specify{ expect( scorpion.fetch Numeric ).to eq 5 }
+    specify{ expect( scorpion.fetch String  ).to eq "hello" }
+    specify{ expect( scorpion.fetch Regexp  ).to be_a RSpec::Mocks::TestDouble }
+  end
+
   context "child context" do
     it "inherits" do
       expect( scorpion.fetch String ).to eq "Shazam!"

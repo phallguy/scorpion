@@ -21,6 +21,12 @@ module Scorpion
     end
   end
 
+  class ArityMismatch < Error
+    def initialize( block, expected_count )
+      super translate( :arity_mismatch, expected: expected_count, actual: block.arity )
+    end
+  end
+
   class BuilderRequiredError < Error
     def initialize( message = nil )
       super ( message || translate( :builder_required ) )

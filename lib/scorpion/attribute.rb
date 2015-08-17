@@ -13,7 +13,10 @@ module Scorpion
     # @!attribute
     # @return [Class,Module,Symbol] contract that describes the desired behavior
     #   of the injected object.
-      attr_reader :contract
+      def contract
+        @contract = @contract.constantize if @contract.is_a? String
+        @contract
+      end
 
     # @!attribute
     # @return [Array<Symbol>] traits that must match on instances of the {#contract}

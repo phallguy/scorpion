@@ -23,7 +23,7 @@ Dir[ File.join( root_path, "spec/support/**/*.rb" ) ].each { |f| require f }
 
 RSpec.configure do |config|
 
-  config.order = "random:40203" # 40203
+  config.order = "random"
 
   config.filter_run focus: true
   config.filter_run_excluding :broken => true

@@ -8,6 +8,15 @@ module Scorpion
 
       ENV_KEY = 'scorpion.instance'.freeze
 
+
+      # Fetch an object from the controller's {#scorpion}.
+      # @see Scorpion#fetch
+      def fetch( *args, &block )
+        scorpion.fetch *args, &block
+      end
+      private :fetch
+
+
       # @overload scorpion
       #   @return [Scorpion] the current scorpion
       # @overload scorpion( scope )

@@ -11,6 +11,7 @@ module Scorpion
   require 'scorpion/object_constructor'
   require 'scorpion/attribute_set'
   require 'scorpion/hunter'
+  require 'scorpion/chain_hunter'
   require 'scorpion/dependency_map'
   require 'scorpion/hunt'
   require 'scorpion/dependency'
@@ -64,6 +65,11 @@ module Scorpion
 
   # Free up any captured dependency and release any long-held resources.
   def destroy
+    reset
+  end
+
+  # Reset the hunting map and clear all dependencies.
+  def reset
   end
 
   # @return [Scorpion::Nest] a nest that uses this scorpion as the mother.

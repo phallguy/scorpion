@@ -33,5 +33,10 @@ module Scorpion
       @mother = nil
     end
 
+    # Reset the hunting map and clear all dependencies.
+    def reset
+      mother.reset
+    end
+
   end
 end

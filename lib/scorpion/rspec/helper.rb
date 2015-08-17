@@ -6,16 +6,63 @@ module Scorpion
         base.let( :scorpion ){ Scorpion::Rspec.scorpion_nest.conceive }
         base.send :extend, Scorpion::Rspec::Helper::Methods
 
+        [ ActionController::Base, ActiveJob::Base, ActionMailer::Base ].each do |intercept|
+          base.infest_nest intercept
+        end
+
         super
       end
 
 
       module Methods
 
+        # Intercept calls to conceive_scorpion in classes that include
+        # {Scorpion::Rails::Nest}
+        # @param [Class] klass that includes {Scorpion::Rails::Nest}
+        # @return [void]
+        def infest_nest( klass )
+          return unless klass < Scorpion::Rails::Nest
+
+          before( :each ) do
+            allow_any_instance_of( klass ).to receive( :conceive_scorpion )
+              .and_wrap_original do |m|
+                # When hunting for dependencies in controllers, jobs, etc. first
+                # consider the dependencies defined in the specs.
+                Scorpion::ChainHunter.new( scorpion, m.call )
+              end
+          end
+        end
+
+        # Set up scorpion hunting rules for the spec.
         def scorpion( &block )
           before( :each ) do
             scorpion.prepare &block
           end
+        end
+
+        # Specify a specific hunting contract and prepare a `let` block of the
+        # same name.
+        def hunt( name, contract, value = :unspecified, &block )
+          block ||= ->{ value == :unspecified ? instance_double( contract ) : value }
+
+          let( name, &block )
+
+          before( :each ) do
+            scorpion.prepare do |hunter|
+              if value == :unspecified
+                hunter.hunt_for contract do
+                  send( name )
+                end
+              else
+                hunter.hunt_for contract, return: value
+              end
+            end
+          end
+        end
+
+        def hunt!( name, contract, value = :unspecified, &block )
+          hunt name, contract, value, &block
+          before(:each){ send name }
         end
 
       end

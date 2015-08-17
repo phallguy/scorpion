@@ -27,7 +27,7 @@ describe Scorpion::ObjectConstructor do
       klass = Class.new do
         include Scorpion::Object
 
-        initialize label: String do |&block|
+        initialize label: String do |label, &block|
           block.call
         end
       end
@@ -36,6 +36,20 @@ describe Scorpion::ObjectConstructor do
         klass.new "apples", &b
       end.to yield_control
     end
+
+    it "raises ArityMismatch when block does not accept expected number of arguments" do
+      expect do
+        Class.new do
+          include Scorpion::Object
+
+          # Should fail here
+          initialize label: String do |&block|
+          end
+        end
+
+      end.to raise_error Scorpion::ArityMismatch
+    end
+
 
     it "it defines matching attributes" do
       klass = Class.new do

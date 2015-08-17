@@ -3,16 +3,16 @@ require 'scorpion/nest'
 module Scorpion
   module Rails
 
-    # Adds a scorpion nest to support injection into rails background worker jobs.
-    module Job
+    # Adds a scorpion nest to support injection into rails mailers.
+    module Mailer
 
 
       def self.included( base )
         # Setup dependency injection
         base.send :include, Scorpion::Object
         base.send :include, Scorpion::Rails::Nest
-        base.send :around_perform do |job, block|
-          job.with_scorpion &block
+        base.send :around_filter do |mailer, block|
+          mailer.with_scorpion &block
         end
 
         super
@@ -22,7 +22,7 @@ module Scorpion
 
         def prepare_scorpion( scorpion )
           scorpion.prepare do |hunter|
-            hunter.hunt_for ActiveJob::Base do
+            hunter.hunt_for ActionMailer::Base do
               self
             end
           end
