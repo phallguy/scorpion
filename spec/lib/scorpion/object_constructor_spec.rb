@@ -67,4 +67,40 @@ describe Scorpion::ObjectConstructor do
       expect( derived.new( logger: :unset, label: "Super" ).logger ).to eq :tesnu
     end
 
+
+    context "inheritance" do
+      let( :klass ) do
+        Class.new do
+          include Scorpion::Object
+
+          initialize label: String do |label:|
+            @label = label.reverse
+          end
+        end
+      end
+
+      let( :derived ) do
+        Class.new( klass )
+      end
+
+      it "inherits super initializer block" do
+        expect( derived.new( label: "Super" ).label ).to eq "repuS"
+      end
+
+      it "inherits initializer_injections" do
+        expect( klass.initializer_injections.count ).to eq 1
+        expect( klass.initializer_injections ).to eq derived.initializer_injections
+      end
+
+      it "can override initializer_injections" do
+        more_derived = Class.new( derived ) do
+          initialize do
+          end
+        end
+
+        expect( more_derived.initializer_injections.count ).to eq 0
+      end
+
+    end
+
 end

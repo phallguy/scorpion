@@ -114,7 +114,7 @@ module Scorpion
       # Define an initializer that accepts injections.
       # @param [Hash] arguments to accept in the initializer.
       # @yield to initialize itself.
-      def initialize( arguments, &block )
+      def initialize( arguments = {}, &block )
         Scorpion::ObjectConstructor.new( self, arguments, &block ).define
       end
 
@@ -152,10 +152,12 @@ module Scorpion
       # @!attribute
       # @return [Scorpion::AttributeSet] the set of injected attriutes.
       def initializer_injections
-        binding.pry if name == "OnboardingAbility"
         @initializer_injections ||= begin
-          attrs = AttributeSet.new
-          attrs
+          if superclass.respond_to?( :initializer_injections )
+            superclass.initializer_injections
+          else
+            AttributeSet.new
+          end
         end
       end
 

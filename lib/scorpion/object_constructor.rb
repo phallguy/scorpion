@@ -24,6 +24,10 @@ module Scorpion
       attr_reader :base, :arguments, :block, :body
 
       def define_dependencies
+        # Override the inherited injections cause we're about to define a new
+        # initializer.
+        base.instance_variable_set :@initializer_injections, AttributeSet.new
+
         arguments.each do |key,expectation|
           base.initializer_injections.define_attribute key, *Array( expectation )
           base.attr_dependency key, *Array( expectation )
@@ -31,8 +35,10 @@ module Scorpion
       end
 
       def build_body
-        body << "injections = args.slice( :#{ arguments.keys.join(', :') } )"
-        body << "inject_from( injections )"
+        if arguments.present?
+          body << "injections = args.slice( :#{ arguments.keys.join(', :') } )"
+          body << "inject_from( injections )"
+        end
         body << "super" if base.superclass < Scorpion::Object
       end
 
@@ -45,7 +51,7 @@ module Scorpion
       end
 
       def assemble
-        source = %Q| def initialize( **args, &block )\n\t#{ body.join( "\n\t" ) }\nend |
+        source = %Q|def initialize( **args, &block )\n\t#{ body.join( "\n\t" ) }\nend|
 
         # puts source
 
