@@ -22,18 +22,19 @@ module Scorpion
   # Hunts for an object that satisfies the requested `contract` and `traits`.
   # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
   # @param [Array<Symbol>] traits required of the dependency
+  # @param [Hash<Symbol,Object>] dependencies to inject into the object.
   # @return [Object] an object that satisfies the contract and traits.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def fetch_by_traits( contract, traits, *args, &block )
-    hunt = Hunt.new( self, contract, traits, *args, &block )
+  def fetch_by_traits( contract, traits, *arguments, **dependencies, &block )
+    hunt = Hunt.new( self, contract, traits, *arguments, **dependencies, &block )
     execute hunt
   end
 
   # Hunts for an object that satisfies the requested `contract` regardless of
   # traits.
   # @see #fetch_by_traits
-  def fetch( contract, *args, &block )
-    fetch_by_traits( contract, nil, *args, &block )
+  def fetch( contract, *arguments, **dependencies, &block )
+    fetch_by_traits( contract, nil, *arguments, **dependencies, &block )
   end
 
   # Creates a new object and feeds it it's dependencies.
@@ -41,11 +42,11 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def spawn( hunt, object_class, *args, &block )
+  def spawn( hunt, object_class, *arguments, **dependencies, &block )
     if object_class < Scorpion::Object
-      object_class.spawn hunt, *args, &block
+      object_class.spawn hunt, *arguments, **dependencies, &block
     else
-      object_class.new *args, &block
+      object_class.new *arguments, &block
     end
   end
 
@@ -113,14 +114,14 @@ module Scorpion
 
   # Hunt for dependency from the primary Scorpion {#instance}.
   # @see #fetch
-  def self.fetch( *args, &block )
-    instance.fetch *args, &block
+  def self.fetch( dependencies, &block )
+    instance.fetch dependencies, &block
   end
 
   # Hunt for dependency from the primary Scorpion {#instance}.
   # @see #fetch_by_traits
-  def self.fetch_by_traits( *args, &block )
-    instance.fetch_by_traits *args, &block
+  def self.fetch_by_traits( dependencies, &block )
+    instance.fetch_by_traits dependencies, &block
   end
 
   # @!attribute logger

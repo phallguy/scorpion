@@ -11,9 +11,9 @@ module Scorpion
     def define
       @signature       = []
       @block_signature = []
-      @body            = ""
+      @body            = []
 
-      build_signature
+      define_dependencies
       build_body
 
       add_initialize_block
@@ -21,48 +21,36 @@ module Scorpion
     end
 
     private
-      attr_reader :base, :arguments, :block, :body, :signature, :block_signature
+      attr_reader :base, :arguments, :block, :body
 
-      def build_signature
+      def define_dependencies
         arguments.each do |key,expectation|
-          attr = base.initializer_injections.define_attribute key, *Array( expectation )
-          signature << ( attr.lazy? ? "#{ key } = nil" : key )
-          block_signature << key
-
+          base.initializer_injections.define_attribute key, *Array( expectation )
           base.attr_dependency key, *Array( expectation )
         end
       end
 
       def build_body
-        arguments.each do |key,expectation|
-          body << "@#{ key } = #{ key }; "
-        end
+        body << "injections = args.slice( :#{ arguments.keys.join(', :') } )"
+        body << "inject_from( injections )"
+        body << "super" if base.superclass < Scorpion::Object
       end
 
       def add_initialize_block
         if block
-          body << "__initialize_with_block( "
-          if block_signature.any?
-            body << block_signature.join( ', ')
-            body << ', '
-          end
-          body << "&block )"
-          fail ArityMismatch.new( block, block_signature.count.abs ) if block.arity.abs < block_signature.count
-          base.send :define_method, :__initialize_with_block, &block
+          name = "__initialize_with_block_#{ base.name || base.object_id }"
+          body << "#{ name }( **injections, &block )"
+          base.send :define_method, :"#{ name }", &block
         end
       end
 
       def assemble
-        source = <<-RUBY
-          def initialize( #{ signature.join( ', ' ) }, &block )
-            #{ body }
-          end
-        RUBY
+        source = %Q| def initialize( **args, &block )\n\t#{ body.join( "\n\t" ) }\nend |
 
-        Scorpion.logger.warn source
+        # puts source
 
         base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-          #{ source }
+#{ source }
         RUBY
       end
   end

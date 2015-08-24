@@ -32,8 +32,8 @@ module Scorpion
       send "#{ attribute.name }=", dependency
     end
 
-    # Crown the object as a object and prepare it to be fed.
-    def self.crown( base )
+    # Infest the object with a scoprion and prepare it to be fed.
+    def self.infest( base )
       base.extend Scorpion::Object::ClassMethods
       if base.is_a? Class
         base.class_exec do
@@ -41,13 +41,13 @@ module Scorpion
           # Create a new instance of this class with all non-lazy dependencies
           # satisfied.
           # @param [Hunt] hunt that this instance will be used to satisfy.
-          def self.spawn( hunt, *args, &block )
+          def self.spawn( hunt, *args, **dependencies, &block )
             new( *args, &block ).tap do |object|
               object.send :scorpion=, hunt.scorpion
 
               # Go hunt for dependencies that are not lazy and initialize the
               # references.
-              hunt.inject object
+              hunt.inject object, dependencies
               object.send :on_injected
             end
           end
@@ -55,18 +55,18 @@ module Scorpion
         end
 
         base.subclasses.each do |sub|
-          crown( sub ) unless sub < Scorpion::Object
+          infest( sub ) unless sub < Scorpion::Object
         end
       end
     end
 
     def self.included( base )
-      crown( base )
+      infest( base )
       super
     end
 
     def self.prepended( base )
-      crown( base )
+      infest( base )
       super
     end
 
@@ -152,6 +152,7 @@ module Scorpion
       # @!attribute
       # @return [Scorpion::AttributeSet] the set of injected attriutes.
       def initializer_injections
+        binding.pry if name == "OnboardingAbility"
         @initializer_injections ||= begin
           attrs = AttributeSet.new
           attrs

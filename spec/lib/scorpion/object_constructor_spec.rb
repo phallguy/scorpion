@@ -1,14 +1,15 @@
 require 'spec_helper'
 
 describe Scorpion::ObjectConstructor do
-   it 'defined an initializer' do
+
+   it 'defines an initializer' do
       klass = Class.new do
         include Scorpion::Object
 
         initialize logger: String
       end
 
-      expect( klass.instance_method(:initialize).arity ).to eq 1
+      expect( klass.instance_method(:initialize).arity ).to eq -1
     end
 
     it "executes initializer code" do
@@ -19,7 +20,7 @@ describe Scorpion::ObjectConstructor do
           initialize label: String, &b
         end
 
-        klass.new "home"
+        klass.new label: "home"
       end.to yield_control
     end
 
@@ -33,23 +34,9 @@ describe Scorpion::ObjectConstructor do
       end
 
       expect do |b|
-        klass.new "apples", &b
+        klass.new label: "apples", &b
       end.to yield_control
     end
-
-    it "raises ArityMismatch when block does not accept expected number of arguments" do
-      expect do
-        Class.new do
-          include Scorpion::Object
-
-          # Should fail here
-          initialize label: String do |&block|
-          end
-        end
-
-      end.to raise_error Scorpion::ArityMismatch
-    end
-
 
     it "it defines matching attributes" do
       klass = Class.new do
@@ -58,6 +45,26 @@ describe Scorpion::ObjectConstructor do
         initialize label: String
       end
 
-      expect( klass.new( "apples" ).label ).to eq "apples"
+      expect( klass.new( label: "apples" ).label ).to eq "apples"
     end
+
+    it "invokes all initializers" do
+      klass = Class.new do
+        include Scorpion::Object
+
+        initialize label: String do |label:|
+          @label = label.reverse
+        end
+      end
+
+      derived = Class.new( klass ) do
+        initialize logger: Logger do |logger:|
+          @logger = logger.to_s.reverse.to_sym
+        end
+      end
+
+      expect( derived.new( logger: :unset, label: "Super" ).label ).to eq "repuS"
+      expect( derived.new( logger: :unset, label: "Super" ).logger ).to eq :tesnu
+    end
+
 end
