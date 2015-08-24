@@ -59,6 +59,10 @@ describe Scorpion::Rails::Controller, type: :controller do
       get :index
     end
 
+    it "prepares a scorpion outside of a request when accessed" do
+      expect( subject.env[Scorpion::Rails::Controller::ENV_KEY] ).to be_nil
+      expect( subject.scorpion ).not_to be_nil
+    end
 
     it "initializes non-lazy dependencies" do
       expect( subject.cache ).to be_present

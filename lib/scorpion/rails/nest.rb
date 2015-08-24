@@ -22,6 +22,13 @@ module Scorpion
         end
         private :nest
 
+        def scorpion( scope = nil )
+          # Make sure a scorpion is always available. Will be freed on the next
+          # call to #with_scorpion
+          ensure_scorpion( super ) unless scope
+          super
+        end
+
       #
       # @!endgroup Attributes
 
@@ -57,9 +64,7 @@ module Scorpion
       # Fetch a scorpion and feed the controller it's dependencies, then yield
       # to perform the action within the context of that scorpion.
       def with_scorpion( &block )
-        assign_scorpion( conceive_scorpion )
-
-        prepare_scorpion( scorpion ) if respond_to?( :prepare_scorpion, true )
+        ensure_scorpion( scorpion )
 
         hunt = Scorpion::Hunt.new scorpion, nil, nil
         hunt.inject self
@@ -71,6 +76,14 @@ module Scorpion
 
       def conceive_scorpion
         nest.conceive
+      end
+
+      def ensure_scorpion( existing )
+        scorpion = existing
+        scorpion = assign_scorpion( conceive_scorpion ) unless existing
+
+        prepare_scorpion( scorpion ) if respond_to?( :prepare_scorpion, true )
+        scorpion
       end
 
     end

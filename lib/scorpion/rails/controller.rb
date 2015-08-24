@@ -38,7 +38,7 @@ module Scorpion
             if scope
               super
             else
-              env[ENV_KEY]
+              ensure_scorpion( env[ENV_KEY] )
             end
           end
         end
@@ -70,6 +70,7 @@ module Scorpion
 
         def free_scorpion
           scorpion.try( :destroy )
+          env.delete ENV_KEY
         end
 
     end

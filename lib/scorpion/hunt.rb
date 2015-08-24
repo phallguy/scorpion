@@ -1,5 +1,5 @@
 module Scorpion
-  # Captures state for a specific hunt so that constructor arguments can be
+  # Captures state for a specific hunt so that constructor dependencies can be
   # shared with child dependencies.
   #
   # @example
@@ -45,7 +45,7 @@ module Scorpion
       attr_reader :trip
       private :trip
 
-      delegate [:contract, :traits, :arguments, :block] => :trip
+      delegate [:contract, :traits, :dependencies, :arguments, :block] => :trip
 
     # @!attribute contract
     # @return [Class,Module,Symbol] contract being hunted for.
@@ -53,8 +53,11 @@ module Scorpion
     # @!attribute traits
     # @return [Array<Symbol>] traits being hunted for.
 
+    # @!attribute [r] dependencies
+    # @return [Hash<Symbol,Dependency>] hash of dependencies to pass to initializer of {#contract} when found.
+
     # @!attribute [r] arguments
-    # @return [Array<Dependency>] dependency to pass to initializer of contract when found.
+    # @return [Array<Object>] positional arguments to pass to the initializer of {#contract} when found.
 
     # @!attribute block
     # @return [#call] block to pass to constructor of contract when found.
@@ -62,22 +65,22 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    def initialize( scorpion, contract, traits, *arguments, &block )
+    def initialize( scorpion, contract, traits, *arguments, **dependencies, &block )
       @scorpion  = scorpion
       @trips     = []
-      @trip      = Trip.new contract, traits, arguments, block
+      @trip      = Trip.new contract, traits, arguments, dependencies, block
     end
 
     # Hunt for additional dependency to satisfy the main hunt's contract and traits.
     # @see Scorpion#hunt
-    def fetch( contract, *arguments, &block )
-      fetch_by_traits( contract, nil, *arguments, &block )
+    def fetch( contract, *arguments, **dependencies, &block )
+      fetch_by_traits( contract, nil, *arguments, **dependencies, &block )
     end
 
     # Hunt for additional dependency to satisfy the main hunt's contract and traits.
     # @see Scorpion#hunt
-    def fetch_by_traits( contract, traits, *arguments, &block )
-      push contract, traits, arguments, block
+    def fetch_by_traits( contract, traits, *arguments, **dependencies, &block )
+      push contract, traits, arguments, dependencies, block
       execute
     ensure
       pop
@@ -85,9 +88,17 @@ module Scorpion
 
     # Inject given `object` with its expected dependencies.
     # @param [Scorpion::Object] object to be injected.
+    # @param [Hash<Symbol,Object>] dependencies explicitly provided.
     # @return [Scorpion::Object] the injected object.
-    def inject( object )
+    def inject( object, **dependencies )
       trip.object = object
+
+      dependencies.each do |key,value|
+        if attr = object.injected_attributes[key]
+          object.send :inject, attr, value
+        end
+      end
+
       object.injected_attributes.each do |attr|
         next if object.send "#{ attr.name }?"
         next if attr.lazy?
@@ -100,8 +111,8 @@ module Scorpion
 
     # Allow the hunt to spawn objects.
     # @see Scorpion#spawn
-    def spawn( klass, *arguments, &block )
-      scorpion.spawn( self, klass, *arguments, &block )
+    def spawn( klass, *arguments, **dependencies, &block )
+      scorpion.spawn( self, klass, *arguments, **dependencies, &block )
     end
 
     private
@@ -111,12 +122,12 @@ module Scorpion
       end
 
       def execute_from_trips
-        return if arguments.any?
+        return if dependencies.any?
 
         trips.each do |trip|
           return trip.object if contract === trip.object
-          trip.arguments.each do |arg|
-            return arg if contract === arg
+          trip.dependencies.each do |key,value|
+            return value if contract === value
           end
         end
 
@@ -127,10 +138,10 @@ module Scorpion
         scorpion.execute self
       end
 
-      def push( contract, traits, arguments, block )
+      def push( contract, traits, arguments, dependencies, block )
         trips.push trip
 
-        @trip = Trip.new contract, traits, arguments, block
+        @trip = Trip.new contract, traits, arguments, dependencies, block
       end
 
       def pop
@@ -141,15 +152,17 @@ module Scorpion
         attr_reader :contract
         attr_reader :traits
         attr_reader :arguments
+        attr_reader :dependencies
         attr_reader :block
 
         attr_accessor :object
 
-        def initialize( contract, traits, arguments, block )
-          @contract  = contract
-          @traits    = traits
-          @arguments = arguments
-          @block     = block
+        def initialize( contract, traits, arguments, dependencies, block )
+          @contract     = contract
+          @traits       = traits
+          @arguments    = arguments
+          @dependencies = dependencies
+          @block        = block
 
           @caller = caller
         end

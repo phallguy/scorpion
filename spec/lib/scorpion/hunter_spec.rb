@@ -97,14 +97,14 @@ describe Scorpion::Hunter do
   context "child dependencies" do
     it "passes initializer args to child dependencies" do
       zoo  = Test::Hunter::Zoo.new
-      city = hunter.fetch Test::Hunter::City, zoo
+      city = hunter.fetch Test::Hunter::City, zoo: zoo
 
       expect( city.park.zoo ).to be zoo
     end
 
     it "passes self to child dependencies" do
       zoo  = Test::Hunter::Zoo.new
-      city = hunter.fetch Test::Hunter::City, zoo
+      city = hunter.fetch Test::Hunter::City, zoo: zoo
 
       expect( city.park.city ).to be city
     end

@@ -84,7 +84,7 @@ describe Scorpion::Object do
     end
 
     it "can inherit" do
-      mouse = Test::Object::Mouse.spawn hunt, name: 'name'
+      mouse = Test::Object::Mouse.spawn hunt, { name: 'name' }, {}
       expect( mouse.family ).to eq 'mouse'
       expect( mouse.options ).to include name: 'name'
     end
