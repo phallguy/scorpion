@@ -88,16 +88,9 @@ module Scorpion
 
     # Inject given `object` with its expected dependencies.
     # @param [Scorpion::Object] object to be injected.
-    # @param [Hash<Symbol,Object>] dependencies explicitly provided.
     # @return [Scorpion::Object] the injected object.
-    def inject( object, **dependencies )
+    def inject( object )
       trip.object = object
-
-      dependencies.each do |key,value|
-        if attr = object.injected_attributes[key]
-          object.send :inject, attr, value
-        end
-      end
 
       object.injected_attributes.each do |attr|
         next if object.send "#{ attr.name }?"

@@ -35,6 +35,15 @@ module Scorpion
 
     # @see Scorpion#hunt
     def execute( hunt )
+      # Try explicitly defined dependencies first
+      scorpions.each do |hunter|
+        begin
+          return hunter.execute( hunt, true )
+        rescue UnsuccessfulHunt
+        end
+      end
+
+      # Then allow implicit
       scorpions.each do |hunter|
         begin
           return hunter.execute( hunt )

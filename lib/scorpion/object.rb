@@ -42,14 +42,22 @@ module Scorpion
           # satisfied.
           # @param [Hunt] hunt that this instance will be used to satisfy.
           def self.spawn( hunt, *args, **dependencies, &block )
-            new( *args, &block ).tap do |object|
-              object.send :scorpion=, hunt.scorpion
+            object =
+              if dependencies.any?
+                new( *args, **dependencies, &block )
+              else
+                new( *args, &block )
+              end
 
-              # Go hunt for dependencies that are not lazy and initialize the
-              # references.
-              hunt.inject object, dependencies
-              object.send :on_injected
-            end
+
+            object.send :scorpion=, hunt.scorpion
+
+            # Go hunt for dependencies that are not lazy and initialize the
+            # references.
+            hunt.inject object
+            object.send :on_injected
+
+            object
           end
 
         end

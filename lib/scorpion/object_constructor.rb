@@ -36,7 +36,7 @@ module Scorpion
 
       def build_body
         if arguments.present?
-          body << "injections = args.slice( :#{ arguments.keys.join(', :') } )"
+          body << "injections = dependencies.slice( :#{ arguments.keys.join(', :') } )"
           body << "inject_from( injections )"
         end
         body << "super" if base.superclass < Scorpion::Object
@@ -45,14 +45,15 @@ module Scorpion
       def add_initialize_block
         if block
           name = "__initialize_with_block_#{ base.name || base.object_id }"
-          body << "#{ name }( **injections, &block )"
+          body << "#{ name }( *args, **injections, &block )"
           base.send :define_method, :"#{ name }", &block
         end
       end
 
       def assemble
-        source = %Q|def initialize( **args, &block )\n\t#{ body.join( "\n\t" ) }\nend|
+        source = %Q|def initialize( *args, **dependencies, &block )\n\t#{ body.join( "\n\t" ) }\nend|
 
+        # puts base.name
         # puts source
 
         base.class_eval <<-RUBY, __FILE__, __LINE__ + 1

@@ -40,10 +40,10 @@ module Scorpion
     end
 
     # @see Scorpion#hunt
-    def execute( hunt )
+    def execute( hunt, explicit_only = false )
       dependency   = dependency_map.find( hunt.contract, hunt.traits )
       dependency ||= parent.dependency_map.find( hunt.contract, hunt.traits ) if parent
-      dependency ||= Dependency.define( hunt.contract ) if hunt.traits.blank?
+      dependency ||= Dependency.define( hunt.contract ) if hunt.traits.blank? && !explicit_only
 
       unsuccessful_hunt( hunt.contract, hunt.traits ) unless dependency
 
