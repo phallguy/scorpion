@@ -55,7 +55,7 @@ module Scorpion
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
   def new( object_class, *arguments, **dependencies, &block )
-    hunt = Hunt.new( self, object_class, *arguments, **dependencies, &block )
+    hunt = Hunt.new( self, object_class, nil, *arguments, **dependencies, &block )
     Scorpion::Dependency::ClassDependency.new( object_class ).fetch( hunt )
   end
 

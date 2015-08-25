@@ -37,7 +37,7 @@ module Scorpion
       def build_body
         if arguments.present?
           body << "injections = dependencies.slice( :#{ arguments.keys.join(', :') } )"
-          body << "inject_from( injections )"
+          body << "inject_from( dependencies )"
         end
         body << "super" if base.superclass < Scorpion::Object
       end

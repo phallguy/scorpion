@@ -107,6 +107,7 @@ module Scorpion
     def spawn( klass, *arguments, **dependencies, &block )
       scorpion.spawn( self, klass, *arguments, **dependencies, &block )
     end
+    alias_method :new, :spawn
 
     private
 
