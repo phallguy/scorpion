@@ -92,7 +92,7 @@ module Scorpion
 
       # Define dependency based on the desired contract and traits.
       # @return [Dependency] the defined dependency.
-      def define( contract, traits = nil , &builder )
+      def define( contract, traits = nil, &builder )
         options, traits = extract_options!( traits )
 
         if options.key?( :return )

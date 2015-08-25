@@ -94,6 +94,17 @@ describe Scorpion::Hunter do
     expect( hunter.fetch_by_traits Test::Hunter::Implicit, [] ).to be_a Test::Hunter::Implicit
   end
 
+  it "initialize explicit contracts" do
+    zoo = hunter.new Test::Hunter::Zoo
+    expect( zoo ).to be_a Test::Hunter::Zoo
+    expect( zoo.scorpion ).to eq hunter
+  end
+
+  it "delegates hunting definitions" do
+    hunter.hunt_for Test::Hunter::Zoo, return: :nyc
+    expect( hunter.fetch Test::Hunter::Zoo ).to eq :nyc
+  end
+
   context "child dependencies" do
     it "passes initializer args to child dependencies" do
       zoo  = Test::Hunter::Zoo.new

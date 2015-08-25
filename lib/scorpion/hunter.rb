@@ -32,6 +32,15 @@ module Scorpion
       dependency_map.chart &block
     end
 
+    # Expose dependency injection definitions as top-level methods.
+    [:hunt_for,:capture,:share].each do |delegate|
+      define_method delegate do |*args,&block|
+        prepare do |hunter|
+          hunter.send delegate, *args, &block
+        end
+      end
+    end
+
     # @see Scorpion#replicate
     def replicate
       replica = self.class.new self

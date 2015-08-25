@@ -50,6 +50,15 @@ module Scorpion
     end
   end
 
+  # Explicitly spawn an instance of {#object_class} and inject it's dependencies.
+  # @param [Array<Object>] args to pass to the constructor.
+  # @param [#call] block to pass to the constructor.
+  # @return [Scorpion::Object] the spawned object.
+  def new( object_class, *arguments, **dependencies, &block )
+    hunt = Hunt.new( self, object_class, *arguments, **dependencies, &block )
+    Scorpion::Dependency::ClassDependency.new( object_class ).fetch( hunt )
+  end
+
   # Execute the `hunt` returning the desired dependency.
   # @param [Hunt] hunt to execute.
   # @return [Object] an object that satisfies the hunt contract and traits.
