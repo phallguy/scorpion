@@ -50,6 +50,16 @@ module Scorpion
     end
   end
 
+  # Inject the {#target} with all non-lazy dependencies.
+  # @param [Scorpion::Object] target to inject.
+  # @return [target]
+  def inject( target )
+    hunt = Scorpion::Hunt.new self, nil, nil
+    hunt.inject target
+
+    target
+  end
+
   # Explicitly spawn an instance of {#object_class} and inject it's dependencies.
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.

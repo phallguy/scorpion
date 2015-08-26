@@ -88,6 +88,12 @@ describe Scorpion::Hunt do
       hunt.inject target
       expect( target.sailor? ).to be_falsy
     end
+
+    it "invokes on_injected" do
+      expect( target ).to receive( :on_injected )
+      hunt.inject target
+    end
+
   end
 
 end

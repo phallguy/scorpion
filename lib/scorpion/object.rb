@@ -55,8 +55,6 @@ module Scorpion
             # Go hunt for dependencies that are not lazy and initialize the
             # references.
             hunt.inject object
-            object.send :on_injected
-
             object
           end
 

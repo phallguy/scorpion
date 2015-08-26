@@ -65,9 +65,7 @@ module Scorpion
       # to perform the action within the context of that scorpion.
       def with_scorpion( &block )
         ensure_scorpion( scorpion )
-
-        hunt = Scorpion::Hunt.new scorpion, nil, nil
-        hunt.inject self
+        scorpion.inject self
 
         yield
       ensure

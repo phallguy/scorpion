@@ -95,10 +95,6 @@ describe Scorpion::Object do
       end.to yield_control
     end
 
-    it "invokes on_injected" do
-      expect_any_instance_of( Test::Object::Mouse ).to receive( :on_injected )
-      Test::Object::Mouse.spawn hunt
-    end
   end
 
   describe "accessors" do

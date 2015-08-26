@@ -99,6 +99,8 @@ module Scorpion
         object.send :inject, attr, fetch_by_traits( attr.contract, attr.traits )
       end
 
+      object.send :on_injected
+
       object
     end
 
