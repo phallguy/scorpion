@@ -17,6 +17,8 @@ module Scorpion
       build_body
 
       add_initialize_block
+      add_super
+
       assemble
     end
 
@@ -39,6 +41,9 @@ module Scorpion
           body << "injections = dependencies.slice( :#{ arguments.keys.join(', :') } )"
           body << "inject_from( dependencies )"
         end
+      end
+
+      def add_super
         body << "super" if base.superclass < Scorpion::Object
       end
 
