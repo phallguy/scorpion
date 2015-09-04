@@ -49,7 +49,7 @@ make them overridable, or just use module mixins.
 
 Most of these counter arguments focus on testing, and given how easy it is to
 mock objects in Ruby, you don't really need a framework. If testing were the
-only virtue they'd be spot on. Despite it's virtues DI doesn't come without it's
+only virtue they'd be spot on. Despite its virtues DI doesn't come without its
 own problems. However for larger projects that you expect to be long-lived, a DI
 framework may help manage the complexity.
 
@@ -144,7 +144,7 @@ end
 ```
 
 Here the dependency is clearly defined - and even creates accessors for getting
-and setting the weapon. When a Hunter is created it's dependencies are also
+and setting the weapon. When a Hunter is created its dependencies are also
 created - and any of their dependencies and so on. Usage is equally simple
 
 ```ruby
@@ -219,7 +219,7 @@ end
 zoo = scorpion.fetch Zoo
 zoo.keeper       # => an instance of a Zoo::Keeper
 zoo.vet?         # => false it hasn't been hunted down yet
-zoo.vet          # => an instnace of a Zoo::Vet
+zoo.vet          # => an instance of a Zoo::Vet
 zoo.keeper.lunch # => an instance of FastFood
 ```
 
@@ -405,7 +405,7 @@ Scorpion allows you to capture dependency and feed the same instance to everyone
 asks for a matching dependency.
 
 DI singletons are different then global singletons in that each scorpion can
-have a unique instance of the class that it shares with all of it's objects. This
+have a unique instance of the class that it shares with all of its objects. This
 allows, for example, global variable like support per-request without polluting
 the global namespace or dealing with thread concurrency issues.
 
@@ -429,7 +429,7 @@ use `share`.
 
 A scorpion nest is where a mother scorpion lives and conceives young -
 duplicates of the mother but maintaining their own state. The scorpion nest is
-used by the Rails integration to give each request it's own scorpion.
+used by the Rails integration to give each request its own scorpion.
 
 All preparation  performed by the mother is shared with all the children it
 conceives so that configuration is established when the application starts.
