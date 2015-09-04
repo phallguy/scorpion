@@ -103,7 +103,12 @@ module Scorpion
           Scorpion::Dependency::BuilderDependency.new( contract, traits, with )
         elsif block_given?
           Scorpion::Dependency::BuilderDependency.new( contract, traits, builder )
-        elsif contract.respond_to?( :create )
+
+        # Allow a Class/Module to define a #create method that will resolve
+        # and return an instance of itself. Do not automatically inherit the
+        # #create method so only consider it if the owner of the method is the
+        # contract itself.
+        elsif contract.respond_to?( :create ) && contract.singleton_methods( false ).include?( :create )
           Scorpion::Dependency::BuilderDependency.new( contract, traits ) do |hunt,*args,**dependencies,&block|
             if dependencies.present?
               contract.create hunt, *args, **dependencies, &block
