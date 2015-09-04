@@ -55,11 +55,39 @@ module Scorpion
           def self.scorpion_nest( &block )
             nest.prepare &block
           end
+
+          # Define dependency resolution that isn't resolved until an instance
+          # of a scorpion is conceived to handle an idividual request.
+          # @param (see DependencyMap#hunt_for )
+          def self.hunt_for( *args, &block )
+            instance_hunts << [:hunt_for,args,block]
+          end
+
+          # Define dependency resolution that isn't resolved until an instance
+          # of a scorpion is conceived to handle an idividual request.
+          # @param (see DependencyMap#capture )
+          def self.capture( *args, &block )
+            instance_hunts << [:capture,args,block]
+          end
+
+          # Hunting dependencies that cannot be resolved until an instance
+          # of the nest class has been created.
+          def self.instance_hunts
+            @instance_hunts ||= begin
+              if superclass.respond_to?( :instance_hunts )
+                superclass.instance_hunts.dup
+              else
+                []
+              end
+            end
+          end
         end
         base.nest ||= Scorpion.instance.build_nest
 
         super
       end
+
+      private
 
       # Fetch a scorpion and feed the controller it's dependencies, then yield
       # to perform the action within the context of that scorpion.
@@ -76,11 +104,22 @@ module Scorpion
         nest.conceive
       end
 
+      def append_instance_hunts( scorpion )
+        scorpion.prepare do |hunter|
+          self.class.instance_hunts.each do |method,args,block|
+            hunter.send method, *args do |*args|
+              instance_exec *args, &block
+            end
+          end
+        end
+      end
+
       def ensure_scorpion( existing )
         scorpion = existing
         scorpion = assign_scorpion( conceive_scorpion ) unless existing
 
         prepare_scorpion( scorpion ) if respond_to?( :prepare_scorpion, true )
+        append_instance_hunts( scorpion )
         scorpion
       end
 

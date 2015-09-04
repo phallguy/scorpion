@@ -12,7 +12,7 @@ module Scorpion
         base.send :include, Scorpion::Object
         base.send :include, Scorpion::Rails::Nest
         base.send :around_perform do |job, block|
-          job.with_scorpion &block
+          job.send :with_scorpion, &block
         end
 
         super

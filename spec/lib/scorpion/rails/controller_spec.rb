@@ -5,6 +5,7 @@ module Test
     class Service; end
     class Cache; end
     class Guard; end
+    class Provided; end
   end
 end
 
@@ -16,11 +17,25 @@ describe Scorpion::Rails::Controller, type: :controller do
       cache   Test::Nest::Cache
     end
 
+    hunt_for Test::Nest::Provided do |scorpion|
+      scorpion.new Test::Nest::Provided
+    end
+
+    hunt_for String do |scorpion|
+      instance_value
+    end
+
     def index
       @guard1 = scorpion.fetch Test::Nest::Guard
       @guard2 = scorpion.fetch Test::Nest::Guard
       render nothing: true
     end
+
+    private
+
+      def instance_value
+        "Snappy"
+      end
   end
 
   context "basics" do
@@ -66,6 +81,14 @@ describe Scorpion::Rails::Controller, type: :controller do
 
     it "initializes non-lazy dependencies" do
       expect( subject.cache ).to be_present
+    end
+
+    it "hunts for instance provided dependencies" do
+      expect( subject.scorpion.fetch( Test::Nest::Provided ) ).to be_a Test::Nest::Provided
+    end
+
+    it "instance dependencies can access instance methods" do
+      expect( subject.scorpion.fetch( String ) ).to eq "Snappy"
     end
 
     it "spawns multiple guards" do
@@ -129,7 +152,6 @@ describe Scorpion::Rails::Controller, type: :controller do
 
       get :index
     end
-
 
     it "scopes relations" do
       allow( subject ).to receive( :index ) do
