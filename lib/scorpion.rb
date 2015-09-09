@@ -124,10 +124,7 @@ module Scorpion
   # @param [Boolean] reset true to free all existing resource and initialize a
   #   new scorpion.
   def self.prepare( reset = false, &block )
-    if reset
-      @instance.destroy
-      @instance = Scorpion::Hunter.new
-    end
+    @instance.reset if reset
     instance.prepare &block
   end
 

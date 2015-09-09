@@ -20,7 +20,7 @@ module Scorpion
     # @!endgroup Attributes
 
     def initialize( parent = nil, &block )
-      @parent      = parent
+      @parent         = parent
       @dependency_map = Scorpion::DependencyMap.new( self )
 
       prepare &block if block_given?

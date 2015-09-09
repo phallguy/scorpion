@@ -127,7 +127,6 @@ module Scorpion
 
     # Remove all dependency mappings.
     def reset
-
       @dependency_set.each &:release        if @dependency_set
       @shared_dependency_set.each &:release if @shared_dependency_set
 
