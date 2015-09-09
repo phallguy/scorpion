@@ -28,7 +28,7 @@ module Scorpion
     #
     # This method is used by the {#scorpion} to feed the object. Do not call it
     # directly.
-    def inject( attribute, dependency )
+    def inject_dependency( attribute, dependency )
       send "#{ attribute.name }=", dependency
     end
 
@@ -132,8 +132,6 @@ module Scorpion
         injected_attributes.define &block
         build_injected_attributes
       end
-      alias_method :inject, :depend_on
-      alias_method :depend_on, :depend_on
 
       # Define a single dependency and accessor.
       # @param [Symbol] name of the dependency.

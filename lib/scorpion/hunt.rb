@@ -96,7 +96,7 @@ module Scorpion
         next if object.send "#{ attr.name }?"
         next if attr.lazy?
 
-        object.send :inject, attr, fetch_by_traits( attr.contract, attr.traits )
+        object.send :inject_dependency, attr, fetch_by_traits( attr.contract, attr.traits )
       end
 
       object.send :on_injected
