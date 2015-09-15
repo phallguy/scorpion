@@ -110,11 +110,7 @@ module Scorpion
         # contract itself.
         elsif contract.respond_to?( :create ) && contract.singleton_methods( false ).include?( :create )
           Scorpion::Dependency::BuilderDependency.new( contract, traits ) do |hunt,*args,**dependencies,&block|
-            if dependencies.present?
-              contract.create hunt, *args, **dependencies, &block
-            else
-              contract.create hunt, *args, &block
-            end
+            contract.create hunt, *args, **dependencies, &block
           end
         else
           dependency_class( contract ).new( contract, traits, &builder )

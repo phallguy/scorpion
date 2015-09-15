@@ -24,11 +24,7 @@ module Scorpion
 
       # @see Scorpion::Dependency#fetch
       def fetch( hunt )
-        if hunt.dependencies.any?
-          builder.call( hunt, *hunt.arguments, **hunt.dependencies, &hunt.block )
-        else
-          builder.call( hunt, *hunt.arguments, &hunt.block )
-        end
+        builder.call( hunt, *hunt.arguments, **hunt.dependencies, &hunt.block )
       end
 
     end
