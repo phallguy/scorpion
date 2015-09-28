@@ -40,6 +40,8 @@ module Scorpion
         if arguments.present?
           body << "injections = dependencies.slice( :#{ arguments.keys.join(', :') } )"
           body << "inject_from( dependencies )"
+        else
+          body << "injections = {}"
         end
       end
 
@@ -49,8 +51,14 @@ module Scorpion
 
       def add_initialize_block
         if block
-          name = "__initialize_with_block_#{ base.name || base.object_id }"
-          body << "#{ name }( *args, **injections, &block )"
+          base_name = base.name || base.object_id.to_s
+          base_name = base_name.gsub /::/, '_'
+          name = "__initialize_with_block_#{ base_name }"
+          if block.arity != 0
+            body << "#{ name }( *args, **injections, &block )"
+          else
+            body << "#{ name }"
+          end
           base.send :define_method, :"#{ name }", &block
         end
       end
