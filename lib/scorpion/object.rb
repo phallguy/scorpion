@@ -79,7 +79,7 @@ module Scorpion
 
     private
 
-      # Called after the object has been initialized and feed all its required
+      # Called after the object has been initialized and fed all its required
       # dependencies. It should be used in place of #initialize when the
       # constructor needs access to injected attributes.
       def on_injected

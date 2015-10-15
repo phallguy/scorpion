@@ -5,7 +5,7 @@ module Scorpion
     require 'scorpion/rspec/helper'
 
     def self.scorpion_nest
-      @scorpion ||= Scorpion::Nest.new
+      @scorpion_nest ||= Scorpion.instance.build_nest
     end
 
     # Prepare a root scorpion for testing.
