@@ -60,9 +60,9 @@ module Scorpion
 
         end
 
-        base.subclasses.each do |sub|
-          infest( sub ) unless sub < Scorpion::Object
-        end
+        # base.subclasses.each do |sub|
+        #   infest( sub ) unless sub < Scorpion::Object
+        # end
       end
     end
 

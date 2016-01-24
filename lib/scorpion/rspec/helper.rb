@@ -6,9 +6,10 @@ module Scorpion
         base.let( :scorpion ){ Scorpion::Rspec.scorpion_nest.conceive }
         base.send :extend, Scorpion::Rspec::Helper::Methods
 
-        [ ActionController::Base, ActiveJob::Base, ActionMailer::Base ].each do |intercept|
-          base.infest_nest intercept
-        end
+
+        base.infest_nest ActionController::Base if defined? ActionController::Base
+        base.infest_nest ActiveJob::Base        if defined? ActiveJob::Base
+        base.infest_nest ActionMailer::Base     if defined? ActionMailer::Base
 
         super
       end
