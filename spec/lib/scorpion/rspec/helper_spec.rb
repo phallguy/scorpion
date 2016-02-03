@@ -40,7 +40,7 @@ describe Scorpion::Rspec::Helper do
     specify{ expect( scorpion.fetch Numeric ).to eq 5 }
     specify{ expect( scorpion.fetch String  ).to eq "hello" }
     specify{ expect( scorpion.fetch Regexp  ).to be_a RSpec::Mocks::TestDouble }
-    specify{ expect( scorpion.fetch ScorpionRspecHelperSpec::Food ).to be_a ScorpionRspecHelperSpec::Food }
+    specify{ expect( scorpion.fetch ScorpionRspecHelperSpec::Food ).to be food }
   end
 
   context "child context" do
