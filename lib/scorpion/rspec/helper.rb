@@ -65,6 +65,28 @@ module Scorpion
           before(:each){ send name }
         end
 
+        # Captures an instance of the given `contract` and assigns it to `name`
+        # and return the same instance when the scorpion resovles any instance
+        # of the contract.
+        # @param [Symbol] name of the rspec method to assign.
+        # @param [Module] contract to hunt for.
+        def capture( name, contract )
+          hunt( name, contract ) do
+            scorpion.new contract
+          end
+        end
+
+        # Captures an instance of the given `contract` and assigns it to `name`
+        # and return the same instance when the scorpion resovles any instance
+        # of the contract.
+        # @param [Symbol] name of the rspec method to assign.
+        # @param [Module] contract to hunt for.
+        def capture!( name, contract )
+          hunt!( name, contract ) do
+            scorpion.new contract
+          end
+        end
+
       end
 
     end

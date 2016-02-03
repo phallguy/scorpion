@@ -6,6 +6,12 @@ Scorpion::Rspec.prepare do
   hunt_for Numeric, return: 42
 end
 
+module ScorpionRspecHelperSpec
+  class Food
+    include Scorpion::Object
+  end
+end
+
 describe Scorpion::Rspec::Helper do
   include Scorpion::Rspec::Helper
 
@@ -29,10 +35,12 @@ describe Scorpion::Rspec::Helper do
     hunt( :number, Numeric, 5 )
     hunt( :string, String ) { "hello" }
     hunt( :double, Regexp )
+    capture( :food, ScorpionRspecHelperSpec::Food )
 
     specify{ expect( scorpion.fetch Numeric ).to eq 5 }
     specify{ expect( scorpion.fetch String  ).to eq "hello" }
     specify{ expect( scorpion.fetch Regexp  ).to be_a RSpec::Mocks::TestDouble }
+    specify{ expect( scorpion.fetch ScorpionRspecHelperSpec::Food ).to be_a ScorpionRspecHelperSpec::Food }
   end
 
   context "child context" do
