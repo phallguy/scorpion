@@ -153,6 +153,15 @@ describe Scorpion::Rails::Controller, type: :controller do
       get :index
     end
 
+    it "hunts for rack env" do
+      allow( subject ).to receive( :index ) do
+        expect( subject.scorpion.fetch( Scorpion::Rack::Env ) ).to be_present
+        controller.render nothing: true
+      end
+
+      get :index
+    end
+
     it "scopes relations" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion( Todo ).all.scorpion ).to be subject.scorpion

@@ -6,7 +6,7 @@ module Scorpion
     # Adds a scorpion nest to support injection into rails controllers.
     module Controller
 
-      ENV_KEY = 'scorpion.instance'.freeze
+      ENV_KEY = 'scorpion.controller.instance'.freeze
 
 
       # Fetch an object from the controller's {#scorpion}.
@@ -61,6 +61,8 @@ module Scorpion
             hunter.hunt_for ActionDispatch::Response do |hunt|
               hunt.fetch( AbstractController::Base ).response
             end
+
+            hunter.hunt_for Scorpion::Rack::Env, return: request.env
           end
         end
 

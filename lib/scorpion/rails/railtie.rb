@@ -1,4 +1,5 @@
 require 'rails/railtie'
+require "scorpion/rack/middleware"
 
 module Scorpion
   module Rails
