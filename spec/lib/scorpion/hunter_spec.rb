@@ -121,4 +121,10 @@ describe Scorpion::Hunter do
     end
   end
 
+  describe "#inspect" do
+    it "is helpful" do
+      expect( hunter.inspect ).to match /contracts/
+      expect( hunter.inspect ).not_to match /0x/
+    end
+  end
 end

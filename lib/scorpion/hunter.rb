@@ -64,5 +64,14 @@ module Scorpion
       dependency_map.reset
     end
 
+    # @return [String]
+    def inspect
+      dependencies = dependency_map.to_a
+      result = "<#{ self.class.name } contracts=#{ dependencies.inspect }"
+      result << " parent=#{ parent.inspect }" if parent
+      result << ">"
+      result
+    end
+
   end
 end

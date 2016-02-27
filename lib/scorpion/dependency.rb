@@ -64,6 +64,13 @@ module Scorpion
       traits.hash
     end
 
+    def inspect
+      result = "<#{ contract.inspect }"
+      result << " traits=#{ traits.to_a.inspect }" if traits.present?
+      result << ">"
+      result
+    end
+
     private
 
       # @return [Boolean] true if the pray satisfies the given contract.

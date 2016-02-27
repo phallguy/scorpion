@@ -140,6 +140,9 @@ class Hunter
   depend_on do
     weapon Weapon
   end
+
+  # or
+  attr_dependency :weapon, Weapon
 end
 ```
 
@@ -168,17 +171,17 @@ hunter.weapon # => an Axe
 Overriding hunters!
 
 ```ruby
-  class Axe < Weapon; end
-  class Predator < Hunter; end
+class Axe < Weapon; end
+class Predator < Hunter; end
 
-  scorpion.prepare do
-    hunt_for Predator
-    hunt_for Axe
-  end
+scorpion.prepare do
+  hunt_for Predator
+  hunt_for Axe
+end
 
-  hunter = scorpion.fetch Hunter
-  hunter        # => Predator
-  hunter.weapon # => an Axe
+hunter = scorpion.fetch Hunter
+hunter        # => Predator
+hunter.weapon # => an Axe
 ```
 
 
@@ -210,10 +213,14 @@ end
 class Zoo
   include Scorpion::Object
 
-  depend_on do # or #depend_on if you like
+  depend_on do
     keeper Zoo::Keeper
     vet Zoo::Vet, lazy: true
   end
+
+  # or with like attr_accessor
+  attr_dependency :keeper, Zook::Keeper
+  attr_dependency :vet, Zoo::Vet, lazy: true
 end
 
 zoo = scorpion.fetch Zoo
@@ -285,9 +292,9 @@ poker.poke     # => "Sword"
 
 #### Traits
 
-Traits can be used to distinguish between dependency of the same type. For example
-a scorpion may be prepare to hunt for several weapons and the object needs a
-blunt weapon.
+Traits can be used to distinguish between dependencies of the same type. For
+example a scorpion may be prepared to hunt for several weapons and the object
+needs a blunt weapon.
 
 ```ruby
 class Weapon; end
@@ -351,13 +358,14 @@ arguments.
 ```ruby
 class City
   def self.create( scorpion, name )
-    klass = if name == "New York"
-      BigCity
-    else
-      SmallCity
-    end
+    klass = 
+      if name == "New York"
+        BigCity
+      else
+        SmallCity
+      end
 
-    klass.new name
+    scorpion.new klass, name
   end
 
   def initialize( name )
@@ -421,9 +429,9 @@ scorpion.fetch Logger  # => Logger.new
 scorpion.fetch Logger  # => Previously captured logger
 ```
 
-Captured dependencies are not shared with child scorpions (for example when
-conceiving scorpions from a [Nest](Nests)). To share captured dependency with children
-use `share`.
+> Captured dependencies are not shared with child scorpions (for example when
+> conceiving scorpions from a [Nest](Nests)). To share captured dependency with
+> children use `share`.
 
 ### Nests
 
@@ -447,8 +455,8 @@ scorpion.fetch Logger  # => Logger.new
 
 #### ActionController
 
-Scorpion provides simple integration into for rails controllers to establish
-a scorpion for each request.
+Scorpion provides simple integration for rails controllers to establish a
+scorpion for each request.
 
 ```ruby
 # user_service.rb
@@ -456,7 +464,7 @@ class UserService
   def find( username ) ... end
 end
 
-# config/nest.rb
+# config/initializers/nest.rb
 require 'scorpion'
 
 Scorpion.prepare do
@@ -494,6 +502,11 @@ injection into ActiveJob objects.
 
 # avatar_job.rb
 class AvatarJob < ActiveJob::Base
+  depend_on do
+    users UserService, lazy: true
+    logger Logger
+  end
+
   def perform( id )
     user = users.find( id )
     logger.write "Found a user: #{ user }"
@@ -505,6 +518,9 @@ end
 
 Scorpion enhances ActiveRecord models to support resolving dependencies from
 a scorpion and sharing that scorpion with all associations.
+
+> Consider using a SOA framework like [Shamu](https://github.com/phallguy/shamu)
+> for managing complex resource relationships.
 
 ```ruby
 class User < ActiveRecord::Base
@@ -518,7 +534,6 @@ class User < ActiveRecord::Base
 end
 
 class SessionsController < ActionController::Base
-
   def create
     user = User.with_scorpion( scorpion ).find params[:id]
     user = scorpion( User ).find params[:id]
@@ -542,3 +557,5 @@ end
 [The MIT License (MIT)](http://opensource.org/licenses/MIT)
 
 Copyright (c) 2015 Paul Alexander
+
+[@phallguy](http://twitter.com/phallguy) / http://phallguy.com
