@@ -6,11 +6,11 @@ module Scorpion
     class Railtie < ::Rails::Railtie
 
       initializer "scorpion.configure" do |app|
-        ::ActionController::Base.send :include, Scorpion::Rails::Controller
-        ::ActiveJob::Base.send :include, Scorpion::Rails::Job
-        ::ActionMailer::Base.send :include, Scorpion::Rails::Mailer
+        ::ActionController::Base.send :include, Scorpion::Rails::Controller if defined? ::ActionController
+        ::ActiveJob::Base.send :include, Scorpion::Rails::Job if defined? ::ActiveJob
+        ::ActionMailer::Base.send :include, Scorpion::Rails::Mailer if defined? ::ActionMailer
 
-        ::Scorpion::Rails::ActiveRecord.install!
+        ::Scorpion::Rails::ActiveRecord.install! if defined? ::ActiveRecord
       end
 
     end
