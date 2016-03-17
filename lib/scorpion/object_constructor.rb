@@ -54,7 +54,7 @@ module Scorpion
           base_name = base.name || base.object_id.to_s
           base_name = base_name.gsub /::/, '_'
           name = "__initialize_with_block_#{ base_name }"
-          if block.arity != 0
+          if block.arity != 0 || block.parameters.any?
             body << "#{ name }( *args, **injections, &block )"
           else
             body << "#{ name }"
@@ -66,8 +66,10 @@ module Scorpion
       def assemble
         source = %Q|def initialize( *args, **dependencies, &block )\n\t#{ body.join( "\n\t" ) }\nend|
 
+        # puts "=" * 50
         # puts base.name
         # puts source
+        # puts "=" * 50
 
         base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
 #{ source }
