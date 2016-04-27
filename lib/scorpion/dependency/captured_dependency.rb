@@ -39,6 +39,13 @@ module Scorpion
         @instance = nil
       end
 
+      # @see Dependency#replicate
+      def replicate
+        dup.tap do |replica|
+          replica.release
+        end
+      end
+
     end
   end
 end
