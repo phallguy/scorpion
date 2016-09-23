@@ -43,7 +43,7 @@ module Scorpion
           # @return [Scorpion::Nest] the nest used to conceive scorpions to
           #   hunt for objects on each request.
           def self.nest
-            nest_instance
+            nest_instance || ( self.nest = Scorpion.instance.build_nest )
           end
           def self.nest=( value )
             nest_instance.destroy if nest_instance
@@ -82,7 +82,7 @@ module Scorpion
             end
           end
         end
-        base.nest ||= Scorpion.instance.build_nest
+
 
         super
       end

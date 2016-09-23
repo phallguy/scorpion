@@ -114,11 +114,22 @@ module Scorpion
   # level code (controllers, scripts, etc.) should explicitly access these
   # methods.
 
+  # @!attribute instance
   # @return [Scorpion] main scorpion for the app.
   def self.instance
+    @instance_referenced = true
     @instance
   end
   @instance = Scorpion::Hunter.new
+  @instance_referenced = false
+
+  def self.instance=( scorpion )
+    if @instance_referenced
+      logger.warn "Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion."
+      @instance_referenced = false
+    end
+    @instance = scorpion
+  end
 
   # Prepare the {#instance} for hunting.
   # @param [Boolean] reset true to free all existing resource and initialize a
