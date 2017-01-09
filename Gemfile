@@ -12,10 +12,10 @@ group :test do
   gem 'guard-rspec'
   gem 'fuubar'
   gem 'yard'
-  gem 'simplecov', github: "colszowka/simplecov"
+  gem 'simplecov'
   gem 'ruby_gntp', '~> 0.3.4'
   gem 'awesome_print'
   gem 'nokogiri', '1.6.7.2'
 
-  gem "codeclimate-test-reporter", group: :test, require: nil
+  gem "codeclimate-test-reporter", require: nil
 end

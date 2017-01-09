@@ -1,10 +1,6 @@
 require 'simplecov'
-if ENV['COVERAGE']
-  require "codeclimate-test-reporter"
-  CodeClimate::TestReporter.start
-else
-  SimpleCov.start
-end
+SimpleCov.start
+
 require 'pry'
 require 'bundler/setup'
 require 'combustion'
