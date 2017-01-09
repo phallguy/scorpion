@@ -30,7 +30,7 @@ module Scorpion
 
     # @see Scorpion#replicate
     def replicate
-      self.class.new scorpions
+      self.class.new *scorpions.map( &:replicate )
     end
 
     # @see Scorpion#hunt
