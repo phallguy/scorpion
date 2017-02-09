@@ -159,8 +159,6 @@ module Scorpion
           @arguments    = arguments
           @dependencies = dependencies
           @block        = block
-
-          @caller = caller
         end
       end
 
