@@ -101,6 +101,24 @@ describe Scorpion::ObjectConstructor do
         expect( more_derived.initializer_injections.count ).to eq 0
       end
 
+      it "fails if changing attribute without changing initializer" do
+        expect do
+          overriden = Class.new( klass ) do
+            attr_dependency :label, Integer
+          end
+        end.to raise_exception Scorpion::ContractMismatchError
+      end
+
+      it "works if changing attribute and changing initializer" do
+        expect do
+          overriden = Class.new( klass ) do
+
+            initialize label: Integer
+            attr_dependency :label, Integer
+          end
+        end.not_to raise_exception
+      end
+
     end
 
 end
