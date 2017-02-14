@@ -131,6 +131,7 @@ module Scorpion
         Scorpion::ObjectConstructor.new( self, arguments ).define if arguments.present?
         injected_attributes.define &block
         build_injected_attributes
+        validate_initializer_injections
       end
 
       # Define a single dependency and accessor.
@@ -141,10 +142,12 @@ module Scorpion
         attr = injected_attributes.define_attribute name, contract, *traits, &block
         build_injected_attribute attr
         set_injected_attribute_visibility attr
+        validate_initializer_injections
+        attr
       end
 
       # @!attribute
-      # @return [Scorpion::AttributeSet] the set of injected attriutes.
+      # @return [Scorpion::AttributeSet] the set of injected attributes.
       def injected_attributes
         @injected_attributes ||= begin
           attrs = AttributeSet.new
@@ -154,7 +157,7 @@ module Scorpion
       end
 
       # @!attribute
-      # @return [Scorpion::AttributeSet] the set of injected attriutes.
+      # @return [Scorpion::AttributeSet] the set of injected attributes.
       def initializer_injections
         @initializer_injections ||= begin
           if superclass.respond_to?( :initializer_injections )
@@ -166,6 +169,14 @@ module Scorpion
       end
 
       private
+        def validate_initializer_injections
+          initializer_injections.each do |attr|
+            injected = injected_attributes[ attr.name ]
+            if injected.contract != attr.contract
+              fail Scorpion::ContractMismatchError.new( self, attr, injected )
+            end
+          end
+        end
 
         def build_injected_attributes
           injected_attributes.each do |attr|

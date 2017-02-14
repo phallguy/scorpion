@@ -6,6 +6,7 @@ en:
         builder_required: A custom builder must be provided to resolve this dependency
         arity_mismatch: The block must accept %{expected} arguments, but actually expects %{actual}
         rack_missing_scorpion: Scorpion not set. Add Scorpion::Rack::Middleware before %{middleware}.
+        contract_mismatch: "%{module} changed the contract for `%{name}` from `%{from}` to `%{to}` but did not update `initialize` block."
     warnings:
       messages:
         mixed_scorpions: A scorpion has already been assigned. Mixing scorpions can result in unexpected results.
