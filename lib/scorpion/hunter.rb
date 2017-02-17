@@ -48,15 +48,24 @@ module Scorpion
       replica
     end
 
-    # @see Scorpion#hunt
+    # @see Scorpion#execute
     def execute( hunt, explicit_only = false )
-      dependency   = dependency_map.find( hunt.contract, hunt.traits )
-      dependency ||= parent.dependency_map.find( hunt.contract, hunt.traits ) if parent
+      dependency   = find_dependency( hunt )
       dependency ||= Dependency.define( hunt.contract ) if hunt.traits.blank? && !explicit_only
 
       unsuccessful_hunt( hunt.contract, hunt.traits ) unless dependency
 
       dependency.fetch hunt
+    end
+
+    # Find any explicitly defined dependencies that can satisfy the hunt.
+    # @param [Hunt] hunt being resolved.
+    # @return [Dependency] the matching dependency if found
+    def find_dependency( hunt )
+      dependency   = dependency_map.find( hunt.contract, hunt.traits )
+      dependency ||= parent.find_dependency( hunt ) if parent
+
+      dependency
     end
 
     # @see Scorpion#reset

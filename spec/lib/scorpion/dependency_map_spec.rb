@@ -82,6 +82,8 @@ describe Scorpion::DependencyMap do
 
   describe "#replicate_from" do
     it "does not dup shared dependency" do
+      # Instead of duping shared dependencies, the scorpion should delegate to
+      # its parent which shares the same instance with all of its children.
       map.chart do
         share do
           capture Test::DependencyMap::Weapon

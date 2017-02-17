@@ -44,6 +44,9 @@ module Test
       initialize( zoo: Test::Hunter::Zoo )
     end
 
+    class Singleton
+    end
+
   end
 end
 
@@ -59,6 +62,10 @@ describe Scorpion::Hunter do
       hunt_for Test::Hunter::Argumented
 
       hunt_for Test::Hunter::Zoo
+
+      share do
+        capture Test::Hunter::Singleton
+      end
     end
   end
 
@@ -118,6 +125,24 @@ describe Scorpion::Hunter do
       city = hunter.fetch Test::Hunter::City, zoo: zoo
 
       expect( city.park.city ).to be city
+    end
+  end
+
+  describe "#find_dependency" do
+    def build_hunt( hunter )
+      Scorpion::Hunt.new hunter, Test::Hunter::Singleton, []
+    end
+
+    it "finds a dependency" do
+      expect( hunter.find_dependency( build_hunt( hunter ) ) ).to be_a Scorpion::Dependency
+    end
+
+    it "finds a parent dependency" do
+      expect( hunter.find_dependency( build_hunt( hunter.replicate ) ) ).to be_a Scorpion::Dependency
+    end
+
+    it "finds grandparent dependency" do
+      expect( hunter.find_dependency( build_hunt( hunter.replicate.replicate ) ) ).to be_a Scorpion::Dependency
     end
   end
 
