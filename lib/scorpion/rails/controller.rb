@@ -30,7 +30,7 @@ module Scorpion
         base.send :include, Scorpion::Object
         base.send :include, Scorpion::Rails::Nest
 
-        base.around_filter :with_scorpion
+        base.around_action :with_scorpion
 
         base.class_eval do
           # Defined here to override the #scorpion method provided by Scorpion::Object.
@@ -38,7 +38,7 @@ module Scorpion
             if scope
               super
             else
-              ensure_scorpion( env[ENV_KEY] )
+              ensure_scorpion( request.env[ENV_KEY] )
             end
           end
         end
@@ -67,12 +67,12 @@ module Scorpion
         end
 
         def assign_scorpion( scorpion )
-          env[ENV_KEY] = scorpion
+          request.env[ENV_KEY] = scorpion
         end
 
         def free_scorpion
           scorpion.try( :destroy )
-          env.delete ENV_KEY
+          request.env.delete ENV_KEY
         end
 
     end

@@ -11,7 +11,7 @@ module Scorpion
         # Setup dependency injection
         base.send :include, Scorpion::Object
         base.send :include, Scorpion::Rails::Nest
-        base.send :around_filter, :with_scorpion
+        base.send :around_action, :with_scorpion
 
         super
       end
