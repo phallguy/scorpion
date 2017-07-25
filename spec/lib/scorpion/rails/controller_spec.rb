@@ -57,19 +57,25 @@ describe Scorpion::Rails::Controller, type: :controller do
     end
 
     it "retrieves scorpion from `env`" do
-      expect( subject.env ).to receive( :[] )
-        .with( Scorpion::Rails::Controller::ENV_KEY )
-        .at_least( :once )
-        .and_call_original
+      expect( subject ).to receive( :scorpion ).at_least( :once ).and_wrap_original do |method, *args|
+        scorpion = method.call( *args )
+        expect( scorpion ).to be subject.request.env[ Scorpion::Rails::Controller::ENV_KEY ]
+
+        scorpion
+      end
 
       get :index
     end
 
     it "stores the scorpion in `env`" do
-      expect( subject.env ).to receive( :[]= )
-        .with( Scorpion::Rails::Controller::ENV_KEY, kind_of( Scorpion ) )
-        .at_least( :once )
-        .and_call_original
+      expect( subject ).to receive( :assign_scorpion ).and_wrap_original do |method, *args|
+        expect( subject.request.env ).to receive( :[]= )
+            .with( Scorpion::Rails::Controller::ENV_KEY, kind_of( Scorpion ) )
+            .at_least( :once )
+            .and_call_original
+
+        method.call( *args )
+      end
 
       get :index
     end

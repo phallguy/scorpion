@@ -11,6 +11,21 @@ module Scorpion
         base.infest_nest ActiveJob::Base        if defined? ActiveJob::Base
         base.infest_nest ActionMailer::Base     if defined? ActionMailer::Base
 
+        base.before( :each ) do
+          allow( Scorpion ).to receive( :instance ) do
+            # Always override the 'global' scorpion with the scorpion from the
+            # spec. Any existing nests will not be affected, only code the
+            # naively reaches into global scorpion context.
+            @@global_scorpion_warned ||=
+              begin
+                puts( "Using global scorpion is not recommended. Objects should be created with scorpion.fetch or scorpion.new" )
+                true
+              end
+
+            scorpion
+          end
+        end
+
         super
       end
 
