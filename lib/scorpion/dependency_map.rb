@@ -33,13 +33,12 @@ module Scorpion
       reset
     end
 
-    # Find {Dependency} that matches the requested `contract` and `traits`.
+    # Find {Dependency} that matches the requested `contract`.
     # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
-    # @param [Array<Symbol>] traits found on the {Dependency}.
     # @return [Dependency] the dependency matching the attribute.
-    def find( contract, traits = nil )
-      dependency_set.find { |p| p.satisfies?( contract, traits ) } ||
-        shared_dependency_set.find { |p| p.satisfies?( contract, traits ) }
+    def find( contract )
+      dependency_set.find { |p| p.satisfies?( contract ) } ||
+        shared_dependency_set.find { |p| p.satisfies?( contract ) }
     end
 
     # Chart the {Dependency} that this hunting map can {#find}.
@@ -75,24 +74,23 @@ module Scorpion
       self
     end
 
-    # Define {Dependency} that can be found on this map by `contract` and `traits`.
+    # Define {Dependency} that can be found on this map by `contract`.
     #
     # If a block is given, it will be used build the actual instances of the
     # dependency for the {Scorpion}.
     #
     # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
-    # @param [Array<Symbol>] traits found on the {Dependency}.
     # @return [Dependency] the dependency to be hunted for.
-    def hunt_for( contract, traits = nil, &builder )
-      active_dependency_set.unshift define_dependency( contract, traits, &builder )
+    def hunt_for( contract, **options, &builder )
+      active_dependency_set.unshift define_dependency( contract, options, &builder )
     end
 
     # Captures a single dependency and returns the same instance fore each request
     # for the resource.
     # @see #hunt_for
     # @return [Dependency] the dependency to be hunted for.
-    def capture( contract, traits = nil, &builder )
-      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, traits, &builder ) ) # rubocop:disable Metrics/LineLength
+    def capture( contract, **options, &builder )
+      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, options, &builder ) )
     end
     alias_method :singleton, :capture
 
@@ -136,8 +134,8 @@ module Scorpion
 
     private
 
-      def define_dependency( contract, traits, &builder )
-        Dependency.define contract, traits, &builder
+      def define_dependency( contract, options, &builder )
+        Dependency.define contract, options, &builder
       end
   end
 end

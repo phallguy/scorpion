@@ -17,9 +17,9 @@ module Scorpion
       #
       # @!endgroup Attributes
 
-      def initialize( contract, traits = nil, builder = nil, &block )
+      def initialize( contract, builder = nil, &block )
         @builder = block_given? ? block : builder
-        super contract, traits
+        super contract
       end
 
       # @see Scorpion::Dependency#fetch

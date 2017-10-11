@@ -20,7 +20,7 @@ module Scorpion
         private :specific_dependency
 
 
-      delegate [:contract, :traits, :satisfies?] => :specific_dependency
+      delegate [ :contract, :satisfies? ] => :specific_dependency
 
       #
       # @!endgroup Attributes

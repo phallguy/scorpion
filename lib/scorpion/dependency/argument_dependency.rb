@@ -16,8 +16,8 @@ module Scorpion
         argument
       end
 
-      def satisfies?( contract, traits = nil )
-        contract === argument && traits.blank?
+      def satisfies?( contract )
+        contract === argument
       end
 
     end

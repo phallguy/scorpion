@@ -13,13 +13,11 @@ module Scorpion
 
   class UnsuccessfulHunt < Error
     attr_reader :contract
-    attr_reader :traits
 
-    def initialize( contract, traits = nil )
+    def initialize( contract )
       @contract = contract
-      @traits   = traits
 
-      super translate( :unsuccessful_hunt, contract: contract, traits: traits )
+      super translate( :unsuccessful_hunt, contract: contract )
     end
   end
 

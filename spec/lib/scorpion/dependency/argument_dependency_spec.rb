@@ -11,8 +11,4 @@ describe Scorpion::Dependency::ArgumentDependency do
   it "doesn't match different types" do
     expect( dependency.satisfies?( Regexp ) ).to be_falsy
   end
-
-  it "doesn't match traits" do
-    expect( dependency.satisfies?( String, :password ) ).to be_falsy
-  end
 end

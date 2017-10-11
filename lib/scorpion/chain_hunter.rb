@@ -51,7 +51,7 @@ module Scorpion
         end
       end
 
-      unsuccessful_hunt hunt.contract, hunt.traits
+      unsuccessful_hunt hunt.contract
     end
 
   end
