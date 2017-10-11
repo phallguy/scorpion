@@ -8,7 +8,6 @@ module Scorpion
   require "scorpion/error"
   require "scorpion/method"
   require "scorpion/object"
-  require "scorpion/object_constructor"
   require "scorpion/attribute_set"
   require "scorpion/hunter"
   require "scorpion/chain_hunter"
@@ -22,11 +21,10 @@ module Scorpion
   # Hunts for an object that satisfies the requested `contract`.
   #
   # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
-  # @param [Hash<Symbol,Object>] dependencies to inject into the object.
   # @return [Object] an object that satisfies the contract.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def fetch( contract, *arguments, **dependencies, &block )
-    hunt = Hunt.new( self, contract, *arguments, **dependencies, &block )
+  def fetch( contract, *arguments, &block )
+    hunt = Hunt.new( self, contract, *arguments, &block )
     execute hunt
   end
 
@@ -35,9 +33,9 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def spawn( hunt, object_class, *arguments, **dependencies, &block )
+  def spawn( hunt, object_class, *arguments, &block )
     if object_class < Scorpion::Object
-      object_class.spawn hunt, *arguments, **dependencies, &block
+      object_class.spawn hunt, *arguments, &block
     else
       object_class.new *arguments, &block
     end
@@ -47,7 +45,7 @@ module Scorpion
   # @param [Scorpion::Object] target to inject.
   # @return [target]
   def inject( target )
-    hunt = Scorpion::Hunt.new self, nil, nil
+    hunt = Scorpion::Hunt.new self, nil
     hunt.inject target
 
     target
@@ -57,8 +55,8 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def new( object_class, *arguments, **dependencies, &block )
-    hunt = Hunt.new( self, object_class, *arguments, **dependencies, &block )
+  def new( object_class, *arguments, &block )
+    hunt = Hunt.new( self, object_class, *arguments, &block )
     Scorpion::Dependency::ClassDependency.new( object_class ).fetch( hunt )
   end
 

@@ -1,3 +1,5 @@
+require "forwardable"
+
 module Scorpion
   # {#chart} available {Dependency} and {#find} them based on desired
   # {Scorpion::Attribute attributes}.
@@ -90,7 +92,7 @@ module Scorpion
     # @see #hunt_for
     # @return [Dependency] the dependency to be hunted for.
     def capture( contract, **options, &builder )
-      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, options, &builder ) )
+      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, options, &builder ) ) # rubocop:disable Metrics/LineLength
     end
     alias_method :singleton, :capture
 

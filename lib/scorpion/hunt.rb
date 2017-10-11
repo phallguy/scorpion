@@ -45,13 +45,10 @@ module Scorpion
       attr_reader :trip
       private :trip
 
-      delegate [:contract, :dependencies, :arguments, :block] => :trip
+      delegate [:contract, :arguments, :block] => :trip
 
     # @!attribute contract
     # @return [Class,Module,Symbol] contract being hunted for.
-
-    # @!attribute [r] dependencies
-    # @return [Hash<Symbol,Dependency>] hash of dependencies to pass to initializer of {#contract} when found.
 
     # @!attribute [r] arguments
     # @return [Array<Object>] positional arguments to pass to the initializer of {#contract} when found.
@@ -62,16 +59,16 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    def initialize( scorpion, contract, *arguments, **dependencies, &block )
+    def initialize( scorpion, contract, *arguments, &block )
       @scorpion  = scorpion
       @trips     = []
-      @trip      = Trip.new contract, arguments, dependencies, block
+      @trip      = Trip.new contract, arguments, block
     end
 
     # Hunt for additional dependency to satisfy the main hunt's contract.
     # @see Scorpion#hunt
-    def fetch( contract, *arguments, **dependencies, &block )
-      push contract, arguments, dependencies, block
+    def fetch( contract, *arguments, &block )
+      push contract, arguments, block
       execute
     ensure
       pop
@@ -82,6 +79,7 @@ module Scorpion
     # @return [Scorpion::Object] the injected object.
     def inject( object )
       trip.object = object
+      object.send :scorpion_hunt=, self
 
       object.injected_attributes.each do |attr|
         next if object.send "#{ attr.name }?"
@@ -97,8 +95,8 @@ module Scorpion
 
     # Allow the hunt to spawn objects.
     # @see Scorpion#spawn
-    def spawn( klass, *arguments, **dependencies, &block )
-      scorpion.spawn( self, klass, *arguments, **dependencies, &block )
+    def spawn( klass, *arguments, &block )
+      scorpion.spawn( self, klass, *arguments, &block )
     end
     alias_method :new, :spawn
 
@@ -109,12 +107,26 @@ module Scorpion
       end
 
       def execute_from_trips
-        return if dependencies.any?
-
         trips.each do |trip|
-          return trip.object if contract === trip.object
-          trip.dependencies.each_value do |value|
-            return value if contract === value
+          if resolved = execute_from_trip( trip )
+            return resolved
+          end
+        end
+
+        nil
+      end
+
+      def execute_from_trip( trip )
+        return unless obj = trip.object
+        return obj if contract === obj
+
+        # If we have already resolved an instance of this contract in this
+        # hunt, then return that same object.
+        if obj.is_a? Scorpion::Object
+          obj.injected_attributes.each do |attr|
+            next unless attr.contract == contract
+
+            return obj.send( attr.name ) if obj.send( :"#{ attr.name }?" )
           end
         end
 
@@ -125,10 +137,10 @@ module Scorpion
         scorpion.execute self
       end
 
-      def push( contract, arguments, dependencies, block )
+      def push( contract, arguments, block )
         trips.push trip
 
-        @trip = Trip.new contract, arguments, dependencies, block
+        @trip = Trip.new contract, arguments, block
       end
 
       def pop
@@ -138,15 +150,13 @@ module Scorpion
       class Trip
         attr_reader :contract
         attr_reader :arguments
-        attr_reader :dependencies
         attr_reader :block
 
         attr_accessor :object
 
-        def initialize( contract, arguments, dependencies, block )
+        def initialize( contract, arguments, block )
           @contract     = contract
           @arguments    = arguments
-          @dependencies = dependencies
           @block        = block
         end
       end
