@@ -23,17 +23,17 @@ describe Scorpion::Dependency::BuilderDependency do
   let( :hunt ) { Scorpion::Hunt.new( scorpion, String, nil ) }
 
   it "supports class hunting delegates" do
-    dependency = Scorpion::Dependency::BuilderDependency.new( String, nil, Test::BuilderDependency::ClassDelegate.new )
+    dependency = Scorpion::Dependency::BuilderDependency.new( String, Test::BuilderDependency::ClassDelegate.new )
     expect( dependency.fetch( hunt ) ).to be Test
   end
 
   it "supports module hunting delegates" do
-    dependency = Scorpion::Dependency::BuilderDependency.new( String, nil, Test::BuilderDependency::ModDelegate )
+    dependency = Scorpion::Dependency::BuilderDependency.new( String, Test::BuilderDependency::ModDelegate )
     expect( dependency.fetch( hunt ) ).to be Test
   end
 
   it "supports block hunting delegates" do
-    dependency = Scorpion::Dependency::BuilderDependency.new( String, nil ) do
+    dependency = Scorpion::Dependency::BuilderDependency.new( String ) do
       Test
     end
     expect( dependency.fetch( hunt ) ).to be Test

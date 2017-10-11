@@ -22,19 +22,19 @@ describe Scorpion::Hunt do
   let( :scorpion ) { double Scorpion }
   let( :hunt ) { Scorpion::Hunt.new scorpion, String, nil }
 
-  describe "#fetch_by_traits" do
+  describe "#fetch" do
     it "changes context" do
       expect( scorpion ).to receive( :execute ) do |hunt|
         expect( hunt.contract ).to eq Regexp
       end
 
-      hunt.fetch_by_traits Regexp, nil
+      hunt.fetch Regexp, nil
     end
 
     it "restores context" do
       expect( scorpion ).to receive( :execute )
 
-      hunt.fetch_by_traits Numeric, nil
+      hunt.fetch Numeric, nil
       expect( hunt.contract ).to eq String
     end
 
@@ -46,7 +46,7 @@ describe Scorpion::Hunt do
 
     it "finds matching argument in grandparent" do
       hunt = Scorpion::Hunt.new scorpion, String, nil, label: "Hello"
-      hunt.send :push, Regexp, nil, [], {}, nil
+      hunt.send :push, Regexp, [], {}, nil
 
       expect( scorpion ).to receive( :execute ) do |_|
         next if hunt.contract == String

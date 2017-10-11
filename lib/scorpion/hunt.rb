@@ -45,13 +45,10 @@ module Scorpion
       attr_reader :trip
       private :trip
 
-      delegate [:contract, :traits, :dependencies, :arguments, :block] => :trip
+      delegate [:contract, :dependencies, :arguments, :block] => :trip
 
     # @!attribute contract
     # @return [Class,Module,Symbol] contract being hunted for.
-
-    # @!attribute traits
-    # @return [Array<Symbol>] traits being hunted for.
 
     # @!attribute [r] dependencies
     # @return [Hash<Symbol,Dependency>] hash of dependencies to pass to initializer of {#contract} when found.
@@ -65,22 +62,16 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    def initialize( scorpion, contract, traits, *arguments, **dependencies, &block ) # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
+    def initialize( scorpion, contract, *arguments, **dependencies, &block )
       @scorpion  = scorpion
       @trips     = []
-      @trip      = Trip.new contract, traits, arguments, dependencies, block
+      @trip      = Trip.new contract, arguments, dependencies, block
     end
 
-    # Hunt for additional dependency to satisfy the main hunt's contract and traits.
+    # Hunt for additional dependency to satisfy the main hunt's contract.
     # @see Scorpion#hunt
     def fetch( contract, *arguments, **dependencies, &block )
-      fetch_by_traits( contract, nil, *arguments, **dependencies, &block )
-    end
-
-    # Hunt for additional dependency to satisfy the main hunt's contract and traits.
-    # @see Scorpion#hunt
-    def fetch_by_traits( contract, traits, *arguments, **dependencies, &block )
-      push contract, traits, arguments, dependencies, block
+      push contract, arguments, dependencies, block
       execute
     ensure
       pop
@@ -96,7 +87,7 @@ module Scorpion
         next if object.send "#{ attr.name }?"
         next if attr.lazy?
 
-        object.send :inject_dependency, attr, fetch_by_traits( attr.contract, attr.traits )
+        object.send :inject_dependency, attr, fetch( attr.contract )
       end
 
       object.send :on_injected
@@ -134,10 +125,10 @@ module Scorpion
         scorpion.execute self
       end
 
-      def push( contract, traits, arguments, dependencies, block )
+      def push( contract, arguments, dependencies, block )
         trips.push trip
 
-        @trip = Trip.new contract, traits, arguments, dependencies, block
+        @trip = Trip.new contract, arguments, dependencies, block
       end
 
       def pop
@@ -146,16 +137,14 @@ module Scorpion
 
       class Trip
         attr_reader :contract
-        attr_reader :traits
         attr_reader :arguments
         attr_reader :dependencies
         attr_reader :block
 
         attr_accessor :object
 
-        def initialize( contract, traits, arguments, dependencies, block )
+        def initialize( contract, arguments, dependencies, block )
           @contract     = contract
-          @traits       = traits
           @arguments    = arguments
           @dependencies = dependencies
           @block        = block

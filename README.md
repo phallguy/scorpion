@@ -10,29 +10,30 @@ Add IoC to rails with minimal fuss and ceremony.
 
 (Also check out [shog](http://github.com/phallguy/shog) for better rails logs)
 
-<!-- MarkdownTOC depth=4 -->
+<!-- vim-markdown-toc GFM -->
 
-- [Dependency Injection](#dependency-injection)
-  - [Why might you _Want_ a DI FRamework?](#why-might-you-_want_-a-di-framework)
-    - [Using a Framework...like Scorpion](#using-a-frameworklike-scorpion)
-- [Using Scorpion](#using-scorpion)
-  - [Objects](#objects)
-  - [Configuration](#configuration)
-    - [Classes](#classes)
-    - [Modules](#modules)
-    - [Traits](#traits)
-    - [Builders](#builders)
-    - [Hunting Delegates](#hunting-delegates)
-    - [Singletons](#singletons)
-  - [Nests](#nests)
-  - [Rails](#rails)
-    - [ActionController](#actioncontroller)
-    - [ActiveJob](#activejob)
-    - [ActiveRecord](#activerecord)
-- [Contributing](#contributing)
-- [License](#license)
+* [Dependency Injection](#dependency-injection)
+  * [Why might you _Want_ a DI FRamework?](#why-might-you-_want_-a-di-framework)
+      * [Setter/Default Injection](#setterdefault-injection)
+      * [Constructor/Ignorant Injection](#constructorignorant-injection)
+    * [Using a Framework...like Scorpion](#using-a-frameworklike-scorpion)
+* [Using Scorpion](#using-scorpion)
+  * [Objects](#objects)
+  * [Configuration](#configuration)
+    * [Classes](#classes)
+    * [Modules](#modules)
+    * [Builders](#builders)
+    * [Hunting Delegates](#hunting-delegates)
+    * [Singletons](#singletons)
+  * [Nests](#nests)
+  * [Rails](#rails)
+    * [ActionController](#actioncontroller)
+    * [ActiveJob](#activejob)
+    * [ActiveRecord](#activerecord)
+* [Contributing](#contributing)
+* [License](#license)
 
-<!-- /MarkdownTOC -->
+<!-- vim-markdown-toc -->
 
 ## Dependency Injection
 
@@ -288,52 +289,6 @@ end
 
 poker = scorpion.fetch Sharp
 poker.poke     # => "Sword"
-```
-
-#### Traits
-
-Traits can be used to distinguish between dependencies of the same type. For
-example a scorpion may be prepared to hunt for several weapons and the object
-needs a blunt weapon.
-
-```ruby
-class Weapon; end
-class Mace < Weapon; end
-class Hammer < Weapon; end
-class Sword < Weapon; end
-
-scorpion.prepare do
-  hunt_for Hammer, :blunt
-  hunt_for Sword, :sharp
-  hunt_for Mace, :blunt, :sharp
-end
-
-scorpion.fetch Weapon, :blunt # => Hammer.new
-scorpion.fetch Weapon, :sharp # => Sword.new
-scorpion.fetch Weapon, :sharp, :blunt # => Mace.new
-```
-
-Modules can also be used to identify specific traits desired from the hunted
-dependency.
-
-```ruby
-module Color; end
-module Streaming; end
-class Logger; end
-class Console < Logger
-  include Color
-end
-class SysLog < Logger
-  include Streaming
-end
-
-scorpion.prepare do
-  hunt_for Console
-  hunt_for SysLog
-end
-
-scorpion.fetch Logger, Color      # => Console.new
-scorpion.fetch Logger, Streaming  # => SysLog.new
 ```
 
 #### Builders

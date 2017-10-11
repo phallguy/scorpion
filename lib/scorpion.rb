@@ -19,22 +19,15 @@ module Scorpion
   require "scorpion/stinger"
   require "scorpion/rails"
 
-  # Hunts for an object that satisfies the requested `contract` and `traits`.
+  # Hunts for an object that satisfies the requested `contract`.
+  #
   # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
-  # @param [Array<Symbol>] traits required of the dependency
   # @param [Hash<Symbol,Object>] dependencies to inject into the object.
-  # @return [Object] an object that satisfies the contract and traits.
+  # @return [Object] an object that satisfies the contract.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def fetch_by_traits( contract, traits, *arguments, **dependencies, &block )
-    hunt = Hunt.new( self, contract, traits, *arguments, **dependencies, &block )
-    execute hunt
-  end
-
-  # Hunts for an object that satisfies the requested `contract` regardless of
-  # traits.
-  # @see #fetch_by_traits
   def fetch( contract, *arguments, **dependencies, &block )
-    fetch_by_traits( contract, nil, *arguments, **dependencies, &block )
+    hunt = Hunt.new( self, contract, *arguments, **dependencies, &block )
+    execute hunt
   end
 
   # Creates a new object and feeds it it's dependencies.
@@ -65,13 +58,13 @@ module Scorpion
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
   def new( object_class, *arguments, **dependencies, &block )
-    hunt = Hunt.new( self, object_class, nil, *arguments, **dependencies, &block )
+    hunt = Hunt.new( self, object_class, *arguments, **dependencies, &block )
     Scorpion::Dependency::ClassDependency.new( object_class ).fetch( hunt )
   end
 
   # Execute the `hunt` returning the desired dependency.
   # @param [Hunt] hunt to execute.
-  # @return [Object] an object that satisfies the hunt contract and traits.
+  # @return [Object] an object that satisfies the hunt contract.
   def execute( hunt )
     fail "Not implemented"
   end
@@ -146,12 +139,6 @@ module Scorpion
     instance.fetch dependencies, &block
   end
 
-  # Hunt for dependency from the primary Scorpion {#instance}.
-  # @see #fetch_by_traits
-  def self.fetch_by_traits( dependencies, &block )
-    instance.fetch_by_traits dependencies, &block
-  end
-
   # @!attribute logger
   # @return [Logger] logger for the Scorpion framework to use.
   def self.logger
@@ -170,8 +157,8 @@ module Scorpion
 
     # Used by concrete scorpions to notify the caller that the hunt was
     # unsuccessful.
-    def unsuccessful_hunt( contract, traits )
-      fail UnsuccessfulHunt.new contract, traits
+    def unsuccessful_hunt( contract )
+      fail UnsuccessfulHunt, contract
     end
 
 end

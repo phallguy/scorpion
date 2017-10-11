@@ -54,11 +54,10 @@ describe Scorpion::Hunter do
 
   let( :hunter ) do
     Scorpion::Hunter.new do
-      capture Test::Hunter::Lion, :tame
+      capture Test::Hunter::Lion
 
       hunt_for Test::Hunter::Bear
-      hunt_for Test::Hunter::Lion, :male
-      hunt_for Test::Hunter::Grizly, :female
+      hunt_for Test::Hunter::Grizly
       hunt_for Test::Hunter::Argumented
 
       hunt_for Test::Hunter::Zoo
@@ -79,8 +78,8 @@ describe Scorpion::Hunter do
   end
 
   it "spawns the same instance for captured dependency" do
-    first = hunter.fetch_by_traits Test::Hunter::Beast, :tame
-    expect( hunter.fetch_by_traits(Test::Hunter::Beast, :tame) ).to be first
+    first = hunter.fetch Test::Hunter::Lion
+    expect( hunter.fetch(Test::Hunter::Lion) ).to be first
   end
 
   it "injects nested objects" do
@@ -95,10 +94,6 @@ describe Scorpion::Hunter do
 
   it "implicitly spawns Class contracts" do
     expect( hunter.fetch(Test::Hunter::Implicit) ).to be_a Test::Hunter::Implicit
-  end
-
-  it "implicitly spawns Class contracts with empty traits" do
-    expect( hunter.fetch_by_traits(Test::Hunter::Implicit, []) ).to be_a Test::Hunter::Implicit
   end
 
   it "initialize explicit contracts" do

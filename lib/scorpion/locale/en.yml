@@ -2,7 +2,7 @@ en:
   scorpion:
     errors:
       messages:
-        unsuccessful_hunt: "Couldn't find a %{contract} builder with traits '%{traits}'"
+        unsuccessful_hunt: "Couldn't find a %{contract} builder"
         builder_required: A custom builder must be provided to resolve this dependency
         arity_mismatch: The block must accept %{expected} arguments, but actually expects %{actual}
         rack_missing_scorpion: Scorpion not set. Add Scorpion::Rack::Middleware before %{middleware}.

@@ -36,9 +36,8 @@ module Scorpion
     end
 
     # Defines the food that {Scorpion::Object} will feed on. A food is defined by
-    # invoking a method with the desired name passing the contract and traits
-    # desired. AttributeSet uses method_missing to dynamically define
-    # attributes.
+    # invoking a method with the desired name passing the contract desired.
+    # AttributeSet uses method_missing to dynamically define attributes.
     #
     # If the block takes an argument, AttributeSet will yield to the block
     # passing itself. If no argument is provided, yield will use the
@@ -71,16 +70,13 @@ module Scorpion
     end
 
     # Define a single attribute with the given name that expects food that will
-    # satisfy the contract and traits.
+    # satisfy the contract.
     # @param [String] name of the attribute.
     # @param [Class,Module,Symbol] contract that describes the desired behavior
     #   of the injected object.
-    # @param [Array<Symbol>] traits that must match on instances of the {#contract}
     # @return [Attribute] the attribute that was created.
-    def define_attribute( name, contract, *traits )
-      options = traits.pop if traits.last.is_a? Hash
-      options ||= {}
-      attributes[name.to_sym] = Attribute.new name, contract, traits, options
+    def define_attribute( name, contract, **options )
+      attributes[name.to_sym] = Attribute.new name, contract, options
     end
 
 

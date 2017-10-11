@@ -19,7 +19,7 @@ module Scorpion
           hunt.contract.initializer_injections.each_with_object(dependencies.dup) do |attr, deps|
             next if attr.lazy?
 
-            deps[attr.name] ||= hunt.fetch_by_traits( attr.contract, attr.traits )
+            deps[attr.name] ||= hunt.fetch( attr.contract )
           end
         end
 

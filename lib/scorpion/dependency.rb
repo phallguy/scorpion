@@ -14,23 +14,18 @@ module Scorpion
 
     # @!attribute
     # @return [Class,Module,Symbol] contract describing the desired behavior of the dependency.
-      attr_reader :contract
-
-    # @!attribute
-    # @return [Array<Symbol>] the traits available on the dependency.
-      attr_reader :traits
+    attr_reader :contract
 
     #
     # @!endgroup Attributes
 
-    def initialize( contract, traits = nil )
+    def initialize( contract )
       @contract = contract
-      @traits   = Set.new( Array( traits ) )
     end
 
-    # @return [Boolean] if the dependency satisfies the required contract and traits.
-    def satisfies?( contract, traits = nil )
-      satisfies_contract?( contract ) && satisfies_traits?( traits )
+    # @return [Boolean] if the dependency satisfies the required contract.
+    def satisfies?( contract )
+      satisfies_contract?( contract )
     end
 
     # Fetch an instance of the dependency.
@@ -52,21 +47,16 @@ module Scorpion
 
     def ==( other )
       return unless other
-      self.class == other.class &&
-        contract   == other.contract &&
-        traits     == other.traits
+      self.class == other.class && contract == other.contract
     end
     alias_method :eql?, :==
 
     def hash
-      self.class.hash ^
-        contract.hash ^
-        traits.hash
+      self.class.hash ^ contract.hash
     end
 
     def inspect
       result = "<#{ contract.inspect }"
-      result << " traits=#{ traits.to_a.inspect }" if traits.present?
       result << ">"
       result
     end
@@ -82,59 +72,34 @@ module Scorpion
         end
       end
 
-      # @return [Boolean] true if the pray satisfies the given contract.
-      def satisfies_traits?( traits )
-        return true if traits.blank?
-
-        Array( traits ).all? do |trait|
-          case trait
-          when Symbol then self.traits.include? trait
-          when Module then contract <= trait
-          else fail ArgumentError, "Unsupported trait"
-          end
-        end
-      end
-
     class << self
 
-      # Define dependency based on the desired contract and traits.
+      # Define dependency based on the desired contract.
       # @return [Dependency] the defined dependency.
-      def define( contract, traits = nil, &builder )
-        options, traits = extract_options!( traits )
-
+      def define( contract, options = {}, &builder )
         if options.key?( :return )
-          Scorpion::Dependency::BuilderDependency.new( contract, traits ) do
+          Scorpion::Dependency::BuilderDependency.new( contract ) do
             options[:return]
           end
-        elsif with = options[:with]
-          Scorpion::Dependency::BuilderDependency.new( contract, traits, with )
+        elsif with = options[ :with ]
+          Scorpion::Dependency::BuilderDependency.new( contract, with )
         elsif block_given?
-          Scorpion::Dependency::BuilderDependency.new( contract, traits, builder )
+          Scorpion::Dependency::BuilderDependency.new( contract, builder )
 
         # Allow a Class/Module to define a #create method that will resolve
         # and return an instance of itself. Do not automatically inherit the
         # #create method so only consider it if the owner of the method is the
         # contract itself.
         elsif contract.respond_to?( :create ) && contract.singleton_methods( false ).include?( :create )
-          Scorpion::Dependency::BuilderDependency.new( contract, traits ) do |hunt, *args, **dependencies, &block|
+          Scorpion::Dependency::BuilderDependency.new( contract ) do |hunt, *args, **dependencies, &block|
             contract.create hunt, *args, **dependencies, &block
           end
         else
-          dependency_class( contract ).new( contract, traits, &builder )
+          dependency_class( contract ).new( contract, &builder )
         end
       end
 
       private
-
-        def extract_options!( traits )
-          case traits
-          when Hash then return [ traits, nil ]
-          when Array then
-            return [ traits.pop, traits ] if traits.last.is_a? Hash
-          end
-
-          [ {}, traits]
-        end
 
         def dependency_class( contract, &builder )
           return Scorpion::Dependency::ClassDependency   if contract.is_a? Class

@@ -45,27 +45,6 @@ describe Scorpion::DependencyMap do
       expect( map.find( Test::DependencyMap::Armor ) ).to be_nil
     end
 
-
-    context "multiple possible matches" do
-      before( :each ) do
-        map.chart do
-          hunt_for Test::DependencyMap::Weapon, [ :sharp, :one_handed ]
-          hunt_for Test::DependencyMap::Weapon, [ :blunt, :one_handed ]
-        end
-      end
-
-      it "returns the last dependency that matches one trait" do
-        expect( map.find( Test::DependencyMap::Weapon, :one_handed ).traits ).to include :blunt
-      end
-
-      it "returns the last dependency that matches all of the traits" do
-        expect( map.find( Test::DependencyMap::Weapon, [ :one_handed, :blunt ] ).traits ).to include :blunt
-      end
-
-      it "returns the last dependency that matches a unique trait" do
-        expect( map.find( Test::DependencyMap::Weapon, :blunt ).traits ).to include :blunt
-      end
-    end
   end
 
   describe "#hunt_for" do

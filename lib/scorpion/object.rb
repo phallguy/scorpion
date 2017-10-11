@@ -137,9 +137,8 @@ module Scorpion
       # Define a single dependency and accessor.
       # @param [Symbol] name of the dependency.
       # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
-      # @param [Array<Symbol>] traits found on the {Dependency}.
-      def attr_dependency( name, contract, *traits, &block )
-        attr = injected_attributes.define_attribute name, contract, *traits, &block
+      def attr_dependency( name, contract, &block )
+        attr = injected_attributes.define_attribute name, contract, &block
         build_injected_attribute attr
         adjust_injected_attribute_visibility attr
         validate_initializer_injections
@@ -191,7 +190,7 @@ module Scorpion
             def #{ attr.name }
               @#{ attr.name } ||= begin
                 attr = injected_attributes[ :#{ attr.name } ]
-                scorpion.fetch_by_traits( attr.contract, attr.traits )
+                scorpion.fetch( attr.contract )
               end
             end
 

@@ -39,35 +39,8 @@ describe Scorpion::Dependency do
 
   end
 
-  describe "traits" do
-
-    context "symbolic" do
-      let( :dependency ) { Scorpion::Dependency.new Test::Dependency::Base, :apples }
-      it "satisfies matched traits" do
-        expect( dependency.satisfies?(Test::Dependency::Base, :apples) ).to be_truthy
-      end
-
-      it "doesn't satisfy mis-matched traits" do
-        expect( dependency.satisfies?(Test::Dependency::Base, :oranges) ).to be_falsy
-      end
-    end
-
-    context "module" do
-      let( :dependency ) { Scorpion::Dependency.new Test::Dependency::Derived }
-
-      it "satisfies module traits" do
-        expect( dependency.satisfies?(Test::Dependency::Base, Test::Dependency::Derived) ).to be_truthy
-      end
-    end
-
-  end
-
   it "can satisfy symbol contracts" do
     expect( Scorpion::Dependency.new( :symbol ).satisfies?(:symbol) ).to be_truthy
-  end
-
-  it "satisfies ignores tail hash traits" do
-    expect( Scorpion::Dependency.new( Test::Dependency::Base ).satisfies?( Test::Dependency::Base ) )
   end
 
   describe "equality" do

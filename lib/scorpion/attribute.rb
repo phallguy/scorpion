@@ -19,10 +19,6 @@ module Scorpion
       end
 
     # @!attribute
-    # @return [Array<Symbol>] traits that must match on instances of the {#contract}
-      attr_reader :traits
-
-    # @!attribute
     # @return [Boolean] true if the attribute is not immediately required and
     #   will be hunted down on first use.
       def lazy?
@@ -45,36 +41,13 @@ module Scorpion
     # @!endgroup Attributes
 
 
-    def initialize( name, contract, traits = nil, lazy: false, public: false, private: false )
+    def initialize( name, contract, lazy: false, public: false, private: false )
       @name      = name.to_sym
       @contract  = contract
-      @traits    = Array( traits ).flatten.freeze
-      @trait_set = Set.new( @traits.map { |t| :"#{t}?" } )
       @lazy      = lazy
       @public    = public
       @private   = private
     end
 
-    def respond_to?( name, include_all = false )
-      super || trait_set.include?( name )
-    end
-
-    private
-
-      # @return [Set] the set of traits associated with the attribute pre-processed
-      #   to include the trait names with a '?' suffix.
-        attr_reader :trait_set
-
-      def method_missing( name, *args ) # rubocop:disable Style/MethodMissing
-        if trait_method?( name )
-          trait_set.include? name
-        else
-          super
-        end
-      end
-
-      def trait_method?( name )
-        name[-1] == "?"
-      end
   end
 end
