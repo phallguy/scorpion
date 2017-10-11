@@ -1,4 +1,4 @@
-require 'scorpion/dependency'
+require "scorpion/dependency"
 
 module Scorpion
   class Dependency

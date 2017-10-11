@@ -23,6 +23,7 @@ module Scorpion
     end
 
     private
+
       attr_reader :base, :arguments, :block, :body
 
       def define_dependencies
@@ -30,7 +31,7 @@ module Scorpion
         # initializer.
         base.instance_variable_set :@initializer_injections, AttributeSet.new
 
-        arguments.each do |key,expectation|
+        arguments.each do |key, expectation|
           base.initializer_injections.define_attribute key, *Array( expectation )
           base.attr_dependency key, *Array( expectation )
         end
@@ -52,27 +53,27 @@ module Scorpion
       def add_initialize_block
         if block
           base_name = base.name || base.object_id.to_s
-          base_name = base_name.gsub /::/, '_'
+          base_name = base_name.gsub /::/, "_"
           name = "__initialize_with_block_#{ base_name }"
-          if block.arity != 0 || block.parameters.any?
-            body << "#{ name }( *args, **injections, &block )"
-          else
-            body << "#{ name }"
-          end
+          body << if block.arity != 0 || block.parameters.any?
+            "#{ name }( *args, **injections, &block )"
+                  else
+            "#{ name }"
+                  end
           base.send :define_method, :"#{ name }", &block
         end
       end
 
       def assemble
-        source = %Q|def initialize( *args, **dependencies, &block )\n\t#{ body.join( "\n\t" ) }\nend|
+        source = %|def initialize( *args, **dependencies, &block )\n\t#{ body.join( "\n\t" ) }\nend|
 
         # puts "=" * 50
         # puts base.name
         # puts source
         # puts "=" * 50
 
-        base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-#{ source }
+        base.class_eval <<~RUBY, __FILE__, __LINE__ + 1
+          #{ source }
         RUBY
       end
   end

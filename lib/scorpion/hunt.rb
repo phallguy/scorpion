@@ -65,7 +65,7 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    def initialize( scorpion, contract, traits, *arguments, **dependencies, &block )
+    def initialize( scorpion, contract, traits, *arguments, **dependencies, &block ) # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
       @scorpion  = scorpion
       @trips     = []
       @trip      = Trip.new contract, traits, arguments, dependencies, block
@@ -122,7 +122,7 @@ module Scorpion
 
         trips.each do |trip|
           return trip.object if contract === trip.object
-          trip.dependencies.each do |key,value|
+          trip.dependencies.each_value do |value|
             return value if contract === value
           end
         end

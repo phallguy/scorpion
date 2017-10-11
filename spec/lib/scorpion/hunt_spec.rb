@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 
 module Test
@@ -18,9 +18,9 @@ module Test
 end
 
 describe Scorpion::Hunt do
-  
-  let( :scorpion ){ double Scorpion }
-  let( :hunt ){ Scorpion::Hunt.new scorpion, String, nil }
+
+  let( :scorpion ) { double Scorpion }
+  let( :hunt ) { Scorpion::Hunt.new scorpion, String, nil }
 
   describe "#fetch_by_traits" do
     it "changes context" do
@@ -41,17 +41,17 @@ describe Scorpion::Hunt do
     it "finds matching argument in parent" do
       hunt.dependencies[:label] = "Hello"
 
-      expect( hunt.fetch String ).to eq "Hello"
+      expect( hunt.fetch(String) ).to eq "Hello"
     end
 
     it "finds matching argument in grandparent" do
       hunt = Scorpion::Hunt.new scorpion, String, nil, label: "Hello"
       hunt.send :push, Regexp, nil, [], {}, nil
 
-      expect( scorpion ).to receive( :execute ) do |hunt|
+      expect( scorpion ).to receive( :execute ) do |_|
         next if hunt.contract == String
 
-        expect( hunt.fetch String ).to eq "Hello"
+        expect( hunt.fetch(String) ).to eq "Hello"
       end.at_least(:once)
 
       hunt.fetch Numeric
@@ -59,7 +59,7 @@ describe Scorpion::Hunt do
   end
 
   describe "#inject" do
-    let( :target )  do
+    let( :target ) do
       Test::Hunt::Target.new
     end
 

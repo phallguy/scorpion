@@ -1,62 +1,176 @@
-Style/LineLength:
-  Max: 120
+AllCops:
+  TargetRubyVersion: 2.4
 
-Style/AccessModifierIndentation:
-  EnforceStyle: indent
+  Exclude:
+    - "**/node_modules/**/*"
+    - "api/bin/*"
+    - "api/db/schema.rb"
+    - "api/vendor/**/*"
+    - ".*"
+    - "/**/.*"
 
-Style/IndentationConsistency:
+
+Bundler/OrderedGems:
   Enabled: false
 
-Style/TrailingBlankLines:
+Style/EmptyMethod:
   Enabled: false
 
-Style/EmptyLinesAroundBody:
+Style/ParallelAssignment:
   Enabled: false
 
-Style/StringLiterals:
+Lint/AmbiguousBlockAssociation:
   Enabled: false
 
-Style/SpaceInsideParens:
+Lint/UselessAccessModifier:
   Enabled: false
 
-Style/SpaceBeforeBlockBraces:
+Lint/AmbiguousRegexpLiteral:
   Enabled: false
-
-Style/SpaceInsideBlockBraces:
-  Enabled: false
-
-Style/SpaceInsideBrackets:
-  Enabled: false
-
-Style/SingleLineBlockParams:
-  Enabled: false
-
-Style/SingleSpaceBeforeFirstArg:
-  Enabled: false
-
-Style/TrailingComma:
-  Enabled: false
-
-Style/SpaceAfterComma:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
-  EnforcedStyle: nested
-
-Style/PercentLiteralDelimiters:
-  PreferredDelimiters:
-    '%':  '{}'
-    '%i': '{}'
-    '%q': '{}'
-    '%Q': '{}'
-    '%r': '{}'
-    '%s': '{}'
-    '%w': '{}'
-    '%W': '{}'
-    '%x': '{}'
 
 Lint/AssignmentInCondition:
   Enabled: false
 
-Lint/AmbiguousRegexpLiteral:
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+Lint/AmbiguousOperator:
+  Enabled: false
+
+Metrics/ClassLength:
+  Max: 500
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 25
+
+Metrics/AbcSize:
+  Max: 24
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/ModuleLength:
+  Max: 500
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Style/Alias:
+  Enabled: false
+
+Layout/CommentIndentation:
+  Enabled: false
+
+Layout/EmptyLines:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: false
+
+Layout/IndentArray:
+  Enabled: false
+
+Layout/IndentationConsistency:
+  Enabled: false
+
+Layout/IndentationWidth:
+  Enabled: false
+
+Style/Lambda:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/OptionHash:
+ Enabled: true
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: false
+
+Layout/SpaceAroundBlockParameters:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+Layout/SpaceAroundOperators:
+  Enabled: false
+
+Layout/SpaceInsideBrackets:
+  Enabled: false
+
+Layout/SpaceInsideParens:
+  Enabled: false
+
+Layout/SpaceInsideStringInterpolation:
+  EnforcedStyle: space
+
+Layout/SpaceInsidePercentLiteralDelimiters:
+  Enabled: false
+
+Style/SpecialGlobalVars:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Layout/TrailingBlankLines:
+  Enabled: false
+
+Style/TrailingCommaInLiteral:
+  Enabled: false
+
+Style/WhileUntilModifier:
+  Enabled: false
+
+Style/UnneededInterpolation:
+  Enabled: false
+
+Style/CaseEquality:
+  Enabled: false
+
+Style/WordArray:
   Enabled: false

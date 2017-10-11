@@ -1,5 +1,5 @@
-require 'scorpion/nest'
-require 'active_support/core_ext/class/attribute'
+require "scorpion/nest"
+require "active_support/core_ext/class/attribute"
 
 module Scorpion
   module Rails
@@ -32,8 +32,7 @@ module Scorpion
       #
       # @!endgroup Attributes
 
-      def self.included( base )
-
+      def self.included( base ) # rubocop:disable Metrics/MethodLength
         # @!attribute [rw]
         # @return [Scorpion::Nest] the singleton nest used by controllers.
         base.class_attribute :nest_instance
@@ -45,8 +44,9 @@ module Scorpion
           def self.nest
             nest_instance || ( self.nest = Scorpion.instance.build_nest )
           end
+
           def self.nest=( value )
-            nest_instance.destroy if nest_instance
+            nest_instance&.destroy
             self.nest_instance = value
           end
 
@@ -60,14 +60,14 @@ module Scorpion
           # of a scorpion is conceived to handle an idividual request.
           # @param (see DependencyMap#hunt_for )
           def self.hunt_for( *args, &block )
-            instance_hunts << [:hunt_for,args,block]
+            instance_hunts << [:hunt_for, args, block]
           end
 
           # Define dependency resolution that isn't resolved until an instance
           # of a scorpion is conceived to handle an idividual request.
           # @param (see DependencyMap#capture )
           def self.capture( *args, &block )
-            instance_hunts << [:capture,args,block]
+            instance_hunts << [:capture, args, block]
           end
 
           # Hunting dependencies that cannot be resolved until an instance
@@ -106,9 +106,9 @@ module Scorpion
 
       def append_instance_hunts( scorpion )
         scorpion.prepare do |hunter|
-          self.class.instance_hunts.each do |method,args,block|
-            hunter.send method, *args do |*args|
-              instance_exec *args, &block
+          self.class.instance_hunts.each do |method, args, block|
+            hunter.send method, *args do |*method_args|
+              instance_exec *method_args, &block
             end
           end
         end

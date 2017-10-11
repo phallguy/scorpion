@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'scorpion/rails'
+require "spec_helper"
+require "scorpion/rails"
 
 describe Scorpion::Rails::ActiveRecord::Relation, type: :model do
   include Scorpion::Rspec::Helper
@@ -48,7 +48,7 @@ describe Scorpion::Rails::ActiveRecord::Relation, type: :model do
   end
 
   context "find methods" do
-    let!( :todo ){ Todo.create! name: "Bill" }
+    let!( :todo ) { Todo.create! name: "Bill" }
 
     it "shares scorpion with found records" do
       expect( criteria.find( todo.id ).scorpion ).to be scorpion

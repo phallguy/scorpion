@@ -1,4 +1,4 @@
-require 'scorpion/nest'
+require "scorpion/nest"
 
 module Scorpion
   module Rails

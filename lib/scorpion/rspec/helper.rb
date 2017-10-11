@@ -3,7 +3,7 @@ module Scorpion
     module Helper
 
       def self.included( base )
-        base.let( :scorpion ){ Scorpion::Rspec.scorpion_nest.conceive }
+        base.let( :scorpion ) { Scorpion::Rspec.scorpion_nest.conceive }
         base.send :extend, Scorpion::Rspec::Helper::Methods
 
 
@@ -44,7 +44,7 @@ module Scorpion
         # Specify a specific hunting contract and prepare a `let` block of the
         # same name.
         def hunt( name, contract, value = :unspecified, &block )
-          block ||= ->{ value == :unspecified ? instance_double( contract ) : value }
+          block ||= -> { value == :unspecified ? instance_double( contract ) : value }
 
           let( name, &block )
 
@@ -63,7 +63,7 @@ module Scorpion
 
         def hunt!( name, contract, value = :unspecified, &block )
           hunt name, contract, value, &block
-          before(:each){ send name }
+          before(:each) { send name }
         end
 
         # Captures an instance of the given `contract` and assigns it to `name`

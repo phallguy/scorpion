@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Test
   module BuilderDependency
@@ -19,8 +19,8 @@ module Test
 end
 
 describe Scorpion::Dependency::BuilderDependency do
-  let( :scorpion ){ double }
-  let( :hunt ){ Scorpion::Hunt.new( scorpion, String, nil ) }
+  let( :scorpion ) { double }
+  let( :hunt ) { Scorpion::Hunt.new( scorpion, String, nil ) }
 
   it "supports class hunting delegates" do
     dependency = Scorpion::Dependency::BuilderDependency.new( String, nil, Test::BuilderDependency::ClassDelegate.new )

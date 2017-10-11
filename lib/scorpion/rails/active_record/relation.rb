@@ -32,14 +32,14 @@ module Scorpion
 
         # from ActiveRecord::Relation
         [ :new, :build, :create, :create! ].each do |method|
-          class_eval <<-EOS, __FILE__, __LINE__ + 1
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def #{ method }( *args, &block )
               super *args do |*block_args|
                 sting!( block_args )
                 yield *block_args if block_given?
               end
             end
-          EOS
+          RUBY
         end
 
         # from ActiveRecord::SpawnMethods
@@ -48,6 +48,7 @@ module Scorpion
         end
 
         private
+
           # from ActiveRecord::Relation
           def exec_queries( *args, &block )
             sting!( super )

@@ -1,4 +1,4 @@
-require 'scorpion/attribute'
+require "scorpion/attribute"
 
 module Scorpion
   class AttributeSet
@@ -13,7 +13,7 @@ module Scorpion
     end
 
     def each( &block )
-      attributes.each do |k,v|
+      attributes.each_value do |v|
         yield v
       end
     end
@@ -90,7 +90,7 @@ module Scorpion
 
     private
 
-      def method_missing( name, *args )
+      def method_missing( name, *args ) # rubocop:disable Style/MethodMissing
         return super unless @defining_attributes
 
         if args.length >= 1
@@ -99,6 +99,8 @@ module Scorpion
           super
         end
       end
+
+
 
   end
 end

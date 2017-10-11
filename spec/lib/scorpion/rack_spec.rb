@@ -12,7 +12,7 @@ describe Scorpion::Rack do
     end
 
     expect do
-      request = Rack::MockRequest.new( klass.new() )
+      request = Rack::MockRequest.new( klass.new )
       request.get "/"
     end.to raise_error Scorpion::Rack::MissingScorpionError
   end

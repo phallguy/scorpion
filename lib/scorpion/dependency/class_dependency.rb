@@ -1,4 +1,4 @@
-require 'scorpion/dependency'
+require "scorpion/dependency"
 
 module Scorpion
   class Dependency
@@ -16,7 +16,7 @@ module Scorpion
           dependencies = hunt.dependencies
           return dependencies unless hunt.contract.respond_to? :initializer_injections
 
-          hunt.contract.initializer_injections.each_with_object(dependencies.dup) do |attr,deps|
+          hunt.contract.initializer_injections.each_with_object(dependencies.dup) do |attr, deps|
             next if attr.lazy?
 
             deps[attr.name] ||= hunt.fetch_by_traits( attr.contract, attr.traits )

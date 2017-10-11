@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Test
   module DependencyMap
@@ -8,8 +8,8 @@ module Test
 end
 
 describe Scorpion::DependencyMap do
-  let( :scorpion ){ double Scorpion }
-  let( :map ){ Scorpion::DependencyMap.new scorpion }
+  let( :scorpion ) { double Scorpion }
+  let( :map ) { Scorpion::DependencyMap.new scorpion }
 
   describe "#chart" do
     it "yields itself when arg expected" do

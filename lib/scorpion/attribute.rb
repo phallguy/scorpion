@@ -25,28 +25,34 @@ module Scorpion
     # @!attribute
     # @return [Boolean] true if the attribute is not immediately required and
     #   will be hunted down on first use.
-      def lazy?; @lazy end
+      def lazy?
+        @lazy
+      end
 
     # @!attribute
     # @return [Boolean] true if the attribute should have a public writer.
-      def public?; @public end
+      def public?
+        @public
+      end
 
     # @!attribute
     # @return [Boolean] true if the attribute should have a public writer.
-      def private?; @private end
+      def private?
+        @private
+      end
 
     #
     # @!endgroup Attributes
 
 
-    def initialize( name, contract, traits = nil, options = {} )
+    def initialize( name, contract, traits = nil, lazy: false, public: false, private: false )
       @name      = name.to_sym
       @contract  = contract
       @traits    = Array( traits ).flatten.freeze
-      @trait_set = Set.new( @traits.map{ |t| :"#{t}?" } )
-      @lazy      = options.fetch( :lazy, false )
-      @public    = options.fetch( :public, false )
-      @private   = options.fetch( :private, false )
+      @trait_set = Set.new( @traits.map { |t| :"#{t}?" } )
+      @lazy      = lazy
+      @public    = public
+      @private   = private
     end
 
     def respond_to?( name, include_all = false )
@@ -54,20 +60,21 @@ module Scorpion
     end
 
     private
+
       # @return [Set] the set of traits associated with the attribute pre-processed
       #   to include the trait names with a '?' suffix.
         attr_reader :trait_set
 
-      def method_missing( name, *args )
-        if is_trait_method?( name )
+      def method_missing( name, *args ) # rubocop:disable Style/MethodMissing
+        if trait_method?( name )
           trait_set.include? name
         else
           super
         end
       end
 
-      def is_trait_method?( name )
-        name[-1] == '?'
+      def trait_method?( name )
+        name[-1] == "?"
       end
   end
 end

@@ -1,11 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Scorpion::AttributeSet do
-  let( :set ){ Scorpion::AttributeSet.new }
+  let( :set ) { Scorpion::AttributeSet.new }
 
   it "yields attributes" do
     set.define do
-     apples 'apples'
+     apples "apples"
     end
     expect( set.first ).to be_a Scorpion::Attribute
   end
