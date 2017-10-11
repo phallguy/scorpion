@@ -91,8 +91,8 @@ module Scorpion
         # #create method so only consider it if the owner of the method is the
         # contract itself.
         elsif contract.respond_to?( :create ) && contract.singleton_methods( false ).include?( :create )
-          Scorpion::Dependency::BuilderDependency.new( contract ) do |hunt, *args, **dependencies, &block|
-            contract.create hunt, *args, **dependencies, &block
+          Scorpion::Dependency::BuilderDependency.new( contract ) do |hunt, *args, &block|
+            contract.create hunt, *args, &block
           end
         else
           dependency_class( contract ).new( contract, &builder )

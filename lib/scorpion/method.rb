@@ -20,5 +20,15 @@ module Scorpion
       @scorpion = value
     end
 
+    # @!attribute
+    # @return [Hunt] the scorpion hunt that captured the object.
+    def scorpion_hunt
+      @scorpion_hunt
+    end
+
+    private def scorpion_hunt=( hunt )
+      @scorpion_hunt = hunt
+    end
+
   end
 end

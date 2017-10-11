@@ -37,25 +37,6 @@ describe Scorpion::Hunt do
       hunt.fetch Numeric, nil
       expect( hunt.contract ).to eq String
     end
-
-    it "finds matching argument in parent" do
-      hunt.dependencies[:label] = "Hello"
-
-      expect( hunt.fetch(String) ).to eq "Hello"
-    end
-
-    it "finds matching argument in grandparent" do
-      hunt = Scorpion::Hunt.new scorpion, String, nil, label: "Hello"
-      hunt.send :push, Regexp, [], {}, nil
-
-      expect( scorpion ).to receive( :execute ) do |_|
-        next if hunt.contract == String
-
-        expect( hunt.fetch(String) ).to eq "Hello"
-      end.at_least(:once)
-
-      hunt.fetch Numeric
-    end
   end
 
   describe "#inject" do
@@ -87,6 +68,13 @@ describe Scorpion::Hunt do
     it "does not fetch lazy attributes" do
       hunt.inject target
       expect( target.sailor? ).to be_falsy
+    end
+
+    it "uses the same hunt when lazy fetching" do
+      hunt.inject target
+
+      expect( hunt ).to receive( :fetch ).with( Test::Hunt::Logger )
+      target.sailor
     end
 
     it "invokes on_injected" do

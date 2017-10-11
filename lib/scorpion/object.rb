@@ -41,15 +41,8 @@ module Scorpion
           # Create a new instance of this class with all non-lazy dependencies
           # satisfied.
           # @param [Hunt] hunt that this instance will be used to satisfy.
-          def self.spawn( hunt, *args, **dependencies, &block )
-            object =
-              if dependencies.any?
-                new( *args, **dependencies, &block )
-              else
-                new( *args, &block )
-              end
-
-
+          def self.spawn( hunt, *args, &block )
+            object = new( *args, &block )
             object.send :scorpion=, hunt.scorpion
 
             # Go hunt for dependencies that are not lazy and initialize the
@@ -117,18 +110,10 @@ module Scorpion
 
     module ClassMethods
 
-      # Define an initializer that accepts injections.
-      # @param [Hash] arguments to accept in the initializer.
-      # @yield to initialize itself.
-      def initialize( arguments = {}, &block )
-        Scorpion::ObjectConstructor.new( self, arguments, &block ).define
-      end
-
       # Tells a {Scorpion} what to inject into the class when it is constructed
       # @return [nil]
       # @see AttributeSet#define
-      def depend_on( arguments = nil, &block )
-        Scorpion::ObjectConstructor.new( self, arguments ).define if arguments.present?
+      def depend_on( &block )
         injected_attributes.define &block
         build_injected_attributes
         validate_initializer_injections
@@ -190,7 +175,7 @@ module Scorpion
             def #{ attr.name }
               @#{ attr.name } ||= begin
                 attr = injected_attributes[ :#{ attr.name } ]
-                scorpion.fetch( attr.contract )
+                ( scorpion_hunt || scorpion ).fetch( attr.contract )
               end
             end
 

@@ -29,9 +29,12 @@ module Test
 
       depend_on do
         city City
+        zoo Test::Hunter::Zoo
       end
 
-      initialize( zoo: Test::Hunter::Zoo )
+      def initialize( zoo = nil )
+        self.zoo = zoo
+      end
     end
 
     class City
@@ -39,9 +42,12 @@ module Test
 
       depend_on do
         park Park
+        zoo Test::Hunter::Zoo
       end
 
-      initialize( zoo: Test::Hunter::Zoo )
+      def initialize( zoo = nil )
+        self.zoo = zoo
+      end
     end
 
     class Singleton
@@ -109,17 +115,24 @@ describe Scorpion::Hunter do
 
   context "child dependencies" do
     it "passes initializer args to child dependencies" do
-      zoo  = Test::Hunter::Zoo.new
-      city = hunter.fetch Test::Hunter::City, zoo: zoo
+      zoo  = hunter.new Test::Hunter::Zoo
+      city = hunter.fetch Test::Hunter::City, zoo
 
       expect( city.park.zoo ).to be zoo
     end
 
     it "passes self to child dependencies" do
-      zoo  = Test::Hunter::Zoo.new
-      city = hunter.fetch Test::Hunter::City, zoo: zoo
+      zoo  = hunter.new Test::Hunter::Zoo
+      city = hunter.fetch Test::Hunter::City, zoo
 
       expect( city.park.city ).to be city
+    end
+
+    it "gets a new instance for the same contract on a different hunt" do
+      zoo = hunter.new Test::Hunter::Zoo
+      other_zoo = hunter.new Test::Hunter::Zoo
+
+      expect( zoo ).not_to be other_zoo
     end
   end
 
