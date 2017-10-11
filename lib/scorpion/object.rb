@@ -1,4 +1,4 @@
-require 'scorpion/attribute_set'
+require "scorpion/attribute_set"
 
 module Scorpion
   # Identifies objects that are injected by {Scorpion scorpions} that inject
@@ -92,8 +92,8 @@ module Scorpion
         injected_attributes.each do |attr|
           next unless dependencies.key? attr.name
 
-          if overwrite || !self.send( "#{ attr.name }?" )
-            self.send( "#{ attr.name }=", dependencies[ attr.name ] )
+          if overwrite || !send( "#{ attr.name }?" )
+            send( "#{ attr.name }=", dependencies[ attr.name ] )
           end
         end
 
@@ -107,8 +107,8 @@ module Scorpion
           next unless dependencies.key? attr.name
           val = dependencies.delete( attr.name )
 
-          if overwrite || !self.send( "#{ attr.name }?" )
-            self.send( "#{ attr.name }=", val )
+          if overwrite || !send( "#{ attr.name }?" )
+            send( "#{ attr.name }=", val )
           end
         end
 
@@ -141,7 +141,7 @@ module Scorpion
       def attr_dependency( name, contract, *traits, &block )
         attr = injected_attributes.define_attribute name, contract, *traits, &block
         build_injected_attribute attr
-        set_injected_attribute_visibility attr
+        adjust_injected_attribute_visibility attr
         validate_initializer_injections
         attr
       end
@@ -169,6 +169,7 @@ module Scorpion
       end
 
       private
+
         def validate_initializer_injections
           initializer_injections.each do |attr|
             injected = injected_attributes[ attr.name ]
@@ -181,7 +182,7 @@ module Scorpion
         def build_injected_attributes
           injected_attributes.each do |attr|
             build_injected_attribute attr
-            set_injected_attribute_visibility attr
+            adjust_injected_attribute_visibility attr
           end
         end
 
@@ -204,7 +205,7 @@ module Scorpion
           RUBY
         end
 
-        def set_injected_attribute_visibility( attr )
+        def adjust_injected_attribute_visibility( attr )
           unless attr.public?
             class_eval <<-RUBY, __FILE__, __LINE__ + 1
               private :#{ attr.name }=

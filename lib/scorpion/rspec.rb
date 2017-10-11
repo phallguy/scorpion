@@ -1,8 +1,8 @@
-require 'scorpion'
+require "scorpion"
 
 module Scorpion
   module Rspec
-    require 'scorpion/rspec/helper'
+    require "scorpion/rspec/helper"
 
     def self.scorpion_nest
       @scorpion_nest ||= Scorpion.instance.build_nest

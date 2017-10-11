@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Test
   module Object
@@ -10,7 +10,7 @@ module Test
     class Mamal
       include Scorpion::Object
 
-      def initialize( family, parent = nil, options={}, &block )
+      def initialize( family, parent = nil, options = {}, &block )
         @family    = family
         @parent    = parent
         @options   = inject_from! options
@@ -37,8 +37,9 @@ module Test
         cheese  Test::Object::Logger
         logger  Test::Object::BackLogger
       end
-      def initialize( options = {} )
-        super 'mouse', nil, options
+
+      def initialize( **options )
+        super "mouse", nil, options
       end
     end
 
@@ -53,7 +54,7 @@ end
 
 describe Scorpion::Object do
 
-  let( :scorpion ){ double Scorpion }
+  let( :scorpion ) { double Scorpion }
   let( :hunt )    { double Scorpion::Hunt }
 
   before( :each ) do
@@ -74,7 +75,7 @@ describe Scorpion::Object do
   describe ".spawn" do
 
     it "can spawn" do
-      mamal = Test::Object::Mamal.spawn hunt, 'mouse', 'rodent', name: 'name'
+      mamal = Test::Object::Mamal.spawn hunt, "mouse", "rodent", name: "name"
       expect( mamal ).to be_a Test::Object::Mamal
     end
 
@@ -84,14 +85,14 @@ describe Scorpion::Object do
     end
 
     it "can inherit" do
-      mouse = Test::Object::Mouse.spawn hunt, { name: 'name' }, {}
-      expect( mouse.family ).to eq 'mouse'
-      expect( mouse.options ).to include name: 'name'
+      mouse = Test::Object::Mouse.spawn hunt, { name: "name" }, {}
+      expect( mouse.family ).to eq "mouse"
+      expect( mouse.options ).to include name: "name"
     end
 
     it "yields to constructor" do
       expect do |b|
-        Test::Object::Mouse.spawn hunt, name: 'name', &b
+        Test::Object::Mouse.spawn hunt, name: "name", &b
       end.to yield_control
     end
 
@@ -99,10 +100,10 @@ describe Scorpion::Object do
 
   describe "accessors" do
     let( :object ) do
-      Test::Object::Mamal.spawn hunt, 'harry', 'jim', name: 'name', manager: double
+      Test::Object::Mamal.spawn hunt, "harry", "jim", name: "name", manager: double
     end
 
-    subject{ object }
+    subject { object }
 
     it "defines accessors" do
       expect( object ).to     respond_to :user_service
@@ -110,12 +111,12 @@ describe Scorpion::Object do
     end
 
     it "supports private reader" do
-      expect( object.respond_to? :executive_manager, false ).to be_falsy
-      expect( object.respond_to? :executive_manager, true ).to be_truthy
+      expect( object.respond_to?(:executive_manager, false) ).to be_falsy
+      expect( object.respond_to?(:executive_manager, true) ).to be_truthy
     end
 
     it "supports public writer" do
-      expect( object.respond_to? :manager=, false ).to be_truthy
+      expect( object.respond_to?(:manager=, false) ).to be_truthy
     end
 
     describe "#attr_dependency" do
@@ -130,7 +131,7 @@ describe Scorpion::Object do
       end
     end
 
-    describe  "inheritance" do
+    describe "inheritance" do
       let( :object ) do
         Test::Object::Mouse.spawn hunt
       end
@@ -144,7 +145,7 @@ describe Scorpion::Object do
       end
 
       it "doesn't effect other classes" do
-        expect( Test::Object::Bear.spawn( hunt, 'Yogi' ).injected_attributes[:logger].contract ).to be Test::Object::ColorLogger
+        expect( Test::Object::Bear.spawn( hunt, "Yogi" ).injected_attributes[:logger].contract ).to be Test::Object::ColorLogger # rubocop:disable Metrics/LineLength
       end
 
     end
@@ -154,7 +155,7 @@ describe Scorpion::Object do
   describe "feasting" do
     let( :logger )  { Test::Object::Logger.new }
     let( :options ) { { manager: logger, color: :red } }
-    let( :object )    { Test::Object::Mouse.new name: 'mighty' }
+    let( :object )    { Test::Object::Mouse.new name: "mighty" }
 
 
     describe "#inject_from" do

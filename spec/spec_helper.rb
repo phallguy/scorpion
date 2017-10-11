@@ -1,15 +1,15 @@
-require 'simplecov'
+require "simplecov"
 SimpleCov.start
 
-require 'pry'
-require 'bundler/setup'
-require 'combustion'
+require "pry"
+require "bundler/setup"
+require "combustion"
 
 Combustion.initialize! :all
 
-require 'rspec/rails'
-require 'scorpion'
-require 'scorpion/rspec'
+require "rspec/rails"
+require "scorpion"
+require "scorpion/rspec"
 
 root_path = File.expand_path( "../..", __FILE__ )
 
@@ -29,8 +29,6 @@ RSpec.configure do |config|
   config.after(:each)   { GC.enable }
 
   config.before( :each, type: :model ) do
-    [ Todo, Author ].each do |model|
-      model.destroy_all
-    end
+    [ Todo, Author ].each(&:destroy_all)
   end
 end

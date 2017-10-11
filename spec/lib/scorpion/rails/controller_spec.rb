@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Test
   module Nest
@@ -21,7 +21,7 @@ describe Scorpion::Rails::Controller, type: :controller do
       scorpion.new Test::Nest::Provided
     end
 
-    hunt_for String do |scorpion|
+    hunt_for String do |_scorpion|
       instance_value
     end
 
@@ -45,7 +45,7 @@ describe Scorpion::Rails::Controller, type: :controller do
         capture   Test::Nest::Service # Once per request
 
         share do
-          capture   Test::Nest::Cache   # Once for all requests
+          capture Test::Nest::Cache # Once for all requests
         end
       end
 
@@ -70,9 +70,9 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "stores the scorpion in `env`" do
       expect( subject ).to receive( :assign_scorpion ).and_wrap_original do |method, *args|
         expect( subject.request.env ).to receive( :[]= )
-            .with( Scorpion::Rails::Controller::ENV_KEY, kind_of( Scorpion ) )
-            .at_least( :once )
-            .and_call_original
+          .with( Scorpion::Rails::Controller::ENV_KEY, kind_of( Scorpion ) )
+          .at_least( :once )
+          .and_call_original
 
         method.call( *args )
       end
@@ -114,7 +114,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "spawns the same service during the same request" do
       allow( subject ).to receive( :index ) do
         service = subject.scorpion.fetch Test::Nest::Service
-        expect( subject.scorpion.fetch Test::Nest::Service ).to be service
+        expect( subject.scorpion.fetch(Test::Nest::Service) ).to be service
         controller.render nothing: true
       end
 
@@ -125,7 +125,7 @@ describe Scorpion::Rails::Controller, type: :controller do
       service = subject.service
 
       allow( subject ).to receive( :index ) do
-        expect( subject.scorpion.fetch Test::Nest::Service ).not_to be service
+        expect( subject.scorpion.fetch(Test::Nest::Service) ).not_to be service
         controller.render nothing: true
       end
 

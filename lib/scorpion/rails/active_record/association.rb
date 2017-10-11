@@ -46,11 +46,11 @@ module Scorpion
             next unless klass.instance_methods.include? method
 
             mod = Module.new do
-              module_eval <<-EOS, __FILE__, __LINE__ + 1
+              module_eval <<-RUBY, __FILE__, __LINE__ + 1
                 def #{ method }( *args, &block )
                   sting! super
                 end
-              EOS
+              RUBY
             end
 
             klass.prepend mod

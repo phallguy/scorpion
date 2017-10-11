@@ -1,6 +1,6 @@
-require 'spec_helper'
-require 'scorpion/rspec'
-load 'scorpion/rspec/helper.rb'
+require "spec_helper"
+require "scorpion/rspec"
+load "scorpion/rspec/helper.rb"
 
 Scorpion::Rspec.prepare do
   hunt_for Numeric, return: 42
@@ -24,11 +24,11 @@ describe Scorpion::Rspec::Helper do
   end
 
   it "is configurable" do
-    expect( scorpion.fetch String ).to eq "Shazam!"
+    expect( scorpion.fetch(String) ).to eq "Shazam!"
   end
 
   it "inherits global config" do
-    expect( scorpion.fetch Numeric ).to eq 42
+    expect( scorpion.fetch(Numeric) ).to eq 42
   end
 
   context "hunting" do
@@ -37,15 +37,15 @@ describe Scorpion::Rspec::Helper do
     hunt( :double, Regexp )
     capture( :food, ScorpionRspecHelperSpec::Food )
 
-    specify{ expect( scorpion.fetch Numeric ).to eq 5 }
-    specify{ expect( scorpion.fetch String  ).to eq "hello" }
-    specify{ expect( scorpion.fetch Regexp  ).to be_a RSpec::Mocks::TestDouble }
-    specify{ expect( scorpion.fetch ScorpionRspecHelperSpec::Food ).to be food }
+    specify { expect( scorpion.fetch(Numeric) ).to eq 5 }
+    specify { expect( scorpion.fetch(String)  ).to eq "hello" }
+    specify { expect( scorpion.fetch(Regexp)  ).to be_a RSpec::Mocks::TestDouble }
+    specify { expect( scorpion.fetch(ScorpionRspecHelperSpec::Food) ).to be food }
   end
 
   context "child context" do
     it "inherits" do
-      expect( scorpion.fetch String ).to eq "Shazam!"
+      expect( scorpion.fetch(String) ).to eq "Shazam!"
     end
 
     context "overrides" do
@@ -55,7 +55,7 @@ describe Scorpion::Rspec::Helper do
       end
 
       it "overrides" do
-        expect( scorpion.fetch String ).to eq "KaPow"
+        expect( scorpion.fetch(String) ).to eq "KaPow"
       end
     end
   end

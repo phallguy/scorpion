@@ -33,8 +33,8 @@ module Scorpion
     end
 
     # Expose dependency injection definitions as top-level methods.
-    [:hunt_for,:capture,:share].each do |delegate|
-      define_method delegate do |*args,&block|
+    [:hunt_for, :capture, :share].each do |delegate|
+      define_method delegate do |*args, &block|
         prepare do |hunter|
           hunter.send delegate, *args, &block
         end

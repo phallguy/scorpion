@@ -2,10 +2,10 @@ require "spec_helper"
 require "scorpion/rack/middleware"
 
 describe Scorpion::Rack::Middleware do
-  let(:app)      { proc{ [ 200, {}, [ 'Sting!' ] ] } }
+  let(:app)      { proc { [ 200, {}, [ "Sting!" ] ] } }
   let(:stack)    { Scorpion::Rack::Middleware.new( app ) }
   let(:request)  { Rack::MockRequest.new( stack ) }
-  let(:response) { request.get('/') }
+  let(:response) { request.get("/") }
 
   it "creates a scorpion" do
     expect( stack ).to receive( :prepare_scorpion ).and_call_original
@@ -19,8 +19,8 @@ describe Scorpion::Rack::Middleware do
       app.call( env )
     }
 
-    request  = Rack::MockRequest::new( Scorpion::Rack::Middleware.new( proc ) )
-    request.get '/'
+    request = Rack::MockRequest.new( Scorpion::Rack::Middleware.new( proc ) )
+    request.get "/"
   end
 
   it "frees the scorpion on return" do

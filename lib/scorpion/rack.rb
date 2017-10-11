@@ -5,7 +5,7 @@ module Scorpion
     private
 
       def scorpion( env )
-        env[ Middleware::ENV_KEY ] || fail( MissingScorpionError.new( self.class.name ) )
+        env[ Middleware::ENV_KEY ] || fail( MissingScorpionError, self.class.name )
       end
   end
 end

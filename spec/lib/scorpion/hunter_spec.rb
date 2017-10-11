@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Test
   module Hunter
@@ -70,17 +70,17 @@ describe Scorpion::Hunter do
   end
 
   it "spawns dependency" do
-    expect( hunter.fetch Test::Hunter::Beast ).to be_a Test::Hunter::Beast
+    expect( hunter.fetch(Test::Hunter::Beast) ).to be_a Test::Hunter::Beast
   end
 
   it "spawns a new instance for multiple requests" do
     first = hunter.fetch Test::Hunter::Beast
-    expect( hunter.fetch Test::Hunter::Beast ).not_to be first
+    expect( hunter.fetch(Test::Hunter::Beast) ).not_to be first
   end
 
   it "spawns the same instance for captured dependency" do
     first = hunter.fetch_by_traits Test::Hunter::Beast, :tame
-    expect( hunter.fetch_by_traits Test::Hunter::Beast, :tame ).to be first
+    expect( hunter.fetch_by_traits(Test::Hunter::Beast, :tame) ).to be first
   end
 
   it "injects nested objects" do
@@ -94,11 +94,11 @@ describe Scorpion::Hunter do
   end
 
   it "implicitly spawns Class contracts" do
-    expect( hunter.fetch Test::Hunter::Implicit ).to be_a Test::Hunter::Implicit
+    expect( hunter.fetch(Test::Hunter::Implicit) ).to be_a Test::Hunter::Implicit
   end
 
   it "implicitly spawns Class contracts with empty traits" do
-    expect( hunter.fetch_by_traits Test::Hunter::Implicit, [] ).to be_a Test::Hunter::Implicit
+    expect( hunter.fetch_by_traits(Test::Hunter::Implicit, []) ).to be_a Test::Hunter::Implicit
   end
 
   it "initialize explicit contracts" do
@@ -109,7 +109,7 @@ describe Scorpion::Hunter do
 
   it "delegates hunting definitions" do
     hunter.hunt_for Test::Hunter::Zoo, return: :nyc
-    expect( hunter.fetch Test::Hunter::Zoo ).to eq :nyc
+    expect( hunter.fetch(Test::Hunter::Zoo) ).to eq :nyc
   end
 
   context "child dependencies" do

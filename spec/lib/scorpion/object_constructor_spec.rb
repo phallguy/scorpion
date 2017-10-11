@@ -1,8 +1,8 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Scorpion::ObjectConstructor do
 
-   it 'defines an initializer' do
+   it "defines an initializer" do
       klass = Class.new do
         include Scorpion::Object
 
@@ -10,7 +10,7 @@ describe Scorpion::ObjectConstructor do
       end
 
       expect( klass.instance_method(:initialize).arity ).to eq -1
-    end
+   end
 
     it "executes initializer code" do
       expect do |b|
@@ -28,7 +28,7 @@ describe Scorpion::ObjectConstructor do
       klass = Class.new do
         include Scorpion::Object
 
-        initialize label: String do |label, &block|
+        initialize label: String do |_label, &block|
           block.call
         end
       end
@@ -103,7 +103,7 @@ describe Scorpion::ObjectConstructor do
 
       it "fails if changing attribute without changing initializer" do
         expect do
-          overriden = Class.new( klass ) do
+          Class.new( klass ) do
             attr_dependency :label, Integer
           end
         end.to raise_exception Scorpion::ContractMismatchError
@@ -111,7 +111,7 @@ describe Scorpion::ObjectConstructor do
 
       it "works if changing attribute and changing initializer" do
         expect do
-          overriden = Class.new( klass ) do
+          Class.new( klass ) do
 
             initialize label: Integer
             attr_dependency :label, Integer

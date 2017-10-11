@@ -38,8 +38,8 @@ module Scorpion
     # @param [Array<Symbol>] traits found on the {Dependency}.
     # @return [Dependency] the dependency matching the attribute.
     def find( contract, traits = nil )
-      dependency_set.find{ |p| p.satisfies?( contract, traits ) } ||
-      shared_dependency_set.find{ |p| p.satisfies?( contract, traits ) }
+      dependency_set.find { |p| p.satisfies?( contract, traits ) } ||
+        shared_dependency_set.find { |p| p.satisfies?( contract, traits ) }
     end
 
     # Chart the {Dependency} that this hunting map can {#find}.
@@ -92,7 +92,7 @@ module Scorpion
     # @see #hunt_for
     # @return [Dependency] the dependency to be hunted for.
     def capture( contract, traits = nil, &builder )
-      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, traits, &builder ) )
+      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, traits, &builder ) ) # rubocop:disable Metrics/LineLength
     end
     alias_method :singleton, :capture
 
@@ -127,8 +127,8 @@ module Scorpion
 
     # Remove all dependency mappings.
     def reset
-      @dependency_set.each &:release        if @dependency_set
-      @shared_dependency_set.each &:release if @shared_dependency_set
+      @dependency_set&.each &:release
+      @shared_dependency_set&.each &:release
 
       @dependency_set        = @active_dependency_set = []
       @shared_dependency_set = []

@@ -39,7 +39,7 @@ module Scorpion
       scorpions.each do |hunter|
         begin
           return hunter.execute( hunt, true )
-        rescue UnsuccessfulHunt
+        rescue UnsuccessfulHunt # rubocop:disable Lint/HandleExceptions
         end
       end
 
@@ -47,7 +47,7 @@ module Scorpion
       scorpions.each do |hunter|
         begin
           return hunter.execute( hunt )
-        rescue UnsuccessfulHunt
+        rescue UnsuccessfulHunt # rubocop:disable Lint/HandleExceptions
         end
       end
 

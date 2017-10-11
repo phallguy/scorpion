@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Scorpion::UnsuccessfulHunt do
   it "formats the default message" do

@@ -1,4 +1,4 @@
-require 'scorpion/dependency'
+require "scorpion/dependency"
 
 module Scorpion
   class Dependency
@@ -20,7 +20,7 @@ module Scorpion
         private :specific_dependency
 
 
-      delegate [:contract,:traits,:satisfies?] => :specific_dependency
+      delegate [:contract, :traits, :satisfies?] => :specific_dependency
 
       #
       # @!endgroup Attributes
@@ -41,9 +41,7 @@ module Scorpion
 
       # @see Dependency#replicate
       def replicate
-        dup.tap do |replica|
-          replica.release
-        end
+        dup.tap(&:release)
       end
 
     end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Test
   module ModuleDependency
@@ -6,8 +6,8 @@ module Test
   end
 end
 describe Scorpion::Dependency::ModuleDependency do
-  let( :scorpion ){ double }
-  let( :dependency )    { Scorpion::Dependency::ModuleDependency.new( Test::ModuleDependency::Example ) }
+  let( :scorpion ) { double }
+  let( :dependency ) { Scorpion::Dependency::ModuleDependency.new( Test::ModuleDependency::Example ) }
 
   it "returns the module itself" do
     expect( dependency.fetch( scorpion ) ).to be Test::ModuleDependency::Example

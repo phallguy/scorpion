@@ -2,11 +2,11 @@ module Scorpion
   # Dependency that can be injected into a {Scorpion::Object} by a {Scorpion}.
   class Dependency
 
-    require 'scorpion/dependency/captured_dependency'
-    require 'scorpion/dependency/class_dependency'
-    require 'scorpion/dependency/module_dependency'
-    require 'scorpion/dependency/builder_dependency'
-    require 'scorpion/dependency/argument_dependency'
+    require "scorpion/dependency/captured_dependency"
+    require "scorpion/dependency/class_dependency"
+    require "scorpion/dependency/module_dependency"
+    require "scorpion/dependency/builder_dependency"
+    require "scorpion/dependency/argument_dependency"
 
     # ============================================================================
     # @!group Attributes
@@ -53,15 +53,15 @@ module Scorpion
     def ==( other )
       return unless other
       self.class == other.class &&
-      contract   == other.contract &&
-      traits     == other.traits
+        contract   == other.contract &&
+        traits     == other.traits
     end
     alias_method :eql?, :==
 
     def hash
       self.class.hash ^
-      contract.hash ^
-      traits.hash
+        contract.hash ^
+        traits.hash
     end
 
     def inspect
@@ -89,7 +89,7 @@ module Scorpion
         Array( traits ).all? do |trait|
           case trait
           when Symbol then self.traits.include? trait
-          when Module then self.contract <= trait
+          when Module then contract <= trait
           else fail ArgumentError, "Unsupported trait"
           end
         end
@@ -116,7 +116,7 @@ module Scorpion
         # #create method so only consider it if the owner of the method is the
         # contract itself.
         elsif contract.respond_to?( :create ) && contract.singleton_methods( false ).include?( :create )
-          Scorpion::Dependency::BuilderDependency.new( contract, traits ) do |hunt,*args,**dependencies,&block|
+          Scorpion::Dependency::BuilderDependency.new( contract, traits ) do |hunt, *args, **dependencies, &block|
             contract.create hunt, *args, **dependencies, &block
           end
         else
@@ -125,13 +125,12 @@ module Scorpion
       end
 
       private
+
         def extract_options!( traits )
           case traits
           when Hash then return [ traits, nil ]
           when Array then
-            if traits.last.is_a? Hash
-              return [ traits.pop, traits ]
-            end
+            return [ traits.pop, traits ] if traits.last.is_a? Hash
           end
 
           [ {}, traits]

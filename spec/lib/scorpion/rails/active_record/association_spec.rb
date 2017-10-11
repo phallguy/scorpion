@@ -1,11 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Scorpion::Rails::ActiveRecord::Association, type: :model do
   include Scorpion::Rspec::Helper
 
   before( :each ) do
     author = Author.create! name: "Pitbull"
-    todo   = Todo.create! name: "Be even more awesome", author: author
+    Todo.create! name: "Be even more awesome", author: author
   end
 
   it "shares scorpion with associations" do

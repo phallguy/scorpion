@@ -1,23 +1,23 @@
-require 'i18n'
+require "i18n"
 
-I18n.load_path += Dir[ File.expand_path( '../scorpion/locale/*.yml', __FILE__ ) ]
+I18n.load_path += Dir[ File.expand_path( "../scorpion/locale/*.yml", __FILE__ ) ]
 
 module Scorpion
 
-  require 'scorpion/version'
-  require 'scorpion/error'
-  require 'scorpion/method'
-  require 'scorpion/object'
-  require 'scorpion/object_constructor'
-  require 'scorpion/attribute_set'
-  require 'scorpion/hunter'
-  require 'scorpion/chain_hunter'
-  require 'scorpion/dependency_map'
-  require 'scorpion/hunt'
-  require 'scorpion/dependency'
-  require 'scorpion/nest'
-  require 'scorpion/stinger'
-  require 'scorpion/rails'
+  require "scorpion/version"
+  require "scorpion/error"
+  require "scorpion/method"
+  require "scorpion/object"
+  require "scorpion/object_constructor"
+  require "scorpion/attribute_set"
+  require "scorpion/hunter"
+  require "scorpion/chain_hunter"
+  require "scorpion/dependency_map"
+  require "scorpion/hunt"
+  require "scorpion/dependency"
+  require "scorpion/nest"
+  require "scorpion/stinger"
+  require "scorpion/rails"
 
   # Hunts for an object that satisfies the requested `contract` and `traits`.
   # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
@@ -102,6 +102,7 @@ module Scorpion
   def logger
     @logger || Scorpion.logger
   end
+
   def logger=( value )
     @logger = value
   end
@@ -125,7 +126,7 @@ module Scorpion
 
   def self.instance=( scorpion )
     if @instance_referenced
-      logger.warn "Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion."
+      logger.warn "Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion." # rubocop:disable Metrics/LineLength
       @instance_referenced = false
     end
     @instance = scorpion
@@ -156,6 +157,7 @@ module Scorpion
   def self.logger
     @logger ||= defined?( ::Rails ) ? ::Rails.logger : Logger.new( STDOUT )
   end
+
   def self.logger=( value )
     @logger = value
   end
