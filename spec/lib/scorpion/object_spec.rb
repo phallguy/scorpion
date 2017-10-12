@@ -129,6 +129,16 @@ describe Scorpion::Object do
 
         expect( klass.new ).to respond_to :logger
       end
+
+      it "defines attributes with options" do
+        klass = Class.new do
+          include Scorpion::Object
+
+          attr_dependency :logger, Test::Object::Logger, lazy: true
+        end
+
+        expect( klass.new ).to respond_to :logger
+      end
     end
 
     describe "inheritance" do
