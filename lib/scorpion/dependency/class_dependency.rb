@@ -6,8 +6,9 @@ module Scorpion
     class ClassDependency < Scorpion::Dependency
 
       def fetch( hunt )
-        hunt.scorpion.spawn hunt, hunt.contract, *hunt.arguments, &hunt.block
+        hunt.scorpion.spawn hunt, contract, *hunt.arguments, &hunt.block
       end
+
 
     end
   end

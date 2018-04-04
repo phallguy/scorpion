@@ -5,6 +5,7 @@ module Test
     class Beast; end
     class Bear < Beast; end
     class Lion < Beast; end
+    class Tiger < Beast; end
     class Grizly < Bear; end
     class Argumented
       def initialize( arg )
@@ -53,6 +54,11 @@ module Test
     class Singleton
     end
 
+    class Madonna < Singleton
+    end
+
+    class Cher < Singleton
+    end
   end
 end
 
@@ -61,6 +67,7 @@ describe Scorpion::Hunter do
   let( :hunter ) do
     Scorpion::Hunter.new do
       capture Test::Hunter::Lion
+      capture Test::Hunter::Tiger
 
       hunt_for Test::Hunter::Bear
       hunt_for Test::Hunter::Grizly
@@ -69,7 +76,8 @@ describe Scorpion::Hunter do
       hunt_for Test::Hunter::Zoo
 
       share do
-        capture Test::Hunter::Singleton
+        capture Test::Hunter::Madonna
+        capture Test::Hunter::Cher
       end
     end
   end
@@ -86,6 +94,29 @@ describe Scorpion::Hunter do
   it "spawns the same instance for captured dependency" do
     first = hunter.fetch Test::Hunter::Lion
     expect( hunter.fetch(Test::Hunter::Lion) ).to be first
+  end
+
+  it "does not capture a sibling dependency" do
+    first = hunter.fetch Test::Hunter::Lion
+    expect( hunter.fetch(Test::Hunter::Tiger) ).not_to be first
+    expect( hunter.fetch(Test::Hunter::Tiger) ).to be_a Test::Hunter::Tiger
+  end
+
+  it "does not share a captured sibling dependency" do
+    singer = hunter.fetch Test::Hunter::Madonna
+    expect( hunter.fetch( Test::Hunter::Cher ) ).not_to be singer
+    expect( hunter.fetch( Test::Hunter::Cher ) ).to be_a Test::Hunter::Cher
+  end
+
+  it "does not share a captured ancestor dependency" do
+    singer = hunter.fetch Test::Hunter::Singleton
+    expect( hunter.fetch( Test::Hunter::Madonna ) ).not_to be singer
+    expect( hunter.fetch( Test::Hunter::Madonna ) ).to be_a Test::Hunter::Madonna
+  end
+
+  it "captures derived dependency" do
+    singer = hunter.fetch Test::Hunter::Singleton
+    expect( singer ).to be_a Test::Hunter::Cher
   end
 
   it "injects nested objects" do
