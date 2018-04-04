@@ -117,11 +117,14 @@ module Scorpion
 
   def self.instance=( scorpion )
     if @instance_referenced
-      logger.warn "Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion." # rubocop:disable Metrics/LineLength
+      logger.warn "Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion." if warn_global_replace # rubocop:disable Metrics/LineLength
       @instance_referenced = false
     end
     @instance = scorpion
   end
+
+  cattr_accessor :warn_global_replace
+  self.warn_global_replace = true
 
   # Prepare the {#instance} for hunting.
   # @param [Boolean] reset true to free all existing resource and initialize a
