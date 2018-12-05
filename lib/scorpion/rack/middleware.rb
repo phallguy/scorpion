@@ -4,7 +4,7 @@ module Scorpion
   module Rack
     class Middleware
 
-      ENV_KEY = "scorpion.rack.instance".freeze
+      ENV_KEY = "scorpion.instance".freeze
 
       def initialize( app, nest = nil )
         @app  = app

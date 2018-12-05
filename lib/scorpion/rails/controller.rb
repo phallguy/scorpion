@@ -6,7 +6,7 @@ module Scorpion
     # Adds a scorpion nest to support injection into rails controllers.
     module Controller
 
-      ENV_KEY = "scorpion.controller.instance".freeze
+      ENV_KEY = "scorpion.instance".freeze
 
 
       # Fetch an object from the controller's {#scorpion}.
