@@ -8,13 +8,23 @@ module Scorpion
 
       def initialize( app, nest = nil )
         @app  = app
-        @nest = nest || Scorpion.instance.build_nest
+        @nest = nest
       end
 
       def call( env )
-        env[ENV_KEY] = prepare_scorpion( nest.conceive, env )
+        # If we don't have a nest yet, build one from the configured global
+        # scorpion.
+        @nest ||= Scorpion.instance.build_nest
+
+        conceived = false
+        env[ENV_KEY] ||=
+          begin
+            conceived = true
+            prepare_scorpion( nest.conceive, env )
+          end
+
         @app.call(env).tap do
-          free_scorpion( env )
+          free_scorpion( env ) if conceived
         end
       end
 
