@@ -8,7 +8,6 @@ module Scorpion
 
       ENV_KEY = "scorpion.instance".freeze
 
-
       # Fetch an object from the controller's {#scorpion}.
       # @see Scorpion#fetch
       def fetch( *args, &block )
@@ -71,6 +70,8 @@ module Scorpion
         end
 
         def free_scorpion
+          return unless conceived_scorpion?
+
           scorpion.try( :destroy )
           request.env.delete ENV_KEY
         end

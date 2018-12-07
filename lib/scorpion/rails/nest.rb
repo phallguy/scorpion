@@ -101,7 +101,12 @@ module Scorpion
       end
 
       def conceive_scorpion
+        @conceived_scorpion = true
         nest.conceive
+      end
+
+      def conceived_scorpion?
+        !!@conceived_scorpion
       end
 
       def append_instance_hunts( scorpion )
