@@ -130,7 +130,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
     rainbow (3.0.0)
-    rake (10.5.0)
+    rake (12.3.2)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -199,7 +199,7 @@ DEPENDENCIES
   pry-byebug
   rails (~> 5)
   rails-controller-testing
-  rake (~> 10)
+  rake (~> 12)
   rspec (~> 3.00)
   rspec-rails (~> 3.00)
   rubocop
