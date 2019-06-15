@@ -5,21 +5,20 @@ gemspec
 
 group :test do
 
-  gem "rails", "~> 4.2"
+  gem "rails", "~> 5"
+  gem "rails-controller-testing"
 
-  gem "guard", "~> 2.12.8"
   gem "spring"
   gem "byebug"
   gem "pry-byebug"
-  gem "guard-rspec"
   gem "fuubar"
   gem "yard"
   gem "simplecov"
-  gem "ruby_gntp", "~> 0.3.4"
+  gem "ruby_gntp"
   gem "awesome_print"
-  gem "nokogiri", "~>1.8.2"
+  gem "nokogiri"
 
-  gem "rubocop", "~> 0.50.0"
+  gem "rubocop"
 
   gem "codeclimate-test-reporter", require: nil
 end
