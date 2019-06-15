@@ -17,7 +17,7 @@ group :test do
   gem "simplecov"
   gem "ruby_gntp", "~> 0.3.4"
   gem "awesome_print"
-  gem "nokogiri", "~>1.8.2"
+  gem "nokogiri", "~>1.10.3"
 
   gem "rubocop", "~> 0.50.0"
 
