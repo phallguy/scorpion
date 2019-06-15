@@ -28,7 +28,8 @@ describe Scorpion::Rails::Controller, type: :controller do
     def index
       @guard1 = scorpion.fetch Test::Nest::Guard
       @guard2 = scorpion.fetch Test::Nest::Guard
-      render nothing: true
+
+      render json: "{}"
     end
 
     private
@@ -69,6 +70,7 @@ describe Scorpion::Rails::Controller, type: :controller do
 
     it "stores the scorpion in `env`" do
       expect( subject ).to receive( :assign_scorpion ).and_wrap_original do |method, *args|
+        allow( subject.request.env ).to receive( :[]= )
         expect( subject.request.env ).to receive( :[]= )
           .with( Scorpion::Rails::Controller::ENV_KEY, kind_of( Scorpion ) )
           .at_least( :once )
@@ -81,7 +83,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     end
 
     it "prepares a scorpion outside of a request when accessed" do
-      expect( subject.env[Scorpion::Rails::Controller::ENV_KEY] ).to be_nil
+      expect( subject.request.env[Scorpion::Rails::Controller::ENV_KEY] ).to be_nil
       expect( subject.scorpion ).not_to be_nil
     end
 
@@ -115,7 +117,7 @@ describe Scorpion::Rails::Controller, type: :controller do
       allow( subject ).to receive( :index ) do
         service = subject.scorpion.fetch Test::Nest::Service
         expect( subject.scorpion.fetch(Test::Nest::Service) ).to be service
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
@@ -126,7 +128,7 @@ describe Scorpion::Rails::Controller, type: :controller do
 
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion.fetch(Test::Nest::Service) ).not_to be service
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
@@ -135,7 +137,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "hunts for controller" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion.fetch( AbstractController::Base ) ).to be subject
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
@@ -144,7 +146,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "hunts for response" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion.fetch( ActionDispatch::Response ) ).to be subject.response
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
@@ -153,7 +155,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "hunts for request" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion.fetch( ActionDispatch::Request ).object_id ).to be subject.request.object_id
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
@@ -162,7 +164,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "hunts for rack env" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion.fetch( Scorpion::Rack::Env ) ).to be_present
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
@@ -171,7 +173,7 @@ describe Scorpion::Rails::Controller, type: :controller do
     it "scopes relations" do
       allow( subject ).to receive( :index ) do
         expect( subject.scorpion( Todo ).all.scorpion ).to be subject.scorpion
-        controller.render nothing: true
+        controller.render json: "{}"
       end
 
       get :index
