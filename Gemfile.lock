@@ -43,7 +43,7 @@ GEM
       tzinfo (~> 1.1)
     arel (6.0.4)
     ast (2.3.0)
-    awesome_print (1.7.0)
+    awesome_print (1.8.0)
     builder (3.2.3)
     byebug (9.0.5)
     codeclimate-test-reporter (1.0.4)
