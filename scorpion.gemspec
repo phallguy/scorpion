@@ -13,7 +13,10 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/phallguy/scorpion"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z 2>/dev/null`.split("\x0")
+  spec.files = Dir["lib/**/*.rb"] + Dir["bin/*"]
+  spec.files += Dir["[A-Z]*"] + Dir["spec/**/*"]
+  spec.files.reject! { |fn| fn.include? ".git" }
+
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
