@@ -19,7 +19,7 @@ module Scorpion
 
                   private
 
-                    def method_missing( *args, &block ) # rubocop:disable Style/MethodMissing
+                    def method_missing( *args, &block ) # rubocop:disable Style/MethodMissingSuper
                       @__stinger__.sting! @__instance__.__send__( *args, &block )
                     end
                 end

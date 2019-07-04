@@ -31,7 +31,7 @@ module Scorpion
 
       # @see Dependency#fetch
       def fetch( hunt )
-        @instance ||= specific_dependency.fetch( hunt )
+        @instance ||= specific_dependency.fetch( hunt ) # rubocop:disable Naming/MemoizedInstanceVariableName
       end
 
       # @see Dependency#release

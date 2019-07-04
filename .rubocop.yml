@@ -79,9 +79,6 @@ Layout/EmptyLinesAroundClassBody:
 Layout/EmptyLinesAroundModuleBody:
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
 Style/DoubleNegation:
   Enabled: false
 
@@ -94,7 +91,7 @@ Style/GuardClause:
 Style/HashSyntax:
   Enabled: false
 
-Layout/IndentArray:
+Layout/IndentFirstArrayElement:
   Enabled: false
 
 Layout/IndentationConsistency:
@@ -148,6 +145,18 @@ Layout/SpaceInsideStringInterpolation:
 Layout/SpaceInsidePercentLiteralDelimiters:
   Enabled: false
 
+Layout/SpaceInsideReferenceBrackets:
+  Enabled: false
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Style/MissingRespondToMissing:
+  Enabled: false
+
 Style/SpecialGlobalVars:
   Enabled: false
 
@@ -160,7 +169,7 @@ Style/StringLiterals:
 Layout/TrailingBlankLines:
   Enabled: false
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
   Enabled: false
 
 Style/WhileUntilModifier:
@@ -173,4 +182,13 @@ Style/CaseEquality:
   Enabled: false
 
 Style/WordArray:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+Style/ExpandPathArguments:
   Enabled: false
