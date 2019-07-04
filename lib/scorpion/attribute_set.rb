@@ -86,7 +86,7 @@ module Scorpion
 
     private
 
-      def method_missing( name, *args ) # rubocop:disable Style/MethodMissing
+      def method_missing( name, *args )
         return super unless @defining_attributes
 
         if args.length >= 1
