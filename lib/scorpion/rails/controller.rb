@@ -32,6 +32,10 @@ module Scorpion
         base.around_action :with_scorpion
 
         base.class_eval do
+          if respond_to?( :helper_method )
+            helper_method :scorpion
+          end
+
           # Defined here to override the #scorpion method provided by Scorpion::Object.
           def scorpion( scope = nil )
             if scope
