@@ -65,7 +65,7 @@ module Scorpion
 
       # @return [Boolean] true if the pray satisfies the given contract.
       def satisfies_contract?( contract )
-        if self.contract.is_a? Symbol
+        if self.contract.is_a?(Symbol) || contract.is_a?(Symbol)
           self.contract == contract
         else
           self.contract <= contract
