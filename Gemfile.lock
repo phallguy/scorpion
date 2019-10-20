@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    scorpion-ioc (1.0.8)
+    scorpion-ioc (1.0.10)
       rails (>= 4.0)
 
 GEM
