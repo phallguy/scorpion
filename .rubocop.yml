@@ -3,11 +3,9 @@ AllCops:
 
   Exclude:
     - "**/node_modules/**/*"
-    - "api/bin/*"
-    - "api/db/schema.rb"
-    - "api/vendor/**/*"
-    - ".*"
-    - "/**/.*"
+    - "bin/*"
+    - "db/schema.rb"
+    - "vendor/**/*"
 
 
 Bundler/OrderedGems:
@@ -131,9 +129,6 @@ Style/PercentLiteralDelimiters:
   Enabled: false
 
 Layout/SpaceAroundOperators:
-  Enabled: false
-
-Layout/SpaceInsideBrackets:
   Enabled: false
 
 Layout/SpaceInsideParens:

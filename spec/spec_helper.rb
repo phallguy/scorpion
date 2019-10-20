@@ -5,7 +5,9 @@ require "pry"
 require "bundler/setup"
 require "combustion"
 
-Combustion.initialize! :all
+Combustion.initialize! :all do
+  config.active_record.sqlite3.represent_boolean_as_integer = true
+end
 
 require "rspec/rails"
 require "scorpion"

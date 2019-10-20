@@ -14,11 +14,11 @@ group :test do
   gem "fuubar"
   gem "yard"
   gem "simplecov"
-  gem "ruby_gntp"
   gem "awesome_print"
   gem "nokogiri"
 
   gem "rubocop"
 
   gem "codeclimate-test-reporter", require: nil
+  gem "rspec_junit_formatter", platforms: :mri
 end

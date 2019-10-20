@@ -7,22 +7,22 @@ module Scorpion
       return instance unless instance
 
       klass = @wrappers[instance.class] ||=
-                Class.new( instance.class ) do
-                  def initialize( instance, stinger )
-                    @__instance__ = instance
-                    @__stinger__  = stinger
-                  end
+        Class.new( instance.class ) do
+          def initialize( instance, stinger )
+            @__instance__ = instance
+            @__stinger__  = stinger
+          end
 
-                  def respond_to?( *args )
-                    @__instance__.respond_to?( *args )
-                  end
+          def respond_to?( *args )
+            @__instance__.respond_to?( *args )
+          end
 
-                  private
+          private
 
-                    def method_missing( *args, &block ) # rubocop:disable Style/MethodMissingSuper
-                      @__stinger__.sting! @__instance__.__send__( *args, &block )
-                    end
-                end
+            def method_missing( *args, &block ) # rubocop:disable Style/MethodMissingSuper
+              @__stinger__.sting! @__instance__.__send__( *args, &block )
+            end
+        end
 
       klass.new instance, stinger
     end
