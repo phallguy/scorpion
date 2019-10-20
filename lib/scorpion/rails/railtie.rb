@@ -6,9 +6,9 @@ module Scorpion
     class Railtie < ::Rails::Railtie
 
       initializer "scorpion.configure" do |_app|
-        ::ActionController::Base.send :include, Scorpion::Rails::Controller if defined? ::ActionController
-        ::ActiveJob::Base.send :include, Scorpion::Rails::Job if defined? ::ActiveJob
-        ::ActionMailer::Base.send :include, Scorpion::Rails::Mailer if defined? ::ActionMailer
+        ::ActionController::Base.include Scorpion::Rails::Controller if defined? ::ActionController
+        ::ActiveJob::Base.include Scorpion::Rails::Job if defined? ::ActiveJob
+        ::ActionMailer::Base.include Scorpion::Rails::Mailer if defined? ::ActionMailer
 
         ::Scorpion::Rails::ActiveRecord.install! if defined? ::ActiveRecord
       end
