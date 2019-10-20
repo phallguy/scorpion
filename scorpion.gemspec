@@ -14,6 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["lib/**/*.rb"] + Dir["bin/*"]
   spec.files += Dir["[A-Z]*"] + Dir["spec/**/*"]
+  spec.files << "scorpion.gemspec"
   spec.files.reject! { |fn| fn.include? ".git" }
 
   spec.executables = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
