@@ -170,7 +170,7 @@ Style/TrailingCommaInArrayLiteral:
 Style/WhileUntilModifier:
   Enabled: false
 
-Style/UnneededInterpolation:
+Style/RedundantInterpolation:
   Enabled: false
 
 Style/CaseEquality:
