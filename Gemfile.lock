@@ -189,7 +189,7 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
-  bundler (~> 1.6)
+  bundler (~> 2)
   byebug
   codeclimate-test-reporter
   combustion (~> 1)
@@ -210,4 +210,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.17.3
+   2.1.4
