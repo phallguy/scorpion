@@ -179,10 +179,12 @@ GEM
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
     unicode-display_width (1.6.0)
+    webrick (1.7.0)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    yard (0.9.26)
+    yard (0.9.27)
+      webrick (~> 1.7.0)
 
 PLATFORMS
   ruby
@@ -200,7 +202,7 @@ DEPENDENCIES
   rails-controller-testing
   rake (~> 13)
   rspec (~> 3.00)
-  rspec-rails (~> 5.0)
+  rspec-rails (~> 5)
   rspec_junit_formatter
   rubocop
   scorpion-ioc!
