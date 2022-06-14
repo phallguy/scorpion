@@ -173,7 +173,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    sqlite3 (1.4.2)
+    sqlite3 (1.4.3)
     thor (1.1.0)
     thread_safe (0.3.6)
     tzinfo (1.2.9)
@@ -200,7 +200,7 @@ DEPENDENCIES
   rails-controller-testing
   rake (~> 13)
   rspec (~> 3.00)
-  rspec-rails (~> 5.0)
+  rspec-rails (~> 5)
   rspec_junit_formatter
   rubocop
   scorpion-ioc!
