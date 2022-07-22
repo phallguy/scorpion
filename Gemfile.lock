@@ -176,7 +176,7 @@ GEM
     sqlite3 (1.4.2)
     thor (1.1.0)
     thread_safe (0.3.6)
-    tzinfo (1.2.9)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     unicode-display_width (1.6.0)
     websocket-driver (0.7.3)
@@ -200,7 +200,7 @@ DEPENDENCIES
   rails-controller-testing
   rake (~> 13)
   rspec (~> 3.00)
-  rspec-rails (~> 5.0)
+  rspec-rails (~> 5)
   rspec_junit_formatter
   rubocop
   scorpion-ioc!
