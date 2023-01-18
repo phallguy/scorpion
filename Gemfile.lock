@@ -96,7 +96,7 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    rack (2.2.3)
+    rack (2.2.6.2)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (5.2.6)
@@ -200,7 +200,7 @@ DEPENDENCIES
   rails-controller-testing
   rake (~> 13)
   rspec (~> 3.00)
-  rspec-rails (~> 5.0)
+  rspec-rails (~> 5)
   rspec_junit_formatter
   rubocop
   scorpion-ioc!
