@@ -76,7 +76,7 @@ module Scorpion
     #   of the injected object.
     # @return [Attribute] the attribute that was created.
     def define_attribute( name, contract, **options )
-      attributes[name.to_sym] = Attribute.new name, contract, options
+      attributes[name.to_sym] = Attribute.new name, contract, **options
     end
 
 
@@ -86,11 +86,11 @@ module Scorpion
 
     private
 
-      def method_missing( name, *args )
+      def method_missing( name, *args, **kwargs )
         return super unless @defining_attributes
 
         if args.length >= 1
-          define_attribute name, *args
+          define_attribute name, *args, **kwargs
         else
           super
         end

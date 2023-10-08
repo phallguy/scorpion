@@ -41,8 +41,8 @@ module Scorpion
           # Create a new instance of this class with all non-lazy dependencies
           # satisfied.
           # @param [Hunt] hunt that this instance will be used to satisfy.
-          def self.spawn( hunt, *args, &block )
-            object = new( *args, &block )
+          def self.spawn( hunt, *args, **kwargs, &block )
+            object = new( *args, **kwargs, &block )
             object.send :scorpion=, hunt.scorpion
 
             # Go hunt for dependencies that are not lazy and initialize the

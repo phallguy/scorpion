@@ -6,7 +6,7 @@ class Todo < ActiveRecord::Base
 
   # @!attribute
   # @return [Author] name
-    belongs_to :author, inverse_of: :todos
+    belongs_to :author, inverse_of: :todos, optional: true
 
 
 

@@ -10,7 +10,7 @@ module Test
     class Mamal
       include Scorpion::Object
 
-      def initialize( family, parent = nil, options = {}, &block )
+      def initialize( family, parent = nil, **options, &block )
         @family    = family
         @parent    = parent
         @options   = inject_from! options
@@ -39,7 +39,7 @@ module Test
       end
 
       def initialize( **options )
-        super "mouse", nil, options
+        super "mouse", nil, **options
       end
     end
 

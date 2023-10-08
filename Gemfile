@@ -16,6 +16,7 @@ group :test do
   gem "nokogiri"
 
   gem "rubocop"
+  gem "debug"
 
   gem "rspec_junit_formatter", platforms: :mri
 end
