@@ -6,7 +6,7 @@ module Scorpion
     private
 
       def translate( key, **args )
-        I18n.translate key, args.merge( scope: [:scorpion, :errors, :messages] )
+        I18n.translate key, **args.merge( scope: [:scorpion, :errors, :messages] )
       end
 
   end

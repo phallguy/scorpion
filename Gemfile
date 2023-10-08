@@ -5,12 +5,10 @@ gemspec
 
 group :test do
 
-  gem "rails", "~> 5"
+  gem "rails", "~> 7"
   gem "rails-controller-testing"
 
   gem "spring"
-  gem "byebug"
-  gem "pry-byebug"
   gem "fuubar"
   gem "yard"
   gem "simplecov"
@@ -18,7 +16,7 @@ group :test do
   gem "nokogiri"
 
   gem "rubocop"
+  gem "debug"
 
-  gem "codeclimate-test-reporter", require: nil
   gem "rspec_junit_formatter", platforms: :mri
 end
