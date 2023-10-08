@@ -3,8 +3,9 @@ require "simplecov"
 require "bundler/setup"
 require "combustion"
 
-Combustion.initialize! :all do
+Combustion.initialize! :active_record, :action_controller, :active_job, :action_mailer do 
   # config.active_record.sqlite3.represent_boolean_as_integer = true
+  config.load_defaults 7.0
 end
 
 require "rspec/rails"

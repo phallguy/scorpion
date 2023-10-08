@@ -17,6 +17,5 @@ group :test do
 
   gem "rubocop"
 
-  gem "codeclimate-test-reporter", require: nil
   gem "rspec_junit_formatter", platforms: :mri
 end

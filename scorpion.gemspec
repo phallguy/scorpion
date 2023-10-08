@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "combustion", "~> 1"
   spec.add_development_dependency "rake", "~> 13"
   spec.add_development_dependency "rspec", "~> 3.00"
-  spec.add_development_dependency "rspec-rails", "~> 5"
+  spec.add_development_dependency "rspec-rails", "~> 6"
   spec.add_development_dependency "sqlite3"
 end
