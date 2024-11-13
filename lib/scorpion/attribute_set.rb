@@ -4,35 +4,33 @@ module Scorpion
   class AttributeSet
     include Enumerable
 
-    def initialize( attributes = {} )
+    def initialize(attributes = {})
       @attributes = attributes
     end
 
-    def []( key )
-      attributes.fetch( key )
+    def [](key)
+      attributes.fetch(key)
     end
 
-    def each( &block )
-      attributes.each_value do |v|
-        yield v
-      end
+    def each(&block)
+      attributes.each_value(&block)
     end
 
     # Merge two sets and create another.
-    def merge( other )
-      AttributeSet.new attributes.merge( other.attributes )
+    def merge(other)
+      AttributeSet.new(attributes.merge(other.attributes))
     end
-    alias_method :|, :merge
+    alias | merge
 
     # Inherit attribute definitions from another set.
-    def inherit!( other )
+    def inherit!(other)
       other.each do |attr|
         attributes[attr.name] ||= attr
       end
     end
 
-    def key?( name )
-      attributes.key? name
+    def key?(name)
+      attributes.key?(name)
     end
 
     # Defines the food that {Scorpion::Object} will feed on. A food is defined by
@@ -54,14 +52,14 @@ module Scorpion
     #   define do
     #     logger Rails::Logger, :color
     #   end
-    def define( &block )
+    def define(&block)
       return unless block_given?
 
       @defining_attributes = true
       if block.arity == 1
         yield self
       else
-        instance_eval &block
+        instance_eval(&block)
       end
 
       self
@@ -75,10 +73,9 @@ module Scorpion
     # @param [Class,Module,Symbol] contract that describes the desired behavior
     #   of the injected object.
     # @return [Attribute] the attribute that was created.
-    def define_attribute( name, contract, **options )
-      attributes[name.to_sym] = Attribute.new name, contract, options
+    def define_attribute(name, contract, **options)
+      attributes[name.to_sym] = Attribute.new(name, contract, **options)
     end
-
 
     protected
 
@@ -86,17 +83,14 @@ module Scorpion
 
     private
 
-      def method_missing( name, *args )
+      def method_missing(name, *args, **kwargs)
         return super unless @defining_attributes
 
         if args.length >= 1
-          define_attribute name, *args
+          define_attribute(name, *args, **kwargs)
         else
           super
         end
       end
-
-
-
   end
 end

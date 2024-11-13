@@ -25,10 +25,10 @@ describe Scorpion::Rails::Job do
     compass = Test::Job::Compass.new
 
     Test::Job::Journey.scorpion_nest do |hunter|
-      hunter.hunt_for Test::Job::Compass, return: compass
+      hunter.hunt_for(Test::Job::Compass, return: compass)
     end
 
-    expect( compass ).to receive( :directions )
+    expect(compass).to(receive(:directions))
     Test::Job::Journey.perform_now
   end
 end

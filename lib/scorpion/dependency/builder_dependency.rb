@@ -5,28 +5,26 @@ module Scorpion
     # {Dependency} that delegates to another object that implements
     # #call( scorpion, *args, &block ).
     class BuilderDependency < Scorpion::Dependency
-
       # ============================================================================
       # @!group Attributes
       #
 
       # @!attribute
       # @return [#call(scorpion,*args,&block)] the builder to use to fetch instances of the dependency.
-        attr_reader :builder
+      attr_reader :builder
 
       #
       # @!endgroup Attributes
 
-      def initialize( contract, builder = nil, &block )
+      def initialize(contract, builder = nil, &block)
         @builder = block_given? ? block : builder
-        super contract
+        super(contract)
       end
 
       # @see Scorpion::Dependency#fetch
-      def fetch( hunt )
-        builder.call( hunt, *hunt.arguments, &hunt.block )
+      def fetch(hunt)
+        builder.call(hunt, *hunt.arguments, &hunt.block)
       end
-
     end
   end
 end

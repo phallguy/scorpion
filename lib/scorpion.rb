@@ -1,9 +1,9 @@
 require "i18n"
+require "active_support"
 
-I18n.load_path += Dir[ File.expand_path( "../scorpion/locale/*.yml", __FILE__ ) ]
+I18n.load_path += Dir[File.expand_path("scorpion/locale/*.yml", __dir__)]
 
 module Scorpion
-
   require "scorpion/version"
   require "scorpion/error"
   require "scorpion/method"
@@ -23,9 +23,9 @@ module Scorpion
   # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
   # @return [Object] an object that satisfies the contract.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def fetch( contract, *arguments, &block )
-    hunt = Hunt.new( self, contract, *arguments, &block )
-    execute hunt
+  def fetch(contract, *arguments, &block)
+    hunt = Hunt.new(self, contract, *arguments, &block)
+    execute(hunt)
   end
 
   # Creates a new object and feeds it it's dependencies.
@@ -33,20 +33,20 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def spawn( hunt, object_class, *arguments, &block )
+  def spawn(hunt, object_class, *arguments, &block)
     if object_class < Scorpion::Object
-      object_class.spawn hunt, *arguments, &block
+      object_class.spawn(hunt, *arguments, &block)
     else
-      object_class.new *arguments, &block
+      object_class.new(*arguments, &block)
     end
   end
 
   # Inject the {#target} with all non-lazy dependencies.
   # @param [Scorpion::Object] target to inject.
   # @return [target]
-  def inject( target )
-    hunt = Scorpion::Hunt.new self, nil
-    hunt.inject target
+  def inject(target)
+    hunt = Scorpion::Hunt.new(self, nil)
+    hunt.inject(target)
 
     target
   end
@@ -55,23 +55,23 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def new( object_class, *arguments, &block )
-    hunt = Hunt.new( self, object_class, *arguments, &block )
-    Scorpion::Dependency::ClassDependency.new( object_class ).fetch( hunt )
+  def new(object_class, *arguments, &block)
+    hunt = Hunt.new(self, object_class, *arguments, &block)
+    Scorpion::Dependency::ClassDependency.new(object_class).fetch(hunt)
   end
 
   # Execute the `hunt` returning the desired dependency.
   # @param [Hunt] hunt to execute.
   # @return [Object] an object that satisfies the hunt contract.
-  def execute( hunt )
-    fail "Not implemented"
+  def execute(_hunt)
+    raise("Not implemented")
   end
 
   # Creates a new {Scorpion} copying the current configuration any any currently
   # captured dependency.
   # @return [Scorpion] the replicated scorpion.
-  def replicate( &block )
-    fail "Not implemented"
+  def replicate
+    raise("Not implemented")
   end
 
   # Free up any captured dependency and release any long-held resources.
@@ -80,12 +80,11 @@ module Scorpion
   end
 
   # Reset the hunting map and clear all dependencies.
-  def reset
-  end
+  def reset; end
 
   # @return [Scorpion::Nest] a nest that uses this scorpion as the mother.
   def build_nest
-    Scorpion::Nest.new( self )
+    Scorpion::Nest.new(self)
   end
 
   # @!attribute
@@ -94,7 +93,7 @@ module Scorpion
     @logger || Scorpion.logger
   end
 
-  def logger=( value )
+  def logger=(value)
     @logger = value
   end
 
@@ -115,9 +114,9 @@ module Scorpion
   @instance = Scorpion::Hunter.new
   @instance_referenced = false
 
-  def self.instance=( scorpion )
+  def self.instance=(scorpion)
     if @instance_referenced
-      logger.warn "Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion." if warn_global_replace # rubocop:disable Metrics/LineLength
+      logger.warn("Replacing the global Scorpion.instance will not update any Scorpion::Nest instances created with the original scorpion.") if warn_global_replace
       @instance_referenced = false
     end
     @instance = scorpion
@@ -129,37 +128,35 @@ module Scorpion
   # Prepare the {#instance} for hunting.
   # @param [Boolean] reset true to free all existing resource and initialize a
   #   new scorpion.
-  def self.prepare( reset = false, &block )
+  def self.prepare(reset = false, &block)
     @instance.reset if reset
-    instance.prepare &block
+    instance.prepare(&block)
   end
 
   # Hunt for dependency from the primary Scorpion {#instance}.
   # @see #fetch
-  def self.fetch( dependencies, &block )
-    instance.fetch dependencies, &block
+  def self.fetch(dependencies, &block)
+    instance.fetch(dependencies, &block)
   end
 
   # @!attribute logger
   # @return [Logger] logger for the Scorpion framework to use.
   def self.logger
-    @logger ||= defined?( ::Rails ) ? ::Rails.logger : Logger.new( STDOUT )
+    @logger ||= defined?(::Rails) ? ::Rails.logger : Logger.new(STDOUT)
   end
 
-  def self.logger=( value )
+  def self.logger=(value)
     @logger = value
   end
 
   #
   # @!endgroup Convenience Methods
 
-
   private
 
     # Used by concrete scorpions to notify the caller that the hunt was
     # unsuccessful.
-    def unsuccessful_hunt( contract )
-      fail UnsuccessfulHunt, contract
+    def unsuccessful_hunt(contract)
+      raise(UnsuccessfulHunt, contract)
     end
-
 end

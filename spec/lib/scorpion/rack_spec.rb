@@ -6,14 +6,14 @@ describe Scorpion::Rack do
     klass = Class.new do
       include Scorpion::Rack
 
-      def call( env )
-        scorpion( env )
+      def call(env)
+        scorpion(env)
       end
     end
 
     expect do
-      request = Rack::MockRequest.new( klass.new )
+      request = Rack::MockRequest.new(klass.new)
       request.get "/"
-    end.to raise_error Scorpion::Rack::MissingScorpionError
+    end.to(raise_error(Scorpion::Rack::MissingScorpionError))
   end
 end

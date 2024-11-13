@@ -11,27 +11,26 @@ module Scorpion
 
       # @!attribute
       # @return [Object] the instance that was captured.
-        attr_reader :instance
+      attr_reader :instance
 
       # @!attribute
       # @return [Scorpion::Dependency] the actual dependency to hunt. Used to fetch the
       #   single {#instance}.
-        attr_reader :specific_dependency
-        private :specific_dependency
+      attr_reader :specific_dependency
+      private :specific_dependency
 
-
-      delegate [ :contract, :satisfies? ] => :specific_dependency
+      delegate %i[contract satisfies?] => :specific_dependency
 
       #
       # @!endgroup Attributes
 
-      def initialize( specific_dependency )
+      def initialize(specific_dependency)
         @specific_dependency = specific_dependency
       end
 
       # @see Dependency#fetch
-      def fetch( hunt )
-        @instance ||= specific_dependency.fetch( hunt ) # rubocop:disable Naming/MemoizedInstanceVariableName
+      def fetch(hunt)
+        @instance ||= specific_dependency.fetch(hunt) # rubocop:disable Naming/MemoizedInstanceVariableName
       end
 
       # @see Dependency#release
@@ -43,7 +42,6 @@ module Scorpion
       def replicate
         dup.tap(&:release)
       end
-
     end
   end
 end

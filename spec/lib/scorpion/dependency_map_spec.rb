@@ -8,13 +8,13 @@ module Test
 end
 
 describe Scorpion::DependencyMap do
-  let( :scorpion ) { double Scorpion }
-  let( :map ) { Scorpion::DependencyMap.new scorpion }
+  let(:scorpion) { double Scorpion }
+  let(:map) { Scorpion::DependencyMap.new(scorpion) }
 
   describe "#chart" do
     it "yields itself when arg expected" do
       map.chart do |itself|
-        expect( map ).to be itself
+        expect(map).to(be(itself))
       end
     end
   end
@@ -26,7 +26,7 @@ describe Scorpion::DependencyMap do
         hunt_for Test::DependencyMap::Armor
       end
 
-      expect( map.find( Test::DependencyMap::Armor ).contract ).to eq Test::DependencyMap::Armor
+      expect(map.find(Test::DependencyMap::Armor).contract).to(eq(Test::DependencyMap::Armor))
     end
 
     it "returns nil when no match" do
@@ -34,7 +34,7 @@ describe Scorpion::DependencyMap do
         hunt_for Test::DependencyMap::Weapon
       end
 
-      expect( map.find( Test::DependencyMap::Armor ) ).to be_nil
+      expect(map.find(Test::DependencyMap::Armor)).to(be_nil)
     end
 
     it "returns nil when no match" do
@@ -42,20 +42,19 @@ describe Scorpion::DependencyMap do
         hunt_for Test::DependencyMap::Weapon
       end
 
-      expect( map.find( Test::DependencyMap::Armor ) ).to be_nil
+      expect(map.find(Test::DependencyMap::Armor)).to(be_nil)
     end
-
   end
 
   describe "#hunt_for" do
     it "adds a Dependency" do
-      expect( map ).to be_empty
+      expect(map).to(be_empty)
 
       map.chart do
         hunt_for Test::DependencyMap::Weapon
       end
 
-      expect( map.first ).to be_a Scorpion::Dependency
+      expect(map.first).to(be_a(Scorpion::Dependency))
     end
   end
 
@@ -69,10 +68,10 @@ describe Scorpion::DependencyMap do
         end
       end
 
-      replica = Scorpion::DependencyMap.new scorpion
-      replica.replicate_from( map )
+      replica = Scorpion::DependencyMap.new(scorpion)
+      replica.replicate_from(map)
 
-      expect( replica ).to be_empty
+      expect(replica).to(be_empty)
     end
 
     it "dups captured dependency" do
@@ -80,10 +79,10 @@ describe Scorpion::DependencyMap do
         capture Test::DependencyMap::Weapon
       end
 
-      replica = Scorpion::DependencyMap.new scorpion
-      replica.replicate_from( map )
+      replica = Scorpion::DependencyMap.new(scorpion)
+      replica.replicate_from(map)
 
-      expect( replica ).not_to be_empty
+      expect(replica).not_to(be_empty)
     end
   end
 end

@@ -9,9 +9,8 @@ module Scorpion
     end
 
     # Prepare a root scorpion for testing.
-    def self.prepare( &block )
-      scorpion_nest.prepare &block
+    def self.prepare(&block)
+      scorpion_nest.prepare(&block)
     end
-
   end
 end

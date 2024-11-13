@@ -32,20 +32,20 @@ module Scorpion
 
     # @!attribute
     # @return [Scorpion] scorpion used to fetch uncaptured dependency.
-      attr_reader :scorpion
+    attr_reader :scorpion
 
     # @!attribute
     # @return [Array<Array>] the stack of trips conducted by the hunt to help
     #   resolve child dependencies.
-      attr_reader :trips
-      private :trips
+    attr_reader :trips
+    private :trips
 
     # @!attribute
     # @return [Trip] the current hunting trip.
-      attr_reader :trip
-      private :trip
+    attr_reader :trip
+    private :trip
 
-      delegate [:contract, :arguments, :block] => :trip
+    delegate %i[contract arguments block] => :trip
 
     # @!attribute contract
     # @return [Class,Module,Symbol] contract being hunted for.
@@ -59,16 +59,16 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    def initialize( scorpion, contract, *arguments, &block )
+    def initialize(scorpion, contract, *arguments, &block)
       @scorpion  = scorpion
       @trips     = []
-      @trip      = Trip.new contract, arguments, block
+      @trip      = Trip.new(contract, arguments, block)
     end
 
     # Hunt for additional dependency to satisfy the main hunt's contract.
     # @see Scorpion#hunt
-    def fetch( contract, *arguments, &block )
-      push contract, arguments, block
+    def fetch(contract, *arguments, &block)
+      push(contract, arguments, block)
       execute
     ensure
       pop
@@ -77,28 +77,28 @@ module Scorpion
     # Inject given `object` with its expected dependencies.
     # @param [Scorpion::Object] object to be injected.
     # @return [Scorpion::Object] the injected object.
-    def inject( object )
+    def inject(object)
       trip.object = object
-      object.send :scorpion_hunt=, self
+      object.send(:scorpion_hunt=, self)
 
       object.injected_attributes.each do |attr|
-        next if object.send "#{ attr.name }?"
+        next if object.send("#{attr.name}?")
         next if attr.lazy?
 
-        object.send :inject_dependency, attr, fetch( attr.contract )
+        object.send(:inject_dependency, attr, fetch(attr.contract))
       end
 
-      object.send :on_injected
+      object.send(:on_injected)
 
       object
     end
 
     # Allow the hunt to spawn objects.
     # @see Scorpion#spawn
-    def spawn( klass, *arguments, &block )
-      scorpion.spawn( self, klass, *arguments, &block )
+    def spawn(klass, *arguments, &block)
+      scorpion.spawn(self, klass, *arguments, &block)
     end
-    alias_method :new, :spawn
+    alias new spawn
 
     private
 
@@ -108,7 +108,7 @@ module Scorpion
 
       def execute_from_trips
         trips.each do |trip|
-          if resolved = execute_from_trip( trip )
+          if resolved = execute_from_trip(trip)
             return resolved
           end
         end
@@ -116,17 +116,17 @@ module Scorpion
         nil
       end
 
-      def execute_from_trip( trip )
+      def execute_from_trip(trip)
         return unless obj = trip.object
         return obj if contract === obj
 
         # If we have already resolved an instance of this contract in this
         # hunt, then return that same object.
-        if obj.is_a? Scorpion::Object
+        if obj.is_a?(Scorpion::Object)
           obj.injected_attributes.each do |attr|
             next unless attr.contract == contract
 
-            return obj.send( attr.name ) if obj.send( :"#{ attr.name }?" )
+            return obj.send(attr.name) if obj.send(:"#{attr.name}?")
           end
         end
 
@@ -134,13 +134,13 @@ module Scorpion
       end
 
       def execute_from_scorpion
-        scorpion.execute self
+        scorpion.execute(self)
       end
 
-      def push( contract, arguments, block )
-        trips.push trip
+      def push(contract, arguments, block)
+        trips.push(trip)
 
-        @trip = Trip.new contract, arguments, block
+        @trip = Trip.new(contract, arguments, block)
       end
 
       def pop
@@ -154,7 +154,7 @@ module Scorpion
 
         attr_accessor :object
 
-        def initialize( contract, arguments, block )
+        def initialize(contract, arguments, block)
           @contract     = contract
           @arguments    = arguments
           @block        = block

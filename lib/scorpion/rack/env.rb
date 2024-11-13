@@ -1,9 +1,10 @@
 module Scorpion
   module Rack
     module Env
-      def self.create( * )
-        fail "Include Scorpion::Rails::Controller in your ApplicationController" if defined? Rails
-        fail "Add Scorpion::Rack::Middleware"
+      def self.create(*)
+        raise("Include Scorpion::Rails::Controller in your ApplicationController") if defined? Rails
+
+        raise("Add Scorpion::Rack::Middleware")
       end
     end
   end

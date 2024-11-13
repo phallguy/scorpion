@@ -8,15 +8,15 @@ module Scorpion
     #   @param [#with_scorpion] scope an object that responds to #with_scorpion that
     #     receives the current scorpion.
     #   @return [scope] stung object.
-    def scorpion( scope = nil )
+    def scorpion(scope = nil)
       if scope
-        scope.with_scorpion( scorpion )
+        scope.with_scorpion(scorpion)
       else
         @scorpion
       end
     end
 
-    private def scorpion=( value )
+    private def scorpion=(value)
       @scorpion = value
     end
 
@@ -26,9 +26,8 @@ module Scorpion
       @scorpion_hunt
     end
 
-    private def scorpion_hunt=( hunt )
+    private def scorpion_hunt=(hunt)
       @scorpion_hunt = hunt
     end
-
   end
 end

@@ -3,15 +3,14 @@ require "scorpion/rack/env"
 module Scorpion
   module Rack
     class Middleware
-
       ENV_KEY = "scorpion.instance".freeze
 
-      def initialize( app, nest = nil )
+      def initialize(app, nest = nil)
         @app  = app
         @nest = nest
       end
 
-      def call( env )
+      def call(env)
         # If we don't have a nest yet, build one from the configured global
         # scorpion.
         @nest ||= Scorpion.instance.build_nest
@@ -20,11 +19,11 @@ module Scorpion
         env[ENV_KEY] ||=
           begin
             conceived = true
-            prepare_scorpion( nest.conceive, env )
+            prepare_scorpion(nest.conceive, env)
           end
 
         @app.call(env).tap do
-          free_scorpion( env ) if conceived
+          free_scorpion(env) if conceived
         end
       end
 
@@ -32,12 +31,12 @@ module Scorpion
 
         attr_reader :nest
 
-        def prepare_scorpion( scorpion, env )
-          scorpion.hunt_for Rack::Env, return: env
+        def prepare_scorpion(scorpion, env)
+          scorpion.hunt_for(Rack::Env, return: env)
           scorpion
         end
 
-        def free_scorpion( env )
+        def free_scorpion(env)
           env[ENV_KEY].destroy
         end
     end

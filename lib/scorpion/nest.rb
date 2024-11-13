@@ -1,7 +1,6 @@
 module Scorpion
   # A scorpion factory
   class Nest
-
     # ============================================================================
     # @!group Associations
     #
@@ -9,17 +8,17 @@ module Scorpion
     # @!attribute
     # @return [Scorpion] the mother scorpion that that will {#conceive} new
     #   scorpions for each request.
-      attr_reader :mother
+    attr_reader :mother
 
     #
     # @!endgroup Associations
 
-    def initialize( mother = nil )
+    def initialize(mother = nil)
       @mother = mother || Scorpion::Hunter.new
     end
 
-    def prepare( &block )
-      mother.prepare &block
+    def prepare(&block)
+      mother.prepare(&block)
     end
 
     # @return [Scorpion] a new scorpion used to hunt for dependencies.
@@ -37,6 +36,5 @@ module Scorpion
     def reset
       mother.reset
     end
-
   end
 end

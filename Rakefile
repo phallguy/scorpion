@@ -10,5 +10,5 @@ task :lint do
   system "rubocop"
 end
 
-task :default => [ :lint, :specs ]
-task :release => [ :default ]
+task :default => %i[lint specs]
+task :release => [:default]

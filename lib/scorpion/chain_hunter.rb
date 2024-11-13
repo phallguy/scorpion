@@ -1,5 +1,4 @@
 module Scorpion
-
   # Chains hunting calls to one or more managed scorpions.
   class ChainHunter
     include Scorpion
@@ -15,44 +14,38 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-
-    def initialize( *scorpions )
+    def initialize(*scorpions)
       @scorpions = scorpions
     end
 
     # Prepare the scorpion for hunting.
     # @see DependencyMap#chart
-    def prepare( &block )
+    def prepare(&block)
       if top = scorpions.first
-        top.prepare &block
+        top.prepare(&block)
       end
     end
 
     # @see Scorpion#replicate
     def replicate
-      self.class.new *scorpions.map( &:replicate )
+      self.class.new(*scorpions.map(&:replicate))
     end
 
     # @see Scorpion#hunt
-    def execute( hunt )
+    def execute(hunt)
       # Try explicitly defined dependencies first
       scorpions.each do |hunter|
-        begin
-          return hunter.execute( hunt, true )
-        rescue UnsuccessfulHunt # rubocop:disable Lint/HandleExceptions
-        end
+        return hunter.execute(hunt, true)
+      rescue UnsuccessfulHunt
       end
 
       # Then allow implicit
       scorpions.each do |hunter|
-        begin
-          return hunter.execute( hunt )
-        rescue UnsuccessfulHunt # rubocop:disable Lint/HandleExceptions
-        end
+        return hunter.execute(hunt)
+      rescue UnsuccessfulHunt
       end
 
-      unsuccessful_hunt hunt.contract
+      unsuccessful_hunt(hunt.contract)
     end
-
   end
 end

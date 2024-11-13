@@ -12,35 +12,35 @@ module Scorpion
     #
 
     # @return [Scorpion] the scorpion that created the map.
-      attr_reader :scorpion
+    attr_reader :scorpion
 
     # @return [Set] the set of dependency charted on this map.
-      attr_reader :dependency_set
-      private :dependency_set
+    attr_reader :dependency_set
+    private :dependency_set
 
     # @return [Set] the set of dependencies charted on this map that is shared
     #   with all child dependencies.
-      attr_reader :shared_dependency_set
-      private :shared_dependency_set
+    attr_reader :shared_dependency_set
+    private :shared_dependency_set
 
     # @return [Set] the active dependency set either {#dependency_set} or {#shared_dependency_set}
-      attr_reader :active_dependency_set
-      private :active_dependency_set
+    attr_reader :active_dependency_set
+    private :active_dependency_set
 
     #
     # @!endgroup Attributes
 
-    def initialize( scorpion )
-      @scorpion              = scorpion
+    def initialize(scorpion)
+      @scorpion = scorpion
       reset
     end
 
     # Find {Dependency} that matches the requested `contract`.
     # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
     # @return [Dependency] the dependency matching the attribute.
-    def find( contract )
-      dependency_set.find { |p| p.satisfies?( contract ) } ||
-        shared_dependency_set.find { |p| p.satisfies?( contract ) }
+    def find(contract)
+      dependency_set.find { |p| p.satisfies?(contract) } ||
+        shared_dependency_set.find { |p| p.satisfies?(contract) }
     end
 
     # Chart the {Dependency} that this hunting map can {#find}.
@@ -64,13 +64,13 @@ module Scorpion
     #   end
     #
     # @return [self]
-    def chart( &block )
+    def chart(&block)
       return unless block_given?
 
       if block.arity == 1
         yield self
       else
-        instance_eval &block
+        instance_eval(&block)
       end
 
       self
@@ -83,22 +83,22 @@ module Scorpion
     #
     # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
     # @return [Dependency] the dependency to be hunted for.
-    def hunt_for( contract, **options, &builder )
-      active_dependency_set.unshift define_dependency( contract, options, &builder )
+    def hunt_for(contract, **options, &builder)
+      active_dependency_set.unshift(define_dependency(contract, options, &builder))
     end
 
     # Captures a single dependency and returns the same instance fore each request
     # for the resource.
     # @see #hunt_for
     # @return [Dependency] the dependency to be hunted for.
-    def capture( contract, **options, &builder )
-      active_dependency_set.unshift Dependency::CapturedDependency.new( define_dependency( contract, options, &builder ) ) # rubocop:disable Metrics/LineLength
+    def capture(contract, **options, &builder)
+      active_dependency_set.unshift(Dependency::CapturedDependency.new(define_dependency(contract, options, &builder)))
     end
-    alias_method :singleton, :capture
+    alias singleton capture
 
     # Share dependencies defined within the block with all child scorpions.
     # @return [Dependency] the dependency to be hunted for.
-    def share( &block )
+    def share
       old_set = active_dependency_set
       @active_dependency_set = shared_dependency_set
       yield
@@ -107,15 +107,15 @@ module Scorpion
     end
 
     # @visibility private
-    def each( &block )
-      dependency_set.each &block
+    def each(&block)
+      dependency_set.each(&block)
     end
-    delegate [ :empty?, :blank?, :present? ] => :dependency_set
+    delegate %i[empty? blank? present?] => :dependency_set
 
     # Replicates the dependency in `other_map` into this map.
     # @param [Scorpion::DependencyMap] other_map to replicate from.
     # @return [self]
-    def replicate_from( other_map )
+    def replicate_from(other_map)
       other_map.each do |dependency|
         if replica = dependency.replicate
           dependency_set << replica
@@ -127,8 +127,8 @@ module Scorpion
 
     # Remove all dependency mappings.
     def reset
-      @dependency_set&.each &:release
-      @shared_dependency_set&.each &:release
+      @dependency_set&.each(&:release)
+      @shared_dependency_set&.each(&:release)
 
       @dependency_set        = @active_dependency_set = []
       @shared_dependency_set = []
@@ -136,8 +136,8 @@ module Scorpion
 
     private
 
-      def define_dependency( contract, options, &builder )
-        Dependency.define contract, options, &builder
+      def define_dependency(contract, options, &builder)
+        Dependency.define(contract, options, &builder)
       end
   end
 end

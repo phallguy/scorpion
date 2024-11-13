@@ -1,11 +1,10 @@
 module Scorpion
-
   # Add scorpion support to a Rack middleware.
   module Rack
     private
 
-      def scorpion( env )
-        env[ Middleware::ENV_KEY ] || fail( MissingScorpionError, self.class.name )
+      def scorpion(env)
+        env[Middleware::ENV_KEY] || raise(MissingScorpionError, self.class.name)
       end
   end
 end

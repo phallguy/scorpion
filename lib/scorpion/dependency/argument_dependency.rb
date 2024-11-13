@@ -5,21 +5,19 @@ module Scorpion
     # {Dependency} for an captured argument.
     # @see {Scorpion#argument}.
     class ArgumentDependency < Scorpion::Dependency
-
       attr_reader :argument
 
-      def initialize( argument )
+      def initialize(argument)
         @argument = argument
       end
 
-      def fetch( *args )
+      def fetch(*_args)
         argument
       end
 
-      def satisfies?( contract )
+      def satisfies?(contract)
         contract === argument
       end
-
     end
   end
 end
