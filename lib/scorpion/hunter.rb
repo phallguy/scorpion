@@ -34,11 +34,13 @@ module Scorpion
 
     # Expose dependency injection definitions as top-level methods.
     %i[hunt_for capture share].each do |delegate|
-      define_method delegate do |*args, **kwargs, &block|
+      define_method delegate do |*args, &block|
         prepare do |hunter|
-          hunter.send(delegate, *args, **kwargs, &block)
+          hunter.send(delegate, *args, &block)
         end
       end
+
+      ruby2_keywords delegate
     end
 
     # @see Scorpion#replicate

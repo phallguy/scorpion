@@ -23,7 +23,7 @@ module Scorpion
   # @param [Class,Module,Symbol] contract describing the desired behavior of the dependency.
   # @return [Object] an object that satisfies the contract.
   # @raise [UnsuccessfulHunt] if a matching object cannot be found.
-  def fetch(contract, *arguments, &block)
+  ruby2_keywords def fetch(contract, *arguments, &block)
     hunt = Hunt.new(self, contract, *arguments, &block)
     execute(hunt)
   end
@@ -33,7 +33,7 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def spawn(hunt, object_class, *arguments, &block)
+  ruby2_keywords def spawn(hunt, object_class, *arguments, &block)
     if object_class < Scorpion::Object
       object_class.spawn(hunt, *arguments, &block)
     else
@@ -55,7 +55,7 @@ module Scorpion
   # @param [Array<Object>] args to pass to the constructor.
   # @param [#call] block to pass to the constructor.
   # @return [Scorpion::Object] the spawned object.
-  def new(object_class, *arguments, &block)
+  ruby2_keywords def new(object_class, *arguments, &block)
     hunt = Hunt.new(self, object_class, *arguments, &block)
     Scorpion::Dependency::ClassDependency.new(object_class).fetch(hunt)
   end

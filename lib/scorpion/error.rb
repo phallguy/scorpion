@@ -5,7 +5,7 @@ module Scorpion
     private
 
       def translate(key, **args)
-        I18n.t(key, **args.merge(scope: %i[scorpion errors messages]))
+        I18n.t(key, **args, scope: %i[scorpion errors messages])
       end
   end
 

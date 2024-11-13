@@ -45,7 +45,7 @@ module Scorpion
     attr_reader :trip
     private :trip
 
-    delegate %i[contract arguments block] => :trip
+    delegate %i[contract arguments args kwargs block] => :trip
 
     # @!attribute contract
     # @return [Class,Module,Symbol] contract being hunted for.
@@ -59,7 +59,7 @@ module Scorpion
     #
     # @!endgroup Attributes
 
-    def initialize(scorpion, contract, *arguments, &block)
+    ruby2_keywords def initialize(scorpion, contract, *arguments, &block)
       @scorpion  = scorpion
       @trips     = []
       @trip      = Trip.new(contract, arguments, block)
@@ -67,7 +67,7 @@ module Scorpion
 
     # Hunt for additional dependency to satisfy the main hunt's contract.
     # @see Scorpion#hunt
-    def fetch(contract, *arguments, &block)
+    ruby2_keywords def fetch(contract, *arguments, &block)
       push(contract, arguments, block)
       execute
     ensure
@@ -95,7 +95,7 @@ module Scorpion
 
     # Allow the hunt to spawn objects.
     # @see Scorpion#spawn
-    def spawn(klass, *arguments, &block)
+    ruby2_keywords def spawn(klass, *arguments, &block)
       scorpion.spawn(self, klass, *arguments, &block)
     end
     alias new spawn

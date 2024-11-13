@@ -36,17 +36,19 @@ module Scorpion
       base.extend(Scorpion::Object::ClassMethods)
       if base.is_a?(Class)
         base.class_exec do
-          # Create a new instance of this class with all non-lazy dependencies
-          # satisfied.
-          # @param [Hunt] hunt that this instance will be used to satisfy.
-          def self.spawn(hunt, *args, **kwargs, &block)
-            object = new(*args, **kwargs, &block)
-            object.send(:scorpion=, hunt.scorpion)
+          class << self
+            # Create a new instance of this class with all non-lazy dependencies
+            # satisfied.
+            # @param [Hunt] hunt that this instance will be used to satisfy.
+            ruby2_keywords def spawn(hunt, *args, &block)
+              object = new(*args, &block)
+              object.send(:scorpion=, hunt.scorpion)
 
-            # Go hunt for dependencies that are not lazy and initialize the
-            # references.
-            hunt.inject(object)
-            object
+              # Go hunt for dependencies that are not lazy and initialize the
+              # references.
+              hunt.inject(object)
+              object
+            end
           end
         end
 
