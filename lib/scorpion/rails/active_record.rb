@@ -9,11 +9,10 @@ module Scorpion
       def self.install!
         return unless defined? ::ActiveRecord
 
-        ::ActiveRecord::Base.prepend(Scorpion::Rails::ActiveRecord::Model)
+        ActiveSupport.on_load(:active_record) { prepend(Scorpion::Rails::ActiveRecord::Model) }
+
         ::ActiveRecord::Relation.prepend(Scorpion::Rails::ActiveRecord::Relation)
         ::ActiveRecord::Associations::Association.prepend(Scorpion::Rails::ActiveRecord::Association)
-
-        # TODO: extend Scorpion::Hunter to support AR
       end
     end
   end
