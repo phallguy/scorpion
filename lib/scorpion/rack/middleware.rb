@@ -19,8 +19,10 @@ module Scorpion
         env[ENV_KEY] ||=
           begin
             conceived = true
-            prepare_scorpion(nest.conceive, env)
+            nest.conceive
           end
+
+        prepare_scorpion(env[ENV_KEY], env)
 
         @app.call(env).tap do
           free_scorpion(env) if conceived

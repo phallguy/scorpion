@@ -16,7 +16,7 @@ module Scorpion
   require "scorpion/dependency"
   require "scorpion/nest"
   require "scorpion/stinger"
-  require "scorpion/rails"
+  require "scorpion/rails" if defined? ::Rails
 
   # Hunts for an object that satisfies the requested `contract`.
   #
