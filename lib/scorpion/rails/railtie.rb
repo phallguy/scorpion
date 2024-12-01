@@ -11,6 +11,10 @@ module Scorpion
 
         ::Scorpion::Rails::ActiveRecord.install! if defined? ::ActiveRecord
       end
+
+      initializer "scorpion.insert_middleware" do |app|
+        app.config.middleware.unshift(Scorpion::Rack::Middleware)
+      end
     end
   end
 end
