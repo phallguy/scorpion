@@ -90,7 +90,7 @@ module Scorpion
         dependencies
       end
 
-      # Injects dependenices from the hash and removes them from the hash.
+      # Injects dependencies from the hash and removes them from the hash.
       # @see #inject_from
       def inject_from!(dependencies, overwrite = false)
         injected_attributes.each do |attr|
@@ -104,6 +104,10 @@ module Scorpion
         end
 
         dependencies
+      end
+
+      def injection_scorpion_for(_attr)
+        scorpion_hunt || scorpion
       end
 
       module ClassMethods
@@ -170,7 +174,7 @@ module Scorpion
             def #{attr.name}
               @#{attr.name} ||= begin
                 attr = injected_attributes[ :#{attr.name} ]
-                ( scorpion_hunt || scorpion ).fetch( attr.contract )
+                injection_scorpion_for(attr).fetch( attr.contract )
               end
             end
 

@@ -36,15 +36,22 @@ module Scorpion
       @private
     end
 
+    # @!attribute
+    # @return [Hash] application specific extension meta-data.
+    def extensions
+      @extensions
+    end
+
     #
     # @!endgroup Attributes
 
-    def initialize(name, contract, lazy: false, public: false, private: false)
-      @name      = name.to_sym
-      @contract  = contract
-      @lazy      = lazy
-      @public    = public
-      @private   = private
+    def initialize(name, contract, lazy: false, public: false, private: false, **extensions)
+      @name       = name.to_sym
+      @contract   = contract
+      @lazy       = lazy
+      @public     = public
+      @private    = private
+      @extensions = extensions
     end
   end
 end
