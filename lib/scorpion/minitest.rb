@@ -4,12 +4,10 @@ require "scorpion"
 
 module Scorpion
   module Minitest
-    def scorpion_nest
-      self.class.scorpion_nest
-    end
+    delegate :scorpion_nest, to: :class
 
-    def prepare(&block)
-      scorpion_nest.prepare(&block)
+    def prepare(&)
+      scorpion_nest.prepare(&)
     end
 
     def scorpion
@@ -32,7 +30,7 @@ module Scorpion
       end
 
       def infest_nest(klass)
-        return unless klass < Scorpion::Rails::Nest
+        nil unless klass < Scorpion::Rails::Nest
       end
 
       def capture(name, contract, &block)
@@ -52,9 +50,11 @@ module Scorpion
           scorpion.prepare do |hunter|
             if value == :unspecified
               if block
-                hunter.hunt_for(contract, &block)
+                hunter.hunt_for(contract) do |hunter|
+                  instance_exec(hunter, &block)
+                end
               else
-                require "minitest/mock"
+                require("minitest/mock")
                 mock = ::Minitest::Mock.new
                 hunter.hunt_for(contract, return: mock)
               end
